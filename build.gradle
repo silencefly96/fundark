@@ -22,7 +22,7 @@ allprojects {
         maven{ url'https://maven.aliyun.com/repository/public/' }//central仓和jcenter仓的聚合仓
         google()
         mavenCentral()
-        jcenter() // Warning: this repository is going to shut down soon
+        //jcenter() // Warning: this repository is going to shut down soon
     }
 }
 

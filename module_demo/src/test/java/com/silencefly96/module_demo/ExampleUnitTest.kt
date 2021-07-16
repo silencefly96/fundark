@@ -1,4 +1,4 @@
-package com.silencefly96.module_base
+package com.silencefly96.module_demo
 
 import org.junit.Test
 

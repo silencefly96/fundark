@@ -9,7 +9,7 @@ android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.silencefly96.fundark"
+        applicationId "com.silencefly96.module_demo"
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode rootProject.ext.android.versionCode
@@ -46,5 +46,4 @@ dependencies {
 
     //从基础库继承各个依赖
     implementation project(':module_base')
-
 }

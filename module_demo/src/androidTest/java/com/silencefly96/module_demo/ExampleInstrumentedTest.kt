@@ -1,4 +1,4 @@
-package com.silencefly96.module_base
+package com.silencefly96.module_demo
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.silencefly96.module_base.test", appContext.packageName)
+        assertEquals("com.silencefly96.module_demo", appContext.packageName)
     }
 }

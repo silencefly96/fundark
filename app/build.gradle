@@ -45,6 +45,6 @@ dependencies {
     androidTestImplementation rootProject.ext.dependencies.espresso_core
 
     //从基础库继承各个依赖
-    implementation project(':module_base')
+    implementation project(':module_common')
 
 }

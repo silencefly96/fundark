@@ -51,7 +51,8 @@ interface IPermissionHelper {
         if (permissionList.isNotEmpty()) {
             //申请权限
             ActivityCompat.requestPermissions(activity,
-                permissionList.toTypedArray(), PERMISSION_REQUEST_CODE)
+                permissionList.toTypedArray(), PERMISSION_REQUEST_CODE
+            )
         } else {
             //全部权限已同意
             listener.onGranted()

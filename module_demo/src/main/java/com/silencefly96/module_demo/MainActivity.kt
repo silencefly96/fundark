@@ -1,8 +1,5 @@
 package com.silencefly96.module_demo
 
-import android.content.Context
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.silencefly96.module_base.base.BaseActivity

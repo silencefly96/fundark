@@ -1,4 +1,4 @@
-package com.silencefly96.module_base.utils
+package com.silencefly96.module_common.net
 
 import com.google.gson.Gson
 

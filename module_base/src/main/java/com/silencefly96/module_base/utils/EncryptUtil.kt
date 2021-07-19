@@ -8,7 +8,8 @@ import javax.crypto.spec.SecretKeySpec
 
 
 /**
- * 加密工具类，使用base64加密
+ * 加密工具类，支持Base64、MD5、SHA、AES、CAESAR
+ *
  * @author fdk
  * @date 2021/07/13
  */

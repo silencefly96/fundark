@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentManager
  * @date 2021/07/14
  */
 @Suppress("unused")
-class QuickDialogFragment<T, R>(
+class BaseDialogFragment<T, R>(
 
     /**
      * 布局ID
@@ -163,7 +163,7 @@ class QuickDialogFragment<T, R>(
      * @param dimAmount 设置背景昏暗度
      * @return dialog
      */
-    fun setDimAmount(@FloatRange(from = 0.0, to = 1.0) dimAmount: Float): QuickDialogFragment<T, R> {
+    fun setDimAmount(@FloatRange(from = 0.0, to = 1.0) dimAmount: Float): BaseDialogFragment<T, R> {
         mDimAmount = dimAmount
         return this
     }
@@ -174,7 +174,7 @@ class QuickDialogFragment<T, R>(
      * @param alignBottom 是否显示底部
      * @return dialog
      */
-    fun setAlignBottom(alignBottom: Boolean): QuickDialogFragment<T, R> {
+    fun setAlignBottom(alignBottom: Boolean): BaseDialogFragment<T, R> {
         isAlignBottom = alignBottom
         return this
     }
@@ -185,7 +185,7 @@ class QuickDialogFragment<T, R>(
      * @param transparent 是否透明
      * @return dialog
      */
-    fun setTransparent(transparent: Boolean): QuickDialogFragment<T, R> {
+    fun setTransparent(transparent: Boolean): BaseDialogFragment<T, R> {
         isTransparent = transparent
         return this
     }
@@ -197,7 +197,7 @@ class QuickDialogFragment<T, R>(
      * @param height 高度
      * @return dialog
      */
-    fun setSize(width: Int, height: Int): QuickDialogFragment<T, R> {
+    fun setSize(width: Int, height: Int): BaseDialogFragment<T, R> {
         mWidth = width
         mHeight = height
         return this
@@ -209,7 +209,7 @@ class QuickDialogFragment<T, R>(
      * @param margin margin
      * @return dialog
      */
-    fun setMargin(margin: Int): QuickDialogFragment<T, R> {
+    fun setMargin(margin: Int): BaseDialogFragment<T, R> {
         mMargin = margin
         return this
     }
@@ -220,7 +220,7 @@ class QuickDialogFragment<T, R>(
      * @param animStyle anim
      * @return dialog
      */
-    fun setAnimStyle(@StyleRes animStyle: Int): QuickDialogFragment<T, R> {
+    fun setAnimStyle(@StyleRes animStyle: Int): BaseDialogFragment<T, R> {
         mAnimStyle = animStyle
         return this
     }
@@ -231,7 +231,7 @@ class QuickDialogFragment<T, R>(
      * @param mThemeStyle style
      * @return dialog
      */
-    fun setThemeStyle(@StyleRes mThemeStyle: Int): QuickDialogFragment<T, R> {
+    fun setThemeStyle(@StyleRes mThemeStyle: Int): BaseDialogFragment<T, R> {
         this.mThemeStyle = mThemeStyle
         return this
     }
@@ -242,7 +242,7 @@ class QuickDialogFragment<T, R>(
      * @param outCancel 是否点击外部取消
      * @return dialog
      */
-    fun setOutCancel(outCancel: Boolean): QuickDialogFragment<T, R> {
+    fun setOutCancel(outCancel: Boolean): BaseDialogFragment<T, R> {
         isOutCancelable = outCancel
         return this
     }
@@ -272,7 +272,7 @@ class QuickDialogFragment<T, R>(
      */
     fun setOnConvertListener(
         onConvertListener: OnConvertViewListener<T, R>
-    ): QuickDialogFragment<T, R> {
+    ): BaseDialogFragment<T, R> {
         this.onConvertListener = onConvertListener
         return this
     }
@@ -282,7 +282,7 @@ class QuickDialogFragment<T, R>(
      * @param listener 对话框消失监听接口
      * @return dialog
      */
-    fun setOnDismissListener(listener: OnDismissListener<R?>?): QuickDialogFragment<T, R> {
+    fun setOnDismissListener(listener: OnDismissListener<R?>?): BaseDialogFragment<T, R> {
         onDismissListener = listener
         return this
     }
@@ -305,7 +305,7 @@ class QuickDialogFragment<T, R>(
          * @param dialog 对话框
          * @param param 传入参数
          */
-        fun convertView(holder: ViewHolder?, dialog: QuickDialogFragment<T, R>?, param: T)
+        fun convertView(holder: ViewHolder?, dialog: BaseDialogFragment<T, R>?, param: T)
     }
 
     /**
@@ -334,8 +334,8 @@ class QuickDialogFragment<T, R>(
             @LayoutRes mLayoutResId: Int,
             param: T,
             convertViewListener: OnConvertViewListener<T, R>?
-        ): QuickDialogFragment<T, R> {
-            val dialog = QuickDialogFragment<T, R>(mLayoutResId, param)
+        ): BaseDialogFragment<T, R> {
+            val dialog = BaseDialogFragment<T, R>(mLayoutResId, param)
             return dialog.setOnConvertListener(convertViewListener!!)
         }
 

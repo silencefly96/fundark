@@ -39,6 +39,8 @@ android {
 
 dependencies {
 
+    implementation rootProject.ext.dependencies.constraintlayout
+
     //测试相关
     testImplementation rootProject.ext.dependencies.junit
     androidTestImplementation rootProject.ext.dependencies.ext_junit

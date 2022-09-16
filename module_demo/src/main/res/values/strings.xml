@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">module_demo</string>
+    <string name="test_string">hello world</string>
+    <string name="plan_get_all">查询全部</string>
+    <string name="plan_query">查询</string>
+    <string name="plan_delete">删除</string>
+    <string name="plan_add">增加</string>
+    <string name="plan_update">更新</string>
+    <string name="plan_input_id">输入id</string>
+    <string name="plan_input_title">输入标题</string>
+    <string name="plan_input_content">输入内容</string>
+    <string name="plan_all">全部</string>
 </resources>

@@ -46,19 +46,19 @@ dependencies {
     api project(':module_base')
 
     //Jetpack lifecycle
-    implementation rootProject.ext.dependencies.lifecycle_extensions
-    implementation rootProject.ext.dependencies.lifecycle_viewmodel_ktx
-    implementation rootProject.ext.dependencies.lifecycle_livedata_ktx
+    api rootProject.ext.dependencies.lifecycle_extensions
+    api rootProject.ext.dependencies.lifecycle_viewmodel_ktx
+    api rootProject.ext.dependencies.lifecycle_livedata_ktx
 
     //Jetpack Room 数据库框架
-    implementation rootProject.ext.dependencies.room_runtime
-    kapt rootProject.ext.dependencies.room_compiler
+//    implementation rootProject.ext.dependencies.room_runtime
+//    kapt rootProject.ext.dependencies.room_compiler
 
     //Retrofit 网络通信框架
-    implementation rootProject.ext.dependencies.retrofit
-    implementation rootProject.ext.dependencies.converter_gson
+    api rootProject.ext.dependencies.retrofit
+    api rootProject.ext.dependencies.converter_gson
 
     //协程
-    implementation rootProject.ext.dependencies.kotlinx_coroutines_core
-    implementation rootProject.ext.dependencies.kotlinx_coroutines_android
+    api rootProject.ext.dependencies.kotlinx_coroutines_core
+    api rootProject.ext.dependencies.kotlinx_coroutines_android
 }

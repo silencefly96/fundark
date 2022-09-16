@@ -1,4 +1,3 @@
-rootProject.name = "fundark"
 include ':app'
 include ':module_base'
 include ':module_demo'

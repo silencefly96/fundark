@@ -46,5 +46,5 @@ dependencies {
 
     //从基础库继承各个依赖
     implementation project(':module_common')
-
+    //implementation project(':module_demo')
 }

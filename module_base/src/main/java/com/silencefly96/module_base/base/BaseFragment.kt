@@ -69,14 +69,16 @@ abstract class BaseFragment : Fragment(), IPermissionHelper {
      *
      * @return view
      */
-    abstract fun bindView(): View?
+    open fun bindView(): View?{
+        return null
+    }
 
     /**
      * 绑定布局
      *
      * @return 布局ID
      */
-     fun bindLayout(): Int{
+     open fun bindLayout(): Int{
          return 0
      }
 

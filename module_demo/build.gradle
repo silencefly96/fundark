@@ -46,6 +46,12 @@ dependencies {
     androidTestImplementation rootProject.ext.dependencies.ext_junit
     androidTestImplementation rootProject.ext.dependencies.espresso_core
 
+    //Jetpack lifecycle
+    implementation rootProject.ext.dependencies.lifecycle_extensions
+    implementation rootProject.ext.dependencies.lifecycle_viewmodel_ktx
+    implementation rootProject.ext.dependencies.lifecycle_livedata_ktx
+    implementation rootProject.ext.dependencies.databinding
+
     //从基础库继承各个依赖
     implementation project(':module_common')
 

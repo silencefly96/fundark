@@ -7,131 +7,34 @@
         <import type="android.view.View" />
 
         <variable
-            name="id"
-            type="Integer" />
-
-        <variable
-            name="title"
-            type="String" />
-
-        <variable
-            name="content"
-            type="String" />
-
-        <variable
             name="viewmodel"
             type="com.silencefly96.module_demo.plan.PlanViewModel" />
 
-        <variable
-            name="listener"
-            type="com.silencefly96.module_demo.plan.PlanDetailFragment.OnOperateListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/all"
-            android:text="@string/plan_all"
-            android:onClick="@{() -> listener.all()}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/add"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <Button
-            android:id="@+id/add"
-            android:text="@string/plan_add"
-            android:onClick="@{() -> listener.add()}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/all"
-            app:layout_constraintEnd_toStartOf="@id/delete"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <Button
-            android:id="@+id/delete"
-            android:text="@string/plan_delete"
-            android:onClick="@{() -> listener.delete()}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/add"
-            app:layout_constraintEnd_toStartOf="@id/query"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <Button
-            android:id="@+id/query"
-            android:text="@string/plan_query"
-            android:onClick="@{() -> listener.query()}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/delete"
-            app:layout_constraintEnd_toStartOf="@id/update"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <Button
-            android:id="@+id/update"
-            android:text="@string/plan_update"
-            android:onClick="@{() -> listener.update()}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/query"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <EditText
-            android:id="@+id/id"
-            android:text="@{Integer.toString(id)}"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            app:layout_constraintTop_toBottomOf="@id/add"
-            app:layout_constraintStart_toStartOf="parent"
-            android:hint="@string/plan_input_id"
-            android:autofillHints=""
-            android:inputType="number"
-            />
-
-        <EditText
+        <TextView
             android:id="@+id/title"
-            android:text="@{title}"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            app:layout_constraintTop_toBottomOf="@id/add"
-            app:layout_constraintStart_toEndOf="@id/id"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:hint="@string/plan_input_title"
-            android:autofillHints=""
-            android:inputType="text"
-            />
-
-        <EditText
-            android:id="@+id/content"
-            android:text="@{content}"
+            android:text="@{viewmodel.title}"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            app:layout_constraintTop_toBottomOf="@id/id"
-            android:hint="@string/plan_input_content"
+            app:layout_constraintTop_toTopOf="parent"
             android:autofillHints=""
-            android:inputType="text"
             />
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/content"
+            app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintBottom_toBottomOf="parent"
             >
 
             <TextView
-                android:id="@+id/output"
-                android:text="@{viewmodel.output}"
+                android:id="@+id/content"
+                android:text="@{viewmodel.content}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />

@@ -53,22 +53,22 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionHelper {
     /**
      * 是否显示 toolbar 返回键
      */
-    private var isShowBacking = true
+    var isShowBacking = true
 
     /**
      * 是否沉浸状态栏
      */
-    private var isSteepStatusBar = true
+    var isSteepStatusBar = true
 
     /**
      * 是否全屏
      */
-    private var isFullScreen = false
+    var isFullScreen = false
 
     /**
      * 是否禁止旋转屏幕，默认竖屏显示
      */
-    private var isAllowScreenRotate = false
+    var isAllowScreenRotate = false
 
     /**
      * 日志输出标志
@@ -150,7 +150,9 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionHelper {
      *
      * @return 绑定视图
      */
-    abstract fun bindView(): View?
+    open fun bindView(): View?{
+        return null
+    }
 
     /**
      * 绑定布局

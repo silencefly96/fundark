@@ -42,5 +42,8 @@ dependencies {
     implementation rootProject.ext.dependencies.appcompat
     //RecyclerView适配器相关
     implementation rootProject.ext.dependencies.material
-
+    //Jetpack lifecycle
+    api rootProject.ext.dependencies.lifecycle_extensions
+    api rootProject.ext.dependencies.lifecycle_viewmodel_ktx
+    api rootProject.ext.dependencies.lifecycle_livedata_ktx
 }

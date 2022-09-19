@@ -1,7 +1,5 @@
 package com.silencefly96.module_demo.plan.model
 
-import com.silencefly96.module_demo.plan.model.Plan
-
 interface PlanDataSource {
 
     suspend fun queryAll(): List<Plan>

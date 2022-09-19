@@ -53,6 +53,7 @@ ext {
             lifecycle_extensions: "androidx.lifecycle:lifecycle-extensions:2.2.0",
             lifecycle_viewmodel_ktx: "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0",
             lifecycle_livedata_ktx: "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-beta01",
+            databinding: 'com.android.databinding:viewbinding:4.1.3',
 
             //Jetpack Room 数据库框架
             room_runtime: "androidx.room:room-runtime:2.3.0",

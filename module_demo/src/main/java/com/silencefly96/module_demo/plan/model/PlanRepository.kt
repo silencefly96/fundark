@@ -67,9 +67,9 @@ class PlanRepository(
 
     companion object {
 
-        private const val TYPE_LOCAL: Int = 0
-
-        private const val TYPE_REMOTE: Int = 1
+        //仓库类型
+        const val TYPE_LOCAL: Int = 0
+        const val TYPE_REMOTE: Int = 1
 
         private var INSTANCE: PlanRepository? = null
 

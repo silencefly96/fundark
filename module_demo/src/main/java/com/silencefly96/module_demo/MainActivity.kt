@@ -1,5 +1,6 @@
 package com.silencefly96.module_demo
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,12 +14,12 @@ class MainActivity : BaseActivity() {
 
     override fun bindView(): View {
         binding = ActivityMainBinding.inflate(layoutInflater)
+        //禁用沉浸状态栏
+        isSteepStatusBar = false
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun doBusiness(context: Context) {
         startActivity(Intent(this, PlanActivity::class.java))
     }
 }

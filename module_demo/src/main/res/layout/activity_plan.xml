@@ -19,12 +19,21 @@
 
     </LinearLayout>
 
-    
+
     <FrameLayout
         android:id="@+id/listFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/colorPrimary"/>
+
+    <FrameLayout
+        android:id="@+id/testFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
         android:clickable="true"
         android:focusable="true"
         android:background="@color/colorPrimary"/>

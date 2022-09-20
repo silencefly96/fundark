@@ -34,5 +34,7 @@ class PlanActivity : BaseActivity() {
         replaceFragment(PlanListFragment.newInstance(planViewModel), binding.listFrame.id)
         //PlanDetailFragment通过侧边栏提供
         replaceFragment(PlanDetailFragment.newInstance(planViewModel), binding.detailFrame.id)
+        //TestFragment可以控制所有数据
+        replaceFragment(PlanTestFragment.newInstance(planViewModel), binding.testFrame.id)
     }
 }

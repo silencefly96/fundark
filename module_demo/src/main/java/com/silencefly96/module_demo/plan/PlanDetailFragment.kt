@@ -25,8 +25,8 @@ class PlanDetailFragment(val viewModel: PlanViewModel): BaseFragment() {
                 viewModel.title = it.title
                 viewModel.content = it.content
                 //TODO 实现绑定
-//                binding.title.text = it.title
-//                binding.content.text = it.content
+                binding.title.text = it.title
+                binding.content.text = it.content
             }
         }
         return binding.root

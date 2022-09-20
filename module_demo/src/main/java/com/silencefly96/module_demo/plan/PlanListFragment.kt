@@ -33,6 +33,7 @@ class PlanListFragment(val viewModel: PlanViewModel): BaseFragment() {
                         override fun onItemClick(view: View?, itemObj: Plan, position: Int) {
                             viewModel.id.value = position.toString()
                             viewModel.idSelect = position.toString()
+                            binding.id.setText(position.toString())
                         }
                     })
                 }
@@ -63,6 +64,7 @@ class PlanListFragment(val viewModel: PlanViewModel): BaseFragment() {
             //取得所有数据
             val plans = result.getOrNull()
             plans?.let {
+                viewModel.planList.clear()
                 viewModel.planList.addAll(it)
                 adapter.notifyDataSetChanged()
             }

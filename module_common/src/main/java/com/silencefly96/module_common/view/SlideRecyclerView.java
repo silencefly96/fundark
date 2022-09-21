@@ -76,11 +76,12 @@ public class SlideRecyclerView extends RecyclerView {
                     // 这里进行了强制的要求，RecyclerView的子ViewGroup必须要有2个子view,这样菜单按钮才会有值，
                     // 需要注意的是:如果不定制RecyclerView的子View，则要求子View必须要有固定的width。
                     // 比如使用LinearLayout作为根布局，而content部分width已经是match_parent，此时如果菜单view用的是wrap_content，menu的宽度就会为0。
-                    if (mFlingView.getChildCount() == 2) {
-                        mMenuViewWidth = mFlingView.getChildAt(1).getWidth();
-                    } else {
-                        mMenuViewWidth = INVALID_CHILD_WIDTH;
-                    }
+//                    if (mFlingView.getChildCount() == 2) {
+//                        mMenuViewWidth = mFlingView.getChildAt(1).getWidth();
+//                    } else {
+//                        mMenuViewWidth = INVALID_CHILD_WIDTH;
+//                    }
+                    mMenuViewWidth = mFlingView.getChildAt(mFlingView.getChildCount() - 1).getWidth();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:

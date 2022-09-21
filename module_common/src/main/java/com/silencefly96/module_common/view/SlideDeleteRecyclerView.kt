@@ -2,12 +2,15 @@
 
 package com.silencefly96.module_common.view
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.Scroller
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
+
 
 /**
  * 左划删除控件
@@ -35,7 +38,7 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
 
     override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
         e?.let {
-           when(e.action) {
+            when(e.action) {
                MotionEvent.ACTION_DOWN -> {
                    //获取点击位置
                    getSelectItem(e)
@@ -43,14 +46,16 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
                    mLastX = e.x
                }
                MotionEvent.ACTION_MOVE -> {
-                   //不管左右都应该让item跟随滑动
+                   //移动控件
                    moveItem(e)
+                   //更新点击的横坐标
+                   mLastX = e.x
                    //拦截事件
                    return true
                }
                MotionEvent.ACTION_UP -> {
                    //判断结果
-                   stopMove(e)
+                   stopMove()
                }
            }
         }
@@ -59,23 +64,19 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
 
     //滑动结束
     //版本一：判断一下结束的位置，补充或恢复位置
-    private fun stopMove(e: MotionEvent) {
+    //问题：mLast不应该是down的位置
+    //版本二：
+    private fun stopMove() {
         mItem?.let {
-            val dx = e.x - mLastX
             //如果移动过半了，应该判定左滑成功
             val deleteWidth = it.getChildAt(it.childCount - 1).width
-            if (abs(dx) >= deleteWidth / 2) {
-                //触发移动
-                val left = if (dx > 0) {
-                    deleteWidth - dx
-                }else {
-                    - deleteWidth + dx
-                }
-                mScroller.startScroll(0, 0, left.toInt(),0)
+            if (abs(it.scrollX) >= deleteWidth / 2) {
+                //触发移动至完全展开
+                mScroller.startScroll(it.scrollX, 0, - deleteWidth,0)
                 invalidate()
             }else {
                 //如果移动没过半应该恢复状态
-                mScroller.startScroll(0, 0, - dx.toInt(),0)
+                mScroller.startScroll(it.scrollX, 0, 0,0)
                 invalidate()
             }
 
@@ -87,25 +88,34 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
 
     //移动item
     //版本一：绝对值小于删除按钮长度随便移动，大于则不移动
+    //问题：移动方向反了，而且左右可以滑动，没有限定住范围，mLast只是记住down的位置
+    //版本二：通过整体移动的数值，和每次更新的数值，判断是否在范围内，再移动
     private fun moveItem(e: MotionEvent) {
         mItem?.let {
-            val dx = e.x - mLastX
-            //这里默认最后一个view是删除按钮
-            if (abs(dx) < it.getChildAt(it.childCount - 1).width) {
+            val dx = mLastX - e.x
+            //检查mItem移动后应该在[-deleteLength, 0]内
+            val deleteWidth = it.getChildAt(it.childCount - 1).width
+            if ((it.scrollX + dx) <= deleteWidth && (it.scrollX + dx) >= 0) {
                 //触发移动
-                mScroller.startScroll(0, 0, dx.toInt(), 0)
-                invalidate()
+                it.scrollBy(dx.toInt(), 0)
             }
         }
     }
 
     //获取点击位置
     //版本一：通过点击的y坐标除于item高度得出
+    //问题：没考虑列表项的可见性、列表滑动的情况，并且x和屏幕有关不仅仅是列表
+    //版本二：通过遍历子view检查事件在哪个view内，得到点击的item
     private fun getSelectItem(e: MotionEvent) {
-        val firstChild = getChildAt(0)
-        firstChild?.let {
-            val pos = (e.x / firstChild.height).toInt()
-            mItem = getChildAt(pos) as ViewGroup
+        //获得第一个可见的item的position
+        val frame = Rect()
+        forEach {
+            if (it.visibility != GONE) {
+                it.getHitRect(frame)
+                if (frame.contains(e.x.toInt(), e.y.toInt())) {
+                    mItem = it as ViewGroup
+                }
+            }
         }
     }
 

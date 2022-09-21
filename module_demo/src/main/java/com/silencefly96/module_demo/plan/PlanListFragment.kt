@@ -28,6 +28,9 @@ class PlanListFragment(val viewModel: PlanViewModel): BaseFragment() {
                 viewHolder?.let {
                     it.setText(R.id.order, position.toString())
                     it.setText(R.id.title, item.title)
+                    it.setOnClickListener(R.id.delete) {
+                        showToast("delete")
+                    }
                     //点击列表项，修改选中id，触发请求数据
                     setOnItemClickListener(object : ItemClickListener<Plan> {
                         override fun onItemClick(view: View?, itemObj: Plan, position: Int) {

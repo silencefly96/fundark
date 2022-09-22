@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.Scroller
@@ -34,6 +35,13 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
 
     //系统最小移动距离
     private val mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
+    //最小有效速度
+    private val mMinVelocity = 600
+
+    //使用速度控制器，增加侧滑速度判定滑动成功，主要为了是练习
+    //VelocityTracker 由 native 实现，需要及时释放内存
+    private var mVelocityTracker: VelocityTracker? = null
 
     //流畅滑动
     private var mScroller = Scroller(context)
@@ -73,6 +81,7 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
         return super.onInterceptTouchEvent(e)
     }
 
+    //performClick会被onTouchEvent拦截，我们这不需要点击，全都交给super实现去了
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(e: MotionEvent?): Boolean {
         e?.let {
@@ -105,12 +114,20 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
         mItem?.let {
             //如果移动过半了，应该判定左滑成功
             val deleteWidth = it.getChildAt(it.childCount - 1).width
-            if (abs(it.scrollX) >= deleteWidth / 2f) {
+            //如果整个移动过程速度大于600，也判定滑动成功
+            //注意如果没有拦截ACTION_MOVE，mVelocityTracker是没有初始化的
+            var velocity = 0f
+            mVelocityTracker?.let { tracker ->
+                tracker.computeCurrentVelocity(1000)
+                velocity = tracker.xVelocity
+            }
+            //判断结束情况,移动过半或者向左速度很快都展开
+            if ( (abs(it.scrollX) >= deleteWidth / 2f) || (velocity < - mMinVelocity) ) {
                 //触发移动至完全展开
                 mScroller.startScroll(it.scrollX, 0, deleteWidth - it.scrollX, 0)
                 invalidate()
-            } else {
-                //如果移动没过半应该恢复状态
+            }else {
+                //如果移动没过半应该恢复状态，或者向右移动很快则恢复到原来状态
                 mScroller.startScroll(it.scrollX, 0, -it.scrollX, 0)
                 invalidate()
             }
@@ -119,6 +136,12 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
             mLastX = 0f
             //不能为null，后续mScroller要用到
             //mItem = null
+            //mVelocityTracker由native实现，需要及时释放
+            mVelocityTracker?.apply {
+                clear()
+                recycle()
+            }
+            mVelocityTracker = null
         }
     }
 
@@ -128,6 +151,7 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     //版本二：通过整体移动的数值，和每次更新的数值，判断是否在范围内，再移动
     //问题：onInterceptTouchEvent的ACTION_MOVE只触发一次
     //版本三：放在onTouchEvent内执行，并且在onInterceptTouchEvent给出一个拦截判断
+    @SuppressLint("Recycle")
     private fun moveItem(e: MotionEvent): Boolean {
         mItem?.let {
             val dx = mLastX - e.x
@@ -138,6 +162,10 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
                 if ((it.scrollX + dx) <= deleteWidth && (it.scrollX + dx) >= 0) {
                     //触发移动
                     it.scrollBy(dx.toInt(), 0)
+                    //触发速度计算
+                    //这里Recycle不存在问题，一旦返回true，就会拦截事件，就会到达ACTION_UP去回收
+                    mVelocityTracker = mVelocityTracker ?: VelocityTracker.obtain()
+                    mVelocityTracker!!.addMovement(e)
                     return true
                 }
             }

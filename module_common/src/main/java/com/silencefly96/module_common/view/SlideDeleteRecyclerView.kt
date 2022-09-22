@@ -1,11 +1,13 @@
 @file:Suppress("unused")
 
 package com.silencefly96.module_common.view
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.Scroller
 import androidx.core.view.forEach
@@ -30,31 +32,43 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
+    //系统最小移动距离
+    private val mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
     //流畅滑动
     private var mScroller = Scroller(context)
+
     //当前选中item
     private var mItem: ViewGroup? = null
-    //上次按下横坐标
+
+    //上次事件的横坐标
     private var mLastX = 0f
 
     override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
         e?.let {
-            when(e.action) {
-               MotionEvent.ACTION_DOWN -> {
-                   //获取点击位置
-                   getSelectItem(e)
-                   //设置点击的横坐标
-                   mLastX = e.x
-               }
-               MotionEvent.ACTION_MOVE -> {
-                   //判断是否拦截
-                   return moveItem(e)
-               }
-//               MotionEvent.ACTION_UP -> {
-//                   //判断结果
-//                   stopMove()
-//               }
-           }
+            when (e.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    //防止快速按下情况出问题
+                    if (!mScroller.isFinished) {
+                        mScroller.abortAnimation()
+                    }
+
+                    //获取点击位置
+                    getSelectItem(e)
+                    //设置点击的横坐标
+                    mLastX = e.x
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    //判断是否拦截
+                    //如果拦截了ACTION_MOVE，后续事件就不触发onInterceptTouchEvent了
+                    return moveItem(e)
+                }
+                //拦截了ACTION_MOVE，ACTION_UP也不会触发
+//                MotionEvent.ACTION_UP -> {
+//                    //判断结果
+//                    stopMove()
+//                }
+            }
         }
         return super.onInterceptTouchEvent(e)
     }
@@ -62,7 +76,9 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(e: MotionEvent?): Boolean {
         e?.let {
-            when(e.action) {
+            when (e.action) {
+                //没有拦截，也不能拦截，所以不需要处理
+//                MotionEvent.ACTION_DOWN -> {}
                 //拦截了ACTION_MOVE后，后面一系列event都会交到本view处理
                 MotionEvent.ACTION_MOVE -> {
                     //移动控件
@@ -91,17 +107,17 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
             val deleteWidth = it.getChildAt(it.childCount - 1).width
             if (abs(it.scrollX) >= deleteWidth / 2f) {
                 //触发移动至完全展开
-                mScroller.startScroll(it.scrollX, 0, deleteWidth - it.scrollX,0)
+                mScroller.startScroll(it.scrollX, 0, deleteWidth - it.scrollX, 0)
                 invalidate()
-            }else {
+            } else {
                 //如果移动没过半应该恢复状态
-                mScroller.startScroll(it.scrollX, 0, -it.scrollX,0)
+                mScroller.startScroll(it.scrollX, 0, -it.scrollX, 0)
                 invalidate()
             }
 
             //清除状态
             mLastX = 0f
-            //不能为null，后续流畅滑动要用到
+            //不能为null，后续mScroller要用到
             //mItem = null
         }
     }
@@ -115,12 +131,15 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     private fun moveItem(e: MotionEvent): Boolean {
         mItem?.let {
             val dx = mLastX - e.x
-            //检查mItem移动后应该在[-deleteLength, 0]内
-            val deleteWidth = it.getChildAt(it.childCount - 1).width
-            if ((it.scrollX + dx) <= deleteWidth && (it.scrollX + dx) >= 0) {
-                //触发移动
-                it.scrollBy(dx.toInt(), 0)
-                return true
+            //最小的移动距离应该舍弃，onInterceptTouchEvent不拦截，onTouchEvent内才更新mLastX
+            if(abs(dx) > mTouchSlop) {
+                //检查mItem移动后应该在[-deleteLength, 0]内
+                val deleteWidth = it.getChildAt(it.childCount - 1).width
+                if ((it.scrollX + dx) <= deleteWidth && (it.scrollX + dx) >= 0) {
+                    //触发移动
+                    it.scrollBy(dx.toInt(), 0)
+                    return true
+                }
             }
         }
         return false

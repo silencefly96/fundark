@@ -38,7 +38,10 @@ class LeftDeleteItemLayout : ConstraintLayout {
     private var mScroller = Scroller(context)
 
     //上次事件的横坐标
-    private var mLastX = 0f
+    private var mLastX = -1f
+
+    //控制控件结束的runnable
+    private val stopMoveRunnable: Runnable = Runnable { stopMove() }
 
     constructor(context: Context) : this(context, null, 0)
 
@@ -113,6 +116,10 @@ class LeftDeleteItemLayout : ConstraintLayout {
     }
 
     private fun moveItem(e: MotionEvent) {
+        //Log.e("TAG", "moveItem: mLastX=$mLastX")
+        //如果没有收到down事件，不应该移动
+        if (mLastX == -1f) return
+
         val dx = mLastX - e.x
         //检查mItem移动后应该在[-deleteLength, 0]内
         val deleteWidth = mDeleteView!!.width
@@ -120,6 +127,11 @@ class LeftDeleteItemLayout : ConstraintLayout {
             //触发移动
             scrollBy(dx.toInt(), 0)
         }
+
+        //如果一段时间没有移动时间，mLastX还没被stopMove重置为-1，那就是移动到其他地方了
+        //设置200毫秒没有新事件就触发stopMove
+        removeCallbacks(stopMoveRunnable)
+        postDelayed(stopMoveRunnable, 200)
     }
 
     private fun stopMove() {
@@ -135,7 +147,7 @@ class LeftDeleteItemLayout : ConstraintLayout {
 
         invalidate()
         //清除状态
-        mLastX = 0f
+        mLastX = -1f
     }
 
     //流畅地滑动

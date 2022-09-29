@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.BaseRecyclerAdapter
 import com.silencefly96.module_base.base.ViewHolder
+import com.silencefly96.module_common.view.LeftDeleteItemLayout
 import com.silencefly96.module_demo.R
 import com.silencefly96.module_demo.databinding.FragmentPlanListBinding
 import com.silencefly96.module_demo.plan.model.Plan
@@ -28,9 +29,16 @@ class PlanListFragment(val viewModel: PlanViewModel): BaseFragment() {
                 viewHolder?.let {
                     it.setText(R.id.order, position.toString())
                     it.setText(R.id.title, item.title)
+
+                    //使用SlideDeleteRecyclerView
                     it.setOnClickListener(R.id.delete) {
                         showToast("delete")
                     }
+
+                    //使用LeftDeleteItemLayout
+                    (it.itemView as LeftDeleteItemLayout).mDeleteClickListener =
+                        View.OnClickListener { showToast("delete") }
+
                     //点击列表项，修改选中id，触发请求数据
                     setOnItemClickListener(object : ItemClickListener<Plan> {
                         override fun onItemClick(view: View?, itemObj: Plan, position: Int) {

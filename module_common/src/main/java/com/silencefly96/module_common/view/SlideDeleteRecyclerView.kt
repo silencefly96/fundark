@@ -37,7 +37,6 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     private val mMinVelocity = 600
 
     //增加手势控制，双击快速完成侧滑，还是为了练习
-    private var isDoubleClick = false
     private var mGestureDetector: GestureDetector
         = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener(){
             override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -51,7 +50,6 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
                         }else {
                             mScroller.startScroll(it.scrollX, 0, -it.scrollX, 0)
                         }
-                        isDoubleClick = true
                         invalidate()
                         return true
                     }

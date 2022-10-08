@@ -3,8 +3,10 @@ package com.silencefly96.module_demo
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.silencefly96.module_base.base.BaseActivity
+import com.silencefly96.module_common.view.HeaderFooterView
 import com.silencefly96.module_demo.databinding.ActivityMainBinding
 import com.silencefly96.module_demo.plan.PlanActivity
 
@@ -20,6 +22,17 @@ class MainActivity : BaseActivity() {
     }
 
     override fun doBusiness(context: Context) {
-        startActivity(Intent(this, PlanActivity::class.java))
+        //startActivity(Intent(this, PlanActivity::class.java))
+        binding.hhView.onReachHeadListener = object : HeaderFooterView.OnReachHeadListener {
+            override fun onReachHead() {
+                showToast("reach head")
+            }
+        }
+
+        binding.hhView.onReachFootListener = object : HeaderFooterView.OnReachFootListener {
+            override fun onReachFoot() {
+                showToast("reach foot")
+            }
+        }
     }
 }

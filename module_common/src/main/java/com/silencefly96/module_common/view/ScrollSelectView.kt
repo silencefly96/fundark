@@ -2,6 +2,7 @@
 
 package com.silencefly96.module_common.view
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
@@ -45,10 +46,13 @@ class ScrollSelectView @JvmOverloads constructor(
 
     //数据
     var mData: List<String>? = null
+
     //选择数据index
     var mCurrentIndex: Int = 0
+
     //单次事件序列累计滑动值
     private var mScrollY: Float = 0f
+
     //上次事件纵坐标
     private var mLastY: Float = 0f
 
@@ -238,7 +242,7 @@ class ScrollSelectView @JvmOverloads constructor(
                     mLastY = it.y
                 }
                 MotionEvent.ACTION_MOVE -> move(event)
-                MotionEvent.ACTION_UP -> stopMove(event)
+                MotionEvent.ACTION_UP -> stopMove()
             }
         }
         //view是最末端了，应该拦截touch事件，不然事件序列将舍弃
@@ -261,15 +265,23 @@ class ScrollSelectView @JvmOverloads constructor(
         invalidate()
     }
 
-    private fun stopMove(event: MotionEvent) {
+    private fun stopMove() {
         //结束滑动后判定，滑动距离超过四分之一（即mainItem的一半）就切换了选中项
-        if (mScrollY > measuredHeight / 4f) {
-
-        }else if (mScrollY < -measuredHeight /4f) {
-
-        }else {
+        val leftScrollY: Float = when {
+            mScrollY > measuredHeight / 4f -> measuredHeight / 2f - mScrollY
+            mScrollY < -measuredHeight /4f -> -measuredHeight / 2f - mScrollY
             //滑动没有达到切换选中项效果，应该恢复到原先状态
-
+            else -> -mScrollY
         }
+
+        //这里使用ValueAnimator处理剩余的距离，模拟滑动到需要的位置
+        val animator = if (leftScrollY > 0) ValueAnimator.ofFloat(0f, leftScrollY)
+            else ValueAnimator.ofFloat(leftScrollY, 0f)
+        animator.addUpdateListener { animation ->
+            mScrollY = animation.animatedValue as Float
+            invalidate()
+        }
+        animator.duration = 300
+        animator.start()
     }
 }

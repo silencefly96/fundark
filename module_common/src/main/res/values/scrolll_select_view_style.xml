@@ -3,5 +3,7 @@
     <declare-styleable name="ScrollSelectView">
         <attr name="mainAlpha" format="integer"/>
         <attr name="secondAlpha" format="integer"/>
+        <attr name="textScanSize" format="integer"/>
+        <attr name="changeItemYCapacity" format="dimension"/>
     </declare-styleable>
 </resources>

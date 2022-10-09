@@ -44,10 +44,18 @@ class ScrollSelectView @JvmOverloads constructor(
     private val mainAlpha: Int
     private val secondAlpha: Int
 
+    //字体相对于框的缩放比例
+    private val textScanSize: Int
+
+    //切换项目的y轴滑动距离门限值
+    private var itemChangeYCapacity: Float
+
     //数据
+    @Suppress("MemberVisibilityCanBePrivate")
     var mData: List<String>? = null
 
     //选择数据index
+    @Suppress("MemberVisibilityCanBePrivate")
     var mCurrentIndex: Int = 0
 
     //单次事件序列累计滑动值
@@ -67,6 +75,9 @@ class ScrollSelectView @JvmOverloads constructor(
             DEFAULT_BIG_TRANSPARENCY)
         secondAlpha = attrArr.getInteger(R.styleable.ScrollSelectView_secondAlpha,
             DEFAULT_SMALL_TRANSPARENCY)
+        textScanSize = attrArr.getInteger(R.styleable.ScrollSelectView_textScanSize, 2)
+        itemChangeYCapacity = attrArr.getDimension(R.styleable.ScrollSelectView_changeItemYCapacity,
+            0f)
         //回收
         attrArr.recycle()
 
@@ -91,13 +102,11 @@ class ScrollSelectView @JvmOverloads constructor(
         setMeasuredDimension(width, height)
 
         //得到自身高度后，就可以按比例设置字体大小了
-        setFontSize(height)
-    }
+        mainSize = height / 2f / textScanSize
+        secondSize = height / 4f / textScanSize
 
-    private fun setFontSize(totalHeight: Int) {
-        //按6：3：1的比例设置字体大小
-        mainSize = totalHeight * 6 / 10f
-        secondSize = totalHeight / 10f
+        //如果滑动距离门限值没有确定，应该根据view大小设定
+        itemChangeYCapacity = height / 2f
     }
 
     //根据MeasureSpec确定默认宽高，MeasureSpec限定了该view可用的大小
@@ -124,8 +133,8 @@ class ScrollSelectView @JvmOverloads constructor(
     }
 
     private fun drawMainItem(paint: Paint, canvas: Canvas?) {
-        //变化值为主次两个控件中线内的高度，不考虑delta>1，大于时在move已切换了MainItem
-        val delta = mScrollY / (measuredHeight / 2f + measuredHeight / 4f) / 2f
+        //不考虑delta>1，大于时在move已切换了MainItem
+        val delta = mScrollY / itemChangeYCapacity
         val dSize = (mainSize - secondSize) * delta
         val dAlpha = (mainAlpha - secondAlpha) * delta
         val dy = mScrollY
@@ -141,14 +150,13 @@ class ScrollSelectView @JvmOverloads constructor(
         //top为基线到字体上边框的距离（负数），bottom为基线到字体下边框的距离（正数）
         //基线中间点的y轴计算公式，即中心点加上字体高度的一半，基线中间点x就是中心点x
         val baseline = y - (fmi.top + fmi.bottom) / 2f
-        val mainStr = if (mCurrentIndex - 1 < 0 || mCurrentIndex + 1 >= mData!!.size) ""
-            else mData!![mCurrentIndex - 1]
+        val mainStr = if (mCurrentIndex < 0 || mCurrentIndex >= mData!!.size) ""
+            else mData!![mCurrentIndex]
         canvas?.drawText(mainStr, x, baseline, mPaint)
     }
 
     private fun drawSecondItem(paint: Paint, canvas: Canvas?) {
-        //变化的比例只和mainItem有关，即之和切换和不切换直接的状态有关
-        val delta = mScrollY / (measuredHeight / 2f + measuredHeight / 4f) / 2f
+        val delta = mScrollY / itemChangeYCapacity
 
         //绘制上面项目
         var dSize: Float
@@ -196,7 +204,7 @@ class ScrollSelectView @JvmOverloads constructor(
         paint.textSize = secondSize + dSize
         paint.alpha = (secondAlpha + dAlpha).toInt()
         x = measuredWidth / 2f
-        y = measuredHeight  * 7 / 8f + dy
+        y = measuredHeight  * 7 / 8f - dy
         baseline = y - (fmi.top + fmi.bottom) / 2f
         val bottomStr = if (mCurrentIndex + 1 >= mData!!.size) "" else mData!![mCurrentIndex + 1]
         canvas?.drawText(bottomStr, x, baseline, mPaint)
@@ -205,7 +213,7 @@ class ScrollSelectView @JvmOverloads constructor(
     private fun drawNewItem(paint: Paint, canvas: Canvas?) {
         //变化的比例只和mainItem有关，即之和切换和不切换直接的状态有关
         //新项目从无到有，delta只为正数
-        val delta = abs(mScrollY / (measuredHeight / 2f + measuredHeight / 4f) / 2f)
+        val delta = abs(mScrollY / itemChangeYCapacity)
         //新项目终态就是次item
         val dSize = secondSize * delta
         val dAlpha = secondAlpha * delta
@@ -228,7 +236,7 @@ class ScrollSelectView @JvmOverloads constructor(
         //新的item和选中的index相差为2
         val newItemIndex = if (mScrollY > 0) mCurrentIndex + 2 else mCurrentIndex - 2
         val topStr = if (newItemIndex < 0 || newItemIndex >= mData!!.size) ""
-            else mData!![newItemIndex - 1]
+            else mData!![newItemIndex]
         canvas?.drawText(topStr, x, baseline, mPaint)
     }
 
@@ -250,14 +258,19 @@ class ScrollSelectView @JvmOverloads constructor(
     }
 
     private fun move(e: MotionEvent) {
+        val dy = mLastY - e.y
+        //设置滑动范围，到达顶部不能下拉，到达底部不能上拉
+        if (dy < 0 && mCurrentIndex - 1 == 0) return
+        if (dy > 0 && mCurrentIndex + 1 == mData!!.size - 1) return
+
         //累加滑动距离
-        mScrollY += mLastY - e.y
+        mScrollY += dy
         //如果滑动距离切换了选中值，重绘前修改选中值
-        if (mScrollY > (measuredHeight / 2f + measuredHeight / 4f) / 2f) {
+        if (mScrollY > itemChangeYCapacity) {
             mCurrentIndex++
             //等于已经切换了，用完的mScrollY不需要了
             mScrollY = 0f
-        }else if (mScrollY < -(measuredHeight / 2f + measuredHeight / 4f) / 2f){
+        }else if (mScrollY < -itemChangeYCapacity){
             mCurrentIndex--
             mScrollY = 0f
         }
@@ -266,10 +279,10 @@ class ScrollSelectView @JvmOverloads constructor(
     }
 
     private fun stopMove() {
-        //结束滑动后判定，滑动距离超过四分之一（即mainItem的一半）就切换了选中项
+        //结束滑动后判定，滑动距离超过itemChangeYCapacity一半就切换了选中项
         val leftScrollY: Float = when {
-            mScrollY > measuredHeight / 4f -> measuredHeight / 2f - mScrollY
-            mScrollY < -measuredHeight /4f -> -measuredHeight / 2f - mScrollY
+            mScrollY > itemChangeYCapacity / 2f -> measuredHeight / 2f - mScrollY
+            mScrollY < -itemChangeYCapacity / 2f -> -measuredHeight / 2f - mScrollY
             //滑动没有达到切换选中项效果，应该恢复到原先状态
             else -> -mScrollY
         }

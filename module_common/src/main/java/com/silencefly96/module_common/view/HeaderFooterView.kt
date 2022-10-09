@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.Scroller
 import android.widget.TextView
 import androidx.core.view.forEach
-import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -48,7 +47,7 @@ class HeaderFooterView @JvmOverloads constructor(
     private var mScroller = Scroller(context)
 
     init {
-        //设置默认的Header、Footer
+        //设置默认的Header、Footer，这里是从构造来的，如果外部设置需要另外处理
         header = header ?: makeTextView(context, "Header")
         footer = footer ?: makeTextView(context, "Footer")
 

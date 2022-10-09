@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ScrollSelectView">
+        <attr name="mainAlpha" format="integer"/>
+        <attr name="secondAlpha" format="integer"/>
+    </declare-styleable>
+</resources>

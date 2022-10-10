@@ -9,9 +9,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.MeasureSpec.*
+import androidx.core.animation.addListener
 import com.silencefly96.module_common.R
 import kotlin.math.abs
 import kotlin.math.min
@@ -50,6 +52,9 @@ class ScrollSelectView @JvmOverloads constructor(
     //切换项目的y轴滑动距离门限值
     private var itemChangeYCapacity: Float
 
+    //释放滑动动画效果间隔
+    private var afterUpAnimatorPeriod: Int
+
     //数据
     @Suppress("MemberVisibilityCanBePrivate")
     var mData: List<String>? = null
@@ -76,8 +81,12 @@ class ScrollSelectView @JvmOverloads constructor(
         secondAlpha = attrArr.getInteger(R.styleable.ScrollSelectView_secondAlpha,
             DEFAULT_SMALL_TRANSPARENCY)
         textScanSize = attrArr.getInteger(R.styleable.ScrollSelectView_textScanSize, 2)
+        //取到的值限定为dp值，需要转换
         itemChangeYCapacity = attrArr.getDimension(R.styleable.ScrollSelectView_changeItemYCapacity,
             0f)
+        itemChangeYCapacity = dp2px(context, itemChangeYCapacity).toFloat()
+        afterUpAnimatorPeriod = attrArr.getInteger(R.styleable.ScrollSelectView_afterUpAnimatorPeriod,
+            300)
         //回收
         attrArr.recycle()
 
@@ -106,7 +115,7 @@ class ScrollSelectView @JvmOverloads constructor(
         secondSize = height / 4f / textScanSize
 
         //如果滑动距离门限值没有确定，应该根据view大小设定
-        itemChangeYCapacity = height / 2f
+        itemChangeYCapacity = if(itemChangeYCapacity == 0f) height / 4f * 3 else itemChangeYCapacity
     }
 
     //根据MeasureSpec确定默认宽高，MeasureSpec限定了该view可用的大小
@@ -137,9 +146,9 @@ class ScrollSelectView @JvmOverloads constructor(
         val delta = mScrollY / itemChangeYCapacity
         val dSize = (mainSize - secondSize) * delta
         val dAlpha = (mainAlpha - secondAlpha) * delta
-        val dy = mScrollY
-        paint.textSize = mainSize - dSize
-        paint.alpha = (mainAlpha - dAlpha).toInt()
+        val dy = (measuredHeight / 2f + measuredHeight / 4f) / 2f * delta
+        paint.textSize = if (delta > 0) mainSize - dSize else mainSize + dSize
+        paint.alpha = (if (delta> 0) mainAlpha - dAlpha else mainAlpha + dAlpha).toInt()
 
         //中心点，但是绘制是从基线开始的，在中心点下方
         //受滑动影响，修改y即可
@@ -266,11 +275,11 @@ class ScrollSelectView @JvmOverloads constructor(
         //累加滑动距离
         mScrollY += dy
         //如果滑动距离切换了选中值，重绘前修改选中值
-        if (mScrollY > itemChangeYCapacity) {
+        if (mScrollY >= itemChangeYCapacity) {
             mCurrentIndex++
             //等于已经切换了，用完的mScrollY不需要了
             mScrollY = 0f
-        }else if (mScrollY < -itemChangeYCapacity){
+        }else if (mScrollY <= -itemChangeYCapacity){
             mCurrentIndex--
             mScrollY = 0f
         }
@@ -280,21 +289,39 @@ class ScrollSelectView @JvmOverloads constructor(
 
     private fun stopMove() {
         //结束滑动后判定，滑动距离超过itemChangeYCapacity一半就切换了选中项
-        val leftScrollY: Float = when {
-            mScrollY > itemChangeYCapacity / 2f -> measuredHeight / 2f - mScrollY
-            mScrollY < -itemChangeYCapacity / 2f -> -measuredHeight / 2f - mScrollY
+        val terminalScrollY: Float = when {
+            mScrollY > itemChangeYCapacity / 2f -> itemChangeYCapacity
+            mScrollY < -itemChangeYCapacity / 2f -> -itemChangeYCapacity
             //滑动没有达到切换选中项效果，应该恢复到原先状态
-            else -> -mScrollY
+            else -> 0f
         }
 
         //这里使用ValueAnimator处理剩余的距离，模拟滑动到需要的位置
-        val animator = if (leftScrollY > 0) ValueAnimator.ofFloat(0f, leftScrollY)
-            else ValueAnimator.ofFloat(leftScrollY, 0f)
+        val animator = ValueAnimator.ofFloat(mScrollY, terminalScrollY)
         animator.addUpdateListener { animation ->
             mScrollY = animation.animatedValue as Float
             invalidate()
         }
-        animator.duration = 300
+
+        //动画结束时要更新选中的项目
+        animator.addListener (onEnd = {
+            if (mScrollY == itemChangeYCapacity) mCurrentIndex++
+            else if (mScrollY == -itemChangeYCapacity) mCurrentIndex--
+            mScrollY = 0f
+        })
+
+        //滑动动画总时间应该和距离有关
+        val percent = terminalScrollY / (itemChangeYCapacity / 2f)
+        animator.duration = (afterUpAnimatorPeriod * abs(percent)).toLong()
         animator.start()
+    }
+
+    //单位转换
+    @Suppress("SameParameterValue")
+    private fun dp2px(context: Context, dpVal: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dpVal, context.resources
+                .displayMetrics
+        ).toInt()
     }
 }

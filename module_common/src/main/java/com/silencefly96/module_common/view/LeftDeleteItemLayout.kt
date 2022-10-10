@@ -121,6 +121,8 @@ class LeftDeleteItemLayout : ConstraintLayout {
         if (mLastX == -1f) return
 
         val dx = mLastX - e.x
+        //更新点击的横坐标
+        mLastX = e.x
         //检查mItem移动后应该在[-deleteLength, 0]内
         val deleteWidth = mDeleteView!!.width
         if ((scrollX + dx) <= deleteWidth && (scrollX + dx) >= 0) {

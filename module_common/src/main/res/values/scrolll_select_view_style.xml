@@ -6,5 +6,6 @@
         <attr name="textScanSize" format="integer"/>
         <attr name="changeItemYCapacity" format="dimension"/>
         <attr name="afterUpAnimatorPeriod" format="integer"/>
+        <attr name="mainItemPercent" format="fraction"/>
     </declare-styleable>
 </resources>

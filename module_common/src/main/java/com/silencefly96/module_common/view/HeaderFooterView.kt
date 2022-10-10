@@ -172,6 +172,8 @@ class HeaderFooterView @JvmOverloads constructor(
     private fun moveView(e: MotionEvent) {
         //Log.e("TAG", "moveView: height=$height, measuredHeight=$measuredHeight")
         val dy = mLastY - e.y
+        //更新点击的纵坐标
+        mLastY = e.y
         //纵坐标的可滑动范围，0 到 隐藏部分高度，全部显示内容时是header高度
         val scrollMax = if (isAllDisplay) {
             header!!.height

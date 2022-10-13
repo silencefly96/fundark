@@ -3,6 +3,7 @@ package com.silencefly96.module_common.view
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -29,8 +30,26 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ): ViewGroup(context, attributeSet, defStyleAttr){
 
+    @Suppress("unused")
+    companion object{
+        //侧滑共有四个方向，一个不设置的属性，暂时只实现GRAVITY_TYPE_LEFT
+        const val GRAVITY_TYPE_NULL = -1
+        const val GRAVITY_TYPE_LEFT = 0
+        const val GRAVITY_TYPE_TOP = 1
+        const val GRAVITY_TYPE_RIGHT = 2
+        const val GRAVITY_TYPE_BOTTOM = 3
+
+        //滑动状态
+        const val SLIDE_STATE_TYPE_CLOSED = 0
+        const val SLIDE_STATE_TYPE_MOVING = 1
+        const val SLIDE_STATE_TYPE_OPENED = 2
+    }
+
     //侧滑栏控件
-    private var slideView: View? = null
+    private var mSlideView: View? = null
+
+    //滑动状态
+    private var mState = SLIDE_STATE_TYPE_CLOSED
 
     //最大滑动长度
     private var maxScrollLength: Float
@@ -46,6 +65,9 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
 
     //侧滑栏所占比例
     private var mSidePercent: Float = 0.75f
+
+    //切换到目标状态的属性动画
+    private var mAnimator: ValueAnimator? = null
 
     init {
         //读取XML参数
@@ -89,7 +111,7 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
                     throw IllegalArgumentException("function not support")
 
                 //取到侧滑栏，多个时取最后一个
-                slideView = child
+                mSlideView = child
 
                 //侧滑栏大小另外测量，高度铺满父容器，宽度设置为父容器的四分之三
                 childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
@@ -170,26 +192,39 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
             }
         }
 
-        //最后绘制侧滑栏，使其在最顶层
-        slideView?.let {
+        //最后绘制侧滑栏，使其在最顶层？？？这里直接layout是没用的，绘想想看，绘制是onDraw的职责,这里有两个种办法
+        //一是在XML中将侧滑栏放到最后去，二是将mSlideView放到children的最后去，onDraw内应该是for循环绘制的
+        mSlideView?.let {
+            //下面方法是专门在onLayout方法中使用的，不会触发requestLayout
+            removeViewInLayout(mSlideView)
+            addViewInLayout(mSlideView!!, childCount, mSlideView!!.layoutParams)
+
+            //这里还有一个问题，当当前view设置padding的时候，侧滑栏会被裁切,设置不裁切padding内容
+            this.layoutParams.apply {
+                //不裁切孙view在父view超出的部分，让孙view在爷爷view中正常显示，这里不需要
+                //clipChildren = false
+                clipToPadding = false
+            }
+
             //在页面左边
             cTop = 0
             cRight = slideOffset.toInt()
-            cLeft = cRight - slideView!!.measuredWidth
-            cBottom = cTop + slideView!!.measuredHeight
+            cLeft = cRight - mSlideView!!.measuredWidth
+            cBottom = cTop + mSlideView!!.measuredHeight
 
             //布局
-            slideView!!.layout(cLeft, cTop, cRight, cBottom)
+            mSlideView!!.layout(cLeft, cTop, cRight, cBottom)
         }
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         ev?.let {
             when(ev.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    mLastX = ev.x
-                    mScrollLength = 0f
-                }
+                MotionEvent.ACTION_DOWN -> preMove(ev)
                 MotionEvent.ACTION_MOVE -> return true
             }
         }
@@ -203,8 +238,7 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
             when(ev.action) {
                 //如果子控件未拦截ACTION_DOWN事件或者点击在view没有子控件的地方，onTouchEvent要处理
                 MotionEvent.ACTION_DOWN -> {
-                    mLastX = ev.x
-                    mScrollLength = 0f
+                    preMove(ev)
                     return true
                 }
                 MotionEvent.ACTION_MOVE -> moveView(ev)
@@ -215,9 +249,21 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
         return super.onTouchEvent(ev)
     }
 
+    private fun preMove(e: MotionEvent) {
+        mLastX = e.x
+        if (mState == SLIDE_STATE_TYPE_MOVING) {
+            //要取消结束监听，防止错误修改状态，把当前位置交给接下来的滑动处理
+            mAnimator?.removeAllListeners()
+            mAnimator?.cancel()
+        }else {
+            //关闭和展开时，点击滑动应该切换状态
+            mState = SLIDE_STATE_TYPE_MOVING
+        }
+    }
+
     private fun moveView(e: MotionEvent) {
         //没有侧滑栏不移动，避免多次请求布局
-        if (slideView == null) return
+        if (mSlideView == null) return
 
         //注意前面减去后面，就是页面应该scroll的值
         val dx = mLastX - e.x
@@ -262,34 +308,23 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
         }
 
         //这里使用ValueAnimator处理剩余的距离，模拟滑动到需要的位置
-        val animator = ValueAnimator.ofFloat(mScrollLength, terminalScrollX)
-        animator.addUpdateListener { animation ->
+        mAnimator = ValueAnimator.ofFloat(mScrollLength, terminalScrollX)
+        mAnimator!!.addUpdateListener { animation ->
             mScrollLength = animation.animatedValue as Float
             //请求重新布局
             requestLayout()
         }
 
-        //动画结束时要更新选中的项目
-        animator.addListener (onEnd = {
-            mLastX = 0f
-            //mScrollLength = 0f
+        //动画结束时要更新状态
+        mAnimator!!.addListener (onEnd = {
+            mState = if(mScrollLength == 0f) SLIDE_STATE_TYPE_CLOSED else SLIDE_STATE_TYPE_OPENED
         })
 
         //滑动动画总时间应该和距离有关
         val percent = 1 - abs(mScrollLength / maxScrollLength)
-        animator.duration = (maxAnimatorPeriod * abs(percent)).toLong()
-        //animator.duration = maxAnimatorPeriod.toLong()
-        animator.start()
-    }
-
-    @Suppress("unused")
-    companion object{
-        //侧滑共有四个方向，一个不设置的属性，暂时只实现GRAVITY_TYPE_LEFT
-        const val GRAVITY_TYPE_NULL = -1
-        const val GRAVITY_TYPE_LEFT = 0
-        const val GRAVITY_TYPE_TOP = 1
-        const val GRAVITY_TYPE_RIGHT = 2
-        const val GRAVITY_TYPE_BOTTOM = 3
+        mAnimator!!.duration = (maxAnimatorPeriod * abs(percent)).toLong()
+        //mAnimator.duration = maxAnimatorPeriod.toLong()
+        mAnimator!!.start()
     }
 
     //自定义的LayoutParams，子控件使用的是父控件的LayoutParams，所以父控件可以增加自己的属性，在子控件XML中使用

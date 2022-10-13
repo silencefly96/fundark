@@ -18,13 +18,5 @@ class MainActivity : BaseActivity() {
 
     override fun doBusiness(context: Context) {
         //startActivity(Intent(this, PlanActivity::class.java))
-        binding.hhView.mData = ArrayList<String>().apply{
-            add("第一个")
-            add("第二个")
-            add("第三个")
-            add("第四个")
-            add("第五个")
-        }
-        binding.hhView.mCurrentIndex = 2
     }
 }

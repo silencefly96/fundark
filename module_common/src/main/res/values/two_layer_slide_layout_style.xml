@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name ="TwoLayerSlideLayout">
+        <attr name="maxScrollLength" format="dimension"/>
+        <attr name="maxAnimatorPeriod" format="integer"/>
+        <attr name="mSidePercent" format="fraction"/>
+    </declare-styleable>
+    <declare-styleable name ="TwoLayerSlideLayout.Layout">
+        <attr name ="slide_gravity">
+            <enum name ="left" value="0" />
+            <enum name ="top" value="1" />
+            <enum name ="right" value="2" />
+            <enum name ="bottom" value="3" />
+        </attr >
+    </declare-styleable>
+</resources>

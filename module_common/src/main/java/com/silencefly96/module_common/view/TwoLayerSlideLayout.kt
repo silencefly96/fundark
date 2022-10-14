@@ -18,7 +18,7 @@ import kotlin.math.abs
  * 类似旧版QQ，两层页面，切换的使用有互相移动动画
  * 核心思路
  * 1、两部分，主内容和左边侧滑栏，侧滑栏不完全占满主内容
- * 2、向右滑动展现侧滑栏，同时主内容以更慢的速度向右滑动
+ * 2、在主内容页面向右滑动展现侧滑栏，同时主内容以更慢的速度向右滑动
  * 3、侧滑栏完全显示时不再左滑
  * 4、类似侧滑栏，通过自定义属性来指定侧滑栏页面，其他view为主内容
  * 5、侧滑栏就一个view，容器内其他view作为主内容，view摆放类似垂直方向LinearLayout
@@ -238,7 +238,7 @@ class TwoLayerSlideLayout @JvmOverloads constructor(
             when(ev.action) {
                 //如果子控件未拦截ACTION_DOWN事件或者点击在view没有子控件的地方，onTouchEvent要处理
                 MotionEvent.ACTION_DOWN -> {
-                    preMove(ev)
+                    //preMove(ev)
                     return true
                 }
                 MotionEvent.ACTION_MOVE -> moveView(ev)

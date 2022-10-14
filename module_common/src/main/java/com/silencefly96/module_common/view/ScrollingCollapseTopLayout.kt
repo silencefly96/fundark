@@ -6,9 +6,13 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.NestedScrollingParent
+import androidx.core.view.forEach
+import androidx.core.widget.NestedScrollView
 import kotlin.math.abs
 
 /**
@@ -24,10 +28,52 @@ class ScrollingCollapseTopLayout @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyleAttr: Int = 0
-): ViewGroup(context, attributeSet, defStyleAttr) {
+): ViewGroup(context, attributeSet, defStyleAttr), NestedScrollingParent {
+
+    //外部滑动距离
+    private var mScrollHeight = 0f
+
+    //两个部分
+    private val header: Header = Header(context)
+
+    //NestedScrollView只允许一个子view，这里放一个垂直的LinearLayout
+    private val scrollArea: NestedScrollView = NestedScrollView(context).apply {
+        layoutParams.width = LayoutParams.MATCH_PARENT
+        layoutParams.height = LayoutParams.MATCH_PARENT
+        addView(LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams.width = LayoutParams.MATCH_PARENT
+            layoutParams.height = LayoutParams.MATCH_PARENT
+        })
+    }
 
     init {
-        addView(Header(context))
+        addView(header)
+        addView(scrollArea)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+
+        //测量header
+        header.onScroll(mScrollHeight.toInt())
+        header.measure(widthMeasureSpec, heightMeasureSpec)
+
+        //测量滑动区域
+        //把当前控件全部view放到NestedScrollView内的LinearLayout内去
+        (scrollArea.getChildAt(0) as ViewGroup).also { linear->
+            forEach { child ->
+                linear.addView(child)
+            }
+        }
+        val leftHeight = MeasureSpec.getSize(heightMeasureSpec) - header.height
+        scrollArea.measure(widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(leftHeight, MeasureSpec.EXACTLY))
+
+
+        //直接占满宽高
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec),
+            MeasureSpec.getSize(heightMeasureSpec))
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -62,7 +108,8 @@ class ScrollingCollapseTopLayout @JvmOverloads constructor(
         }
 
         //低配Behavior.onNestedPreScroll，这里就处理下ScrollingHideTopLayout传过来的距离
-        fun onScroll(expandHeight: Int) {
+        fun onScroll(scrollHeight: Int) {
+            val expandHeight = collapsingArea.height - scrollHeight
             //这里就改一下背景色的透明度吧
             if (abs(expandHeight) <= collapsingArea.height) {
                 val alpha = expandHeight.toFloat() / collapsingArea.height * 255

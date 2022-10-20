@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name ="DesktopLayerLayout">
+        <attr name="mOrientation">
+            <enum name ="vertical" value="0" />
+            <enum name ="horizontal" value="1" />
+        </attr>
+        <attr name="isAutoFitOrientation" format="boolean"/>
+        <attr name="mPaddingValue" format="integer"/>
+        <attr name="mMainPercent" format="fraction"/>
+        <attr name="mDragModeUpPercent" format="fraction"/>
+        <attr name="mOffscreenPageLimit" format="integer"/>
+    </declare-styleable>
+</resources>

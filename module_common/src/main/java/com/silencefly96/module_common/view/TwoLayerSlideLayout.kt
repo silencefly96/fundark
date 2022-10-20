@@ -22,6 +22,9 @@ import kotlin.math.abs
  * 3、侧滑栏完全显示时不再左滑
  * 4、类似侧滑栏，通过自定义属性来指定侧滑栏页面，其他view为主内容
  * 5、侧滑栏就一个view，容器内其他view作为主内容，view摆放类似垂直方向LinearLayout
+ *
+ * @author silence
+ * @date 2022-10-12
  */
 @Suppress("unused")
 class TwoLayerSlideLayout @JvmOverloads constructor(

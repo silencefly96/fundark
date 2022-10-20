@@ -26,6 +26,9 @@ import kotlin.math.abs
  * 3、在滚动区域向下滚动的时候，header会先滚动到折叠状态，header折叠后滚动区域才开始滚动
  * 4、在滚动区域向上滚动的时候，滚动区域先滚动，滚动区域到顶了才开始展开header
  * 5、低仿CoordinatorLayout，滚动区域效果通过自定义layoutParas向header传递
+ *
+ * @author silence
+ * @date 2022-10-17
  */
 class ScrollingCollapseTopLayout @JvmOverloads constructor(
     context: Context,

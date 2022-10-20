@@ -21,6 +21,9 @@ import kotlin.math.min
  * 2、滚动中间控件时，上面有内容时header不显示，下面有内容时footer不显示
  * 3、滑动到header和footer最大值时不能滑动，释放的时候需要回弹
  * 4、完全显示时隐藏footer
+ *
+ * @author silence
+ * @date 2022-10-08
  */
 @SuppressLint("SetTextI18n", "ViewConstructor")
 class HeaderFooterView @JvmOverloads constructor(

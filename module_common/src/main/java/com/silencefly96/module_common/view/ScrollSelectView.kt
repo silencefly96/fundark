@@ -26,6 +26,9 @@ import kotlin.math.min
  * 3、滑动会造成三个选项滚动，大小透明度发生变化
  * 4、滚动一定距离后，判定是否选中一个项目，并触发动画滚动到选定项
  * 5、尝试做出循环滚动效果
+ *
+ * @author silence
+ * @date 2022-10-10
  */
 class ScrollSelectView @JvmOverloads constructor(
     context: Context,

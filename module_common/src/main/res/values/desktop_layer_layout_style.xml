@@ -7,8 +7,10 @@
         </attr>
         <attr name="isAutoFitOrientation" format="boolean"/>
         <attr name="mPaddingValue" format="integer"/>
-        <attr name="mMainPercent" format="fraction"/>
+        <attr name="mMainPercentVertical" format="fraction"/>
+        <attr name="mMainPercentHorizontal" format="fraction"/>
+        <attr name="mOtherViewScanMinSize" format="fraction"/>
         <attr name="mDragModeUpPercent" format="fraction"/>
-        <attr name="mOffscreenPageLimit" format="integer"/>
+        <attr name="mSlideEffectPercent" format="fraction"/>
     </declare-styleable>
 </resources>

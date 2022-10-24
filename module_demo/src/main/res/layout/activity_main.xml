@@ -6,64 +6,69 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.silencefly96.module_common.view.ScrollingCollapseTopLayout
+    <com.silencefly96.module_common.view.DesktopLayerLayout
         android:id="@+id/hhView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/teal_700"
+        android:background="@color/white"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:background="@color/teal_200"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="300dp">
-
-            <TextView
-                android:text="@string/test_string"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
-
         <TextView
-            android:background="@color/purple_200"
-            android:layout_marginTop="100dp"
-            android:text="@string/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:background="@color/purple_200"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:text="@string/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <LinearLayout
-            android:background="@color/teal_200"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="300dp">
-
-            <TextView
-                android:text="@string/test_string"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:background="@color/purple_200"
+            android:background="@color/red"
             android:layout_marginTop="50dp"
-            android:text="@string/test_string"
+            android:text="111"
+            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
 
-    </com.silencefly96.module_common.view.ScrollingCollapseTopLayout>
+        <TextView
+            android:background="@color/yellow"
+            android:layout_marginTop="50dp"
+            android:text="222"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:background="@color/blue"
+            android:layout_marginTop="50dp"
+            android:text="333"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:background="@color/green"
+            android:layout_marginTop="50dp"
+            android:text="444"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:background="@color/cyan"
+            android:layout_marginTop="50dp"
+            android:text="555"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:background="@color/purple"
+            android:layout_marginTop="50dp"
+            android:text="666"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+
+    </com.silencefly96.module_common.view.DesktopLayerLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

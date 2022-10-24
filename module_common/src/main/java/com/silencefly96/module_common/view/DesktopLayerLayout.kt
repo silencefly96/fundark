@@ -4,15 +4,18 @@ package com.silencefly96.module_common.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Scroller
+import androidx.core.view.children
 import com.silencefly96.module_common.R
-import kotlin.math.abs
+import java.util.*
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 /**
@@ -60,7 +63,7 @@ class DesktopLayerLayout @JvmOverloads constructor(
         const val DEFAULT_DRAG_MODE_UP_PERCENT = 0.15f
 
         // 默认滑动距离生效占横屏比例
-        const val DEFAULT_SLIDE_EFFECT_PERCENT = 0.50f
+        const val DEFAULT_SLIDE_EFFECT_PERCENT = 0.25f
     }
 
     /**
@@ -68,11 +71,12 @@ class DesktopLayerLayout @JvmOverloads constructor(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     var curIndex = 0
-    set(value) {
-        field = value
-        // 修改选中下标，重新测量布局就行，后面处理
-        requestLayout()
-    }
+
+    // 由于将view提高层级会搞乱顺序，需要记录原始位置信息
+    private var mInitViews = ArrayList<View>()
+
+    // view之间的间距
+    private var mGateLength = 0
 
     // 滑动距离
     private var mScrollLength = 0f
@@ -121,7 +125,7 @@ class DesktopLayerLayout @JvmOverloads constructor(
             ORIENTATION_VERTICAL)
 
         isAutoFitOrientation =
-            typedArray.getBoolean(R.styleable.DesktopLayerLayout_isAutoFitOrientation, false)
+            typedArray.getBoolean(R.styleable.DesktopLayerLayout_isAutoFitOrientation, true)
 
         mPaddingValue = typedArray.getInteger(R.styleable.DesktopLayerLayout_mPaddingValue,
             DEFAULT_PADDING_VALUE)
@@ -149,127 +153,139 @@ class DesktopLayerLayout @JvmOverloads constructor(
         typedArray.recycle()
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        // 根据屏幕变化修改方向，自适应
-        if (isAutoFitOrientation) {
-            mOrientation = if (w > h) ORIENTATION_HORIZONTAL else ORIENTATION_VERTICAL
-            requestLayout()
-        }
-    }
-
-/*    override fun onFinishInflate() {
+    override fun onFinishInflate() {
         super.onFinishInflate()
-        moveCurViewToLast(curIndex, curIndex)
+        mInitViews.addAll(children)
     }
 
-    // 将选中view放到最后，即绘制在顶层
-    private fun moveCurViewToLast(index: Int, preIndex: Int) {
-        if (index == preIndex) return
-        if (isValuableIndex(index)) {
-            // 把原来的view放回去
-            val preView = getChildAt(childCount - 1)
-            removeViewInLayout(preView)
-            addViewInLayout(preView, childCount, preView.layoutParams)
+//    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+//        super.onSizeChanged(w, h, oldw, oldh)
+//        // 根据屏幕变化修改方向，自适应
+//        if (isAutoFitOrientation) {
+//            mOrientation = if (w > h) ORIENTATION_HORIZONTAL else ORIENTATION_VERTICAL
+//            requestLayout()
+//        }
+//    }
 
-            // 调整新的view
-            val curView = getChildAt(index)
-            removeViewInLayout(curView)
-            addViewInLayout(curView, childCount, curView.layoutParams)
-        }else {
-            throw IndexOutOfBoundsException("index should in range [0, $childCount)")
-        }
-    }*/
-
-    private fun isValuableIndex(index: Int) = (index in 0 until childCount)
-
+    // 排列规则：初始化第一个放中间，其他向右排列，中间最大，中心在左右边上的最小，不可见的也是最小
+    // view的大小应该只和它在可见页面的位置有关，不应该和curIndex有关，是充分不必要关系
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         // 获取默认尺寸，考虑背景大小
         val width = max(getDefaultSize(0, widthMeasureSpec), suggestedMinimumWidth)
         val height = max(getDefaultSize(0, heightMeasureSpec), suggestedMinimumHeight)
 
-        // 对主内容view测量
-        val curView = getChildAt(curIndex)
-        // 根据抛物线得到缩放比例
-        val scanSize = mOtherViewScanMinSize + scanByParabola(0, 1,
-            (mScrollLength / (width * mSlideEffectPercent)).toInt())
-        val curWidth: Int
-        val curHeight: Int
+        // 设置间距
+        mGateLength = width / 4
+
+        // 恢复view位置
+        if (getCurrentIndexFromScrollX() != curIndex) {
+            removeAllViewsInLayout()
+            for (view in mInitViews) {
+                addViewInLayout(view, childCount, view.layoutParams)
+            }
+        }
+
+        // 中间 view 大小
+        val maxWidth: Int
+        val maxHeight: Int
 
         // 不同方向尺寸不同
         if (mOrientation == ORIENTATION_HORIZONTAL) {
-            curWidth = (width * scanSize).toInt()
-            curHeight = height - 2 * mPaddingValue
+            maxWidth = (width * mMainPercentHorizontal).toInt()
+            maxHeight = height - 2 * mPaddingValue
         }else {
-            curWidth = (width * scanSize).toInt()
-            curHeight = height - 2 * mPaddingValue
+            maxWidth = (width * mMainPercentVertical).toInt()
+            maxHeight = height - 2 * mPaddingValue
         }
 
-        curView.measure(MeasureSpec.makeMeasureSpec(curWidth, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(curHeight, MeasureSpec.EXACTLY))
+        // 两侧 view 大小，第三排
+        val minWidth = (maxWidth * mOtherViewScanMinSize).toInt()
+        val minHeight = (maxHeight * mOtherViewScanMinSize).toInt()
 
-        // 对其他view测量，大小都一样，左闭右开
-        val otherWidth = (curWidth * mOtherViewScanMinSize).toInt()
-        val otherHeight = (curHeight * mOtherViewScanMinSize).toInt()
+        var childWidth: Int
+        var childHeight: Int
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child == curView) continue
-            child.measure(MeasureSpec.makeMeasureSpec(otherWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(otherHeight, MeasureSpec.EXACTLY))
+            val scanSize = getViewScanSize(child, scrollX)
+            childWidth = (minWidth * scanSize).toInt()
+            childHeight = (minHeight * scanSize).toInt()
+            Log.e("TAG", "onMeasure($i): childWidth=$childWidth, childHeight=$childHeight")
+            child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY))
         }
 
         setMeasuredDimension(width, height)
     }
 
+    // 选中view为最大，可见部分会缩放，不可见部分和第三排一样大
+    private fun getViewScanSize(child: View, scrolledLen: Int): Float {
+        var scanSize = 1.0f
+
+        // 开始时当前view未测量，不计算
+        if (measuredWidth == 0) return scanSize
+
+        // 屏幕分成四分，三层
+        val index = indexOfChild(child)
+        // 初始化的时候，第一个放中间，所以index移到可见范围为[2+index, index-2]，可见!=可移动
+        val scrollLeftLimit = -(2 + index) * mGateLength
+        val scrollRightLimit = -(-2 + index) * mGateLength
+
+        // 先判断child是否可见
+        if (scrolledLen in scrollLeftLimit..scrollRightLimit) {
+            // 根据二次函数计算比例
+            scanSize += scanByParabola(scrollLeftLimit, scrollRightLimit, scrolledLen).toFloat()
+        }
+
+        return scanSize
+    }
+
     // 根据抛物线计算比例，y属于[0, 1]
-    // 映射关系：(form - to, 0) -> (to - to, 1)，即(0, 0) -> (0, 1)
+    // 映射关系：(form, 0) ((from + to) / 2, 0) (to, 0) -> (0, 0) (1, 1) (2, 0)
     @Suppress("SameParameterValue")
     private fun scanByParabola(from: Int, to: Int, cur: Int): Double {
-        // 公式：val y = 1 - x.toDouble().pow(2.0)
-        val x = (cur - from / to - from).toDouble()
-        return 1 - x.pow(2.0)
+        // 公式：val y = 1 - (x - 1).toDouble().pow(2.0)
+        // Log.e("TAG", "scanByParabola:from=$from, to=$to, cur=$cur ")
+        val x = ((cur - from) / (to - from).toFloat() * 2).toDouble()
+        return 1 - (x - 1).pow(2.0)
     }
 
+    // layout 按顺序间距排列即可，大小有onMeasure控制,开始位置在中心，也和curIndex无关
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        // 对主内容view布局，放在正中心
-        val curView = getChildAt(curIndex)
-        curView.layout(
-            (r - l) / 2 - curView.measuredWidth / 2,
-            mPaddingValue,
-            (r - l) / 2 + curView.measuredWidth / 2,
-            mPaddingValue + curView.measuredHeight
-        )
-
-        // 对其他view进行布局，这里没考虑类似ViewPager的预加载问题，全部布局了
+        val startX = (r + l) / 2
+        // 排列布局
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child == curView) continue
-
-            // 按间距排列
-            val step = i - curIndex
-            val stepLen = (r - l) / 4
 
             // 中间减去间距，再减去一半的宽度，得到左边坐标
-            val left = (r - l) / 2 + stepLen * step - child.measuredWidth / 2
-            val top = (b - t) / 2 + child.measuredHeight / 2
-            val right = left + child.measuredWidth / 2
-            val bottom = top + child.measuredHeight / 2
+            val left = startX + mGateLength * i - child.measuredWidth / 2
+            val top = (b + t) / 2 - child.measuredHeight / 2
+            val right = left + child.measuredWidth
+            val bottom = top + child.measuredHeight
 
+            Log.e("TAG", "onLayout($i): left=$left, right=$right")
             child.layout(left, top, right, bottom)
         }
-    }
 
-    override fun onDraw(canvas: Canvas?) {
-        //super.onDraw(canvas)
-        // 先绘制其他view
-        for (i in 0 until childCount) {
-            if (i != curIndex) getChildAt(i).draw(canvas)
+        // 完成布局后，绘制之前，将可见view提高层级
+        val targetIndex = getCurrentIndexFromScrollX()
+        for (i in 2 downTo 0) {
+            val preIndex = targetIndex - i
+            val aftIndex = targetIndex + i
+
+            // 逐次提高层级
+            if (preIndex in 0..childCount) {
+                bringChildToFront(getChildAt(preIndex))
+            }
+
+            if (aftIndex != preIndex && aftIndex in 0..childCount) {
+                bringChildToFront(getChildAt(aftIndex))
+            }
         }
-
-        // 对主内容view绘制
-        getChildAt(curIndex).draw(canvas)
     }
+
+    // 根据滚动距离获得当前index
+    private fun getCurrentIndexFromScrollX()= (scrollX / mGateLength.toFloat()).roundToInt()
 
     override fun onInterceptHoverEvent(ev: MotionEvent?): Boolean {
         ev?.let {
@@ -290,29 +306,49 @@ class DesktopLayerLayout @JvmOverloads constructor(
 
     // 根据可以滚动的范围，计算是否可以滚动
     private fun checkScrollInView(length : Float): Boolean {
-        val leftMexScrollLength = if (mRealLeft >= 0) 0 else abs(mRealLeft)
-        val rightMaxScrollLength = if (mRealRight > measuredWidth) 0
-            else mRealRight - measuredWidth
-        return length >= -leftMexScrollLength && length <= rightMaxScrollLength
+        // 一层情况
+        if (childCount <= 1) return false
+        // 左右两边最大移动值，即把最后一个移到中间
+        val leftScrollLimit = -(childCount - 1) * mGateLength
+        val rightScrollLimit = 0
+
+        return (length >= leftScrollLimit && leftScrollLimit <= rightScrollLimit)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
         ev?.let {
-            when(ev.action) {
+            when(it.action) {
                 // 防止点击空白位置或者子view未处理touch事件
                 MotionEvent.ACTION_DOWN -> return true
-                MotionEvent.ACTION_MOVE -> {
-                    val dX = ev.x - mLastX
-                    // 移动自身就可以
-                    scrollTo((scrollX + dX).toInt(), scrollY)
-                }
-                MotionEvent.ACTION_UP -> {
-
-                }
+                MotionEvent.ACTION_MOVE -> move(ev)
+                MotionEvent.ACTION_UP -> moveUp()
             }
         }
         return super.onTouchEvent(ev)
+    }
+
+    private fun move(ev: MotionEvent) {
+        val dX = ev.x - mLastX
+        // 移动自身就可以
+        scrollBy(-(dX).toInt(), 0)
+
+        // 更新值
+        mLastX = ev.x
+        mLastY = ev.y
+    }
+
+    private fun moveUp() {
+        // setter函数会触发，移到到目标位置
+        curIndex = getCurrentIndexFromScrollX()
+        //scrollToCurIndex(getCurrentIndexFromScrollX())
+    }
+
+    // 通过scroller移动到目标位置
+    private fun scrollToCurIndex(targetIndex: Int) {
+        // 赋值
+        val targetScrollLen = -targetIndex * mGateLength
+        mScroller.startScroll(scrollX, scrollY, (targetScrollLen - scrollX), 0)
     }
 
 
@@ -320,6 +356,7 @@ class DesktopLayerLayout @JvmOverloads constructor(
         super.computeScroll()
         if (mScroller.computeScrollOffset()) {
             scrollTo(mScroller.currX, mScroller.currY)
+            //requestLayout()
             postInvalidate()
         }
     }

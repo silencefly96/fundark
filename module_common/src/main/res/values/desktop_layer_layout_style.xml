@@ -10,7 +10,5 @@
         <attr name="mMainPercentVertical" format="fraction"/>
         <attr name="mMainPercentHorizontal" format="fraction"/>
         <attr name="mOtherViewScanMinSize" format="fraction"/>
-        <attr name="mDragModeUpPercent" format="fraction"/>
-        <attr name="mSlideEffectPercent" format="fraction"/>
     </declare-styleable>
 </resources>

@@ -5,6 +5,7 @@ package com.silencefly96.module_common.view
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -75,8 +76,14 @@ class DesktopLayerLayout @JvmOverloads constructor(
     // 滑动距离
     private var mDxLen = 0f
 
-    //系统最小移动距离
+    // 系统最小移动距离
     private val mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
+    // 控件状态
+    private var mState = SCROLL_STATE_IDLE
+
+    // 当前设置的属性动画
+    private var mValueAnimator: ValueAnimator? = null
 
     // 实际布局的左右坐标值
     private var mRealLeft = 0
@@ -84,7 +91,6 @@ class DesktopLayerLayout @JvmOverloads constructor(
 
     // 上一次按下的横竖坐标
     private var mLastX = 0f
-    private var mLastY = 0F
 
     // 方向，从XML内获得
     private var mOrientation: Int
@@ -139,11 +145,25 @@ class DesktopLayerLayout @JvmOverloads constructor(
         mInitViews.addAll(children)
     }
 
+    // 屏幕方向变化并不会触发，初始时会触发，自适应
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        // Log.e("TAG", "onSizeChanged: w=$w, h=$h")
         // 根据屏幕变化修改方向，自适应
         if (isAutoFitOrientation) {
             mOrientation = if (w > h) ORIENTATION_HORIZONTAL else ORIENTATION_VERTICAL
+            requestLayout()
+        }
+    }
+
+    // 需要在manifest中注册捕捉事件类型
+    public override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mOrientation = ORIENTATION_VERTICAL
+            requestLayout()
+        }else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mOrientation = ORIENTATION_HORIZONTAL
             requestLayout()
         }
     }
@@ -277,7 +297,14 @@ class DesktopLayerLayout @JvmOverloads constructor(
             when(it.action) {
                 MotionEvent.ACTION_DOWN -> {
                     mLastX = ev.x
-                    mLastY = ev.y
+                    if(mState == SCROLL_STATE_IDLE) {
+                        mState = SCROLL_STATE_DRAGGING
+                    }else if (mState == SCROLL_STATE_SETTLING) {
+                        mState = SCROLL_STATE_DRAGGING
+                        // 去除结束监听，结束动画
+                        mValueAnimator?.removeAllListeners()
+                        mValueAnimator?.cancel()
+                    }
                 }
                 MotionEvent.ACTION_MOVE -> {
                     // 若ACTION_DOWN是本view拦截，则下面代码不会触发，要在onTouchEvent判断
@@ -331,7 +358,6 @@ class DesktopLayerLayout @JvmOverloads constructor(
 
         // 更新值
         mLastX = ev.x
-        mLastY = ev.y
     }
 
     private fun moveUp() {
@@ -351,7 +377,11 @@ class DesktopLayerLayout @JvmOverloads constructor(
         // 在动画结束时修改curIndex
         animator.addListener (onEnd = {
             curIndex = getCurrentIndex()
+            mState = SCROLL_STATE_IDLE
         })
+
+        // 设置状态
+        mState = SCROLL_STATE_SETTLING
 
         animator.duration = 300L
         animator.start()

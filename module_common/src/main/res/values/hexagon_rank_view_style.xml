@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HexagonRankView">
+        <attr name="mOutPointColor" format="color"/>
+        <attr name="mOutLineColor" format="color"/>
+        <attr name="mInPointColor" format="color"/>
+        <attr name="mInLineColor" format="color"/>
+        <attr name="mInFillColor" format="color"/>
+        <attr name="mDottedLineColor" format="color"/>
+    </declare-styleable>
+</resources>

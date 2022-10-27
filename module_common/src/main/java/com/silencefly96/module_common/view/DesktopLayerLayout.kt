@@ -26,8 +26,6 @@ import kotlin.math.roundToInt
  * 核心思想：
  * 1、类似viewpager，但同时显示两种页面，中间为主页面，左右为小页面，小页面大小一样，间距排列
  * 2、左右滑动可以将切换页面，超过页面数量大小不能滑动，滑动停止主界面能自动移动到目标位置
- * 3、需要处理滑动冲突，左右和上下的滑动冲突都需要处理
- * 4、使用adapter设计填充内容
  *
  * @author silence
  * @date 2022-10-20
@@ -156,7 +154,7 @@ class DesktopLayerLayout @JvmOverloads constructor(
         }
     }
 
-    // 需要在manifest中注册捕捉事件类型
+    // 需要在manifest中注册捕捉事件类型，android:configChanges="orientation|keyboardHidden|screenSize"
     public override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -178,16 +176,6 @@ class DesktopLayerLayout @JvmOverloads constructor(
 
         // 设置间距
         mGateLength = width / 4
-
-        // 只要curIndex切换，就有view可见性发生变化，要恢复view的位置
-//        val newIndex = getCurrentIndex()
-//        if (newIndex != curIndex) {
-//            curIndex = newIndex
-//            removeAllViewsInLayout()
-//            for (view in mInitViews) {
-//                addViewInLayout(view, childCount, view.layoutParams)
-//            }
-//        }
 
         // 中间 view 大小
         val maxWidth: Int

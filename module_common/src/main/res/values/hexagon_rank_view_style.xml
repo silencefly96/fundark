@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="HexagonRankView">
-        <attr name="mOutPointColor" format="color"/>
-        <attr name="mOutLineColor" format="color"/>
-        <attr name="mInPointColor" format="color"/>
-        <attr name="mInLineColor" format="color"/>
-        <attr name="mInFillColor" format="color"/>
-        <attr name="mDottedLineColor" format="color"/>
+        <attr name="outPointColor" format="color"/>
+        <attr name="outLineColor" format="color"/>
+        <attr name="inPointColor" format="color"/>
+        <attr name="inLineColor" format="color"/>
+        <attr name="inFillColor" format="color"/>
+        <attr name="dottedLineColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="strokeWidth" format="dimension"/>
+        <attr name="fillAlpha" format="integer"/>
+        <attr name="radiusPercent" format="dimension"/>
+        <attr name="pointRadius" format="dimension"/>
+        <attr name="startPhase" format="integer"/>
+        <attr name="textMargin" format="dimension"/>
     </declare-styleable>
 </resources>

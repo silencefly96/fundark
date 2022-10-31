@@ -5,7 +5,6 @@ package com.silencefly96.module_common.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import com.silencefly96.module_common.R
 import kotlin.math.cos
@@ -223,6 +222,62 @@ class HexagonRankView @JvmOverloads constructor(
             /******* 颜色效果处理 *******/
             // LightingColorFilter 设定基本色素(过滤颜色), mul 用来和目标像素相乘，add 用来和目标像素相加
             // colorFilter = LightingColorFilter(0x00ffff, 0x000000); //去掉红色
+
+            // PorterDuffColorFilter 设置颜色 模式运算
+            // PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.XOR); //去掉 和 绿色结合的部分
+
+            // ColorMatrixColorFilter 色彩锐度等
+            // 使用一个 ColorMatrix 来对颜色进行处理, 内部是一个 4x5 的矩阵 A, B = [R, G, B, A]-T, A x B
+            //colorFilter =  ColorMatrix(new float[]{
+            //    -1f, 0f, 0f, 0f, 255f,
+            //    0f, -1f, 0f, 0f, 255f,
+            //    0f, 0f, -1f, 0f, 255f,
+            //    0f, 0f, 0f, 1f, 0f }); //去掉 和 绿色结合的部分
+
+            // setXfermode 图片转换模式
+            // “Xfermode” 其实就是“Transfer mode”, Xfermode 指的是 你要绘制的内容 和 canvas 的目标位置的内容应该怎样结合计算出最终的颜色。
+            // 通俗的讲就是要你以绘制的图形作为源图像，以View中已有的内容做为目标图像，选取一个PorterDuff.Mode 作为绘制内容的颜色处理方案
+            // val bitmapOne = BitmapFactory.decodeResource(resources,R.mipmap.ic_launcher_2)
+            // val bitmapTwo = BitmapFactory.decodeResource(resources,R.mipmap.rect_2)
+
+            // val xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN); //取交集，交集样式取决于下层，颜色取决于上层
+            // val saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
+            // canvas.drawBitmap(bitmapTwo, 0, 0, paint);
+            // paint.setXfermode(xfermode); // 设置 Xfermode
+            // canvas.drawBitmap(bitmapOne, 0, 0, paint);
+            // paint.setXfermode(null); // 用完及时清除 Xfermode
+            // canvas.restoreToCount(saved)
+
+
+            /******* 色彩优化 *******/
+            // setDither(boolean dither) 设置图像抖动
+            // 在实际的应用场景中，抖动更多的作用是在图像降低色彩深度绘制时，避免出现大片的色带与色块
+            // 选择 16 位色的 ARGB_4444 或者 RGB_565 的时候，开启它才会有比较明显的效果
+
+            // setFilterBitmap(boolean filter) 线性过滤
+            // 图像在放大绘制的时候，默认使用的是最近邻插值过滤，这种算法简单，但会出现马赛克现象；
+            // 而如果开启了双线性过滤，就可以让结果图像显得更加平滑
+
+
+            /******* 设置阴影或者上层效果 *******/
+            // setShadowLayer() 设置阴影、clearShadowLayer() 清楚阴影
+            // radius 是阴影的模糊范围； dx dy 是阴影的偏移量； shadowColor 是阴影的颜色
+            // setShadowLayer(float radius, float dx, float dy, int shadowColor)
+
+            // setMaskFilter(MaskFilter filter) 绘制层上附件效果，阴影是下层
+            // 模糊效果的 MaskFilter,
+            // NORMAL: 内外都模糊绘制、/SOLID: 内部正常绘制，外部模糊、INNER: 内部模糊，外部不绘制、/OUTER: 内部不绘制，外部模糊
+            // maskFilter = BlurMaskFilter(float radius, BlurMaskFilter.Blur style)
+
+            // EmbossMaskFilter 浮雕效果
+            // direction 是一个 3 个元素的数组，指定了光源的方向； ambient 是环境光的强度，数值范围是 0 到 1； specular 是炫光的系数； blurRadius 是应用光线的范围
+            // EmbossMaskFilter(float[] direction, float ambient, float specular, float blurRadius)
+
+            /******* 获取实际路径 *******/
+            // 获取线条实际路径，当线条比较粗时，路径实际是一个封闭的矩形
+            // getFillPath(Path src, Path dst)
+            // 获取文本的实际路径，获取到path后通过canvas去绘制path
+            // getTextPath(String text, int start, int end, float x, float y, Path path)
         }
     }
 
@@ -403,26 +458,6 @@ class HexagonRankView @JvmOverloads constructor(
         for (point in data) {
             canvas.drawLine(mCenterX.toFloat(), mCenterY.toFloat(), point.x, point.y, mPaint)
         }
-    }
-
-    override fun onTouchEvent(ev: MotionEvent): Boolean {
-        when(ev.action) {
-            MotionEvent.ACTION_DOWN -> {
-
-            }
-            MotionEvent.ACTION_POINTER_DOWN -> {
-
-            }
-            MotionEvent.ACTION_MOVE -> {}
-            MotionEvent.ACTION_UP -> {}
-        }
-        performClick()
-        return super.onTouchEvent(ev)
-    }
-
-    override fun performClick(): Boolean {
-
-        return super.performClick()
     }
 
     // 数据类，标题、分数、外边点坐标、分数点坐标

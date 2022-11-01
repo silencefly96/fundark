@@ -325,98 +325,14 @@ class HexagonRankView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        // 辅助的虚线, 放在底层
+        drawDottedLine(canvas)
+
         // 外面的边和顶点以及标题
         drawOuter(canvas)
 
         // 里面多边形
         drawInner(canvas)
-
-        // 辅助的虚线
-        drawDottedLine(canvas)
-    }
-
-    // 外面的顶点
-    private fun drawOuter(canvas: Canvas) {
-        // 外边路径
-        val path = Path()
-        path.moveTo(data[0].x, data[0].y)
-
-        // 绘制标题，在切线方向绘制
-        // 顶点在最上面时,(60 * i + mStartPhase) -> (-90) => -90 - (60 * i + mStartPhase)
-        val startAngle = -90 - mStartPhase
-        canvas.rotate(startAngle.toFloat(), mCenterX.toFloat(), mCenterY.toFloat())
-
-        mPaint.textAlign = Paint.Align.CENTER
-        mPaint.textSize = mTextSize
-        // 绘制字体要先设置为0
-        mPaint.strokeWidth = 0f
-        // 要画出切线效果，移动的是画布，每次在最上面横着画就行
-        val x = mCenterX.toFloat()
-        val y = mCenterY - mRadius - mTextMargin
-
-        // 循环绘制
-        for (i in 0..5) {
-            // 绘制标题
-            canvas.drawText(data[i].name, x, getBaseline(mPaint, y), mPaint)
-            // 旋转60度画下一个
-            canvas.rotate(-60f, mCenterX.toFloat(), mCenterY.toFloat())
-        }
-        // 绘制标题结束，恢复画布
-        canvas.rotate(-startAngle.toFloat(), mCenterX.toFloat(), mCenterY.toFloat())
-
-        // 循环绘制
-        mPaint.color = mOutPointColor
-        mPaint.strokeWidth = mStrokeWidth
-        for (point in data) {
-            // 绘制点
-            canvas.drawCircle(point.x, point.y, mPointRadius, mPaint)
-            // 绘制外边
-            path.lineTo(point.x, point.y)
-        }
-
-        // 封闭
-        path.close()
-        mPaint.color = mOutLineColor
-        canvas.drawPath(path, mPaint)
-    }
-
-    private fun getBaseline(paint: Paint, tempY: Float): Float {
-        //绘制字体的参数，受字体大小样式影响
-        val fmi = paint.fontMetricsInt
-        //top为基线到字体上边框的距离（负数），bottom为基线到字体下边框的距离（正数）
-        //基线中间点的y轴计算公式，即中心点加上字体高度的一半，基线中间点x就是中心点x
-        return tempY - (fmi.top + fmi.bottom) / 2f
-    }
-
-    // 里面多边形
-    private fun drawInner(canvas: Canvas) {
-        // 里面多边形路径
-        val path = Path()
-        path.moveTo(data[0].curX, data[0].curY)
-
-        // 循环绘制
-        mPaint.color = mInPointColor
-        for (point in data) {
-            // 绘制点
-            canvas.drawCircle(point.curX, point.curY, mPointRadius, mPaint)
-
-            // 添加外边路径到path
-            path.lineTo(point.curX, point.curY)
-        }
-        // 封闭
-        path.close()
-
-        // 绘制路径
-        mPaint.color = mInLineColor
-        canvas.drawPath(path, mPaint)
-
-        // 绘制内部填充
-        mPaint.color = mInFillColor
-        mPaint.style = Paint.Style.FILL
-        mPaint.alpha = mFillAlpha
-        canvas.drawPath(path, mPaint)
-        // 恢复style
-        mPaint.style = Paint.Style.STROKE
     }
 
     // 辅助的虚线，这里将半径三等分，画三个虚线六边形
@@ -428,10 +344,9 @@ class HexagonRankView @JvmOverloads constructor(
         val path = Path()
         mPaint.color = mDottedLineColor
         val array = FloatArray(2)
-        array[0] = 5f
-        array[1] = 5f
-        mPaint.pathEffect =
-            DashPathEffect(array, 5f)
+        array[0] = 10f
+        array[1] = 10f
+        mPaint.pathEffect = DashPathEffect(array, 0f)
 
         // 两层层虚线六边形
         for (i in 1..2) {
@@ -458,7 +373,101 @@ class HexagonRankView @JvmOverloads constructor(
         for (point in data) {
             canvas.drawLine(mCenterX.toFloat(), mCenterY.toFloat(), point.x, point.y, mPaint)
         }
+
+        //  去除虚线效果
+        mPaint.pathEffect = null
     }
+
+    // 外面的顶点
+    private fun drawOuter(canvas: Canvas) {
+        // 外边路径
+        val path = Path()
+        path.moveTo(data[0].x, data[0].y)
+
+        // 绘制标题，在切线方向绘制
+        // 顶点在最上面时,(60 * i + mStartPhase) -> (-90) => -90 - (60 * i + mStartPhase)
+        val startAngle = -90 - mStartPhase
+        canvas.save()
+        canvas.rotate(startAngle.toFloat(), mCenterX.toFloat(), mCenterY.toFloat())
+
+        mPaint.textAlign = Paint.Align.CENTER
+        mPaint.textSize = mTextSize
+        // 绘制字体要先设置为0
+        mPaint.strokeWidth = 0f
+        // 要画出切线效果，移动的是画布，每次在最上面横着画就行
+        val x = mCenterX.toFloat()
+        val y = mCenterY - mRadius - mTextMargin
+
+        // 循环绘制
+        for (i in 0..5) {
+            // 绘制标题
+            canvas.drawText(data[i].name, x, getBaseline(mPaint, y), mPaint)
+            // 旋转60度画下一个
+            canvas.rotate(-60f, mCenterX.toFloat(), mCenterY.toFloat())
+        }
+        // 绘制标题结束，恢复画布
+        canvas.restore()
+
+        // 循环绘制
+        mPaint.color = mOutPointColor
+        mPaint.strokeWidth = mStrokeWidth
+        mPaint.style = Paint.Style.FILL
+        for (point in data) {
+            // 绘制点
+            canvas.drawCircle(point.x, point.y, mPointRadius, mPaint)
+            // 绘制外边
+            path.lineTo(point.x, point.y)
+        }
+
+        // 封闭
+        path.close()
+        mPaint.color = mOutLineColor
+        mPaint.style = Paint.Style.STROKE
+        canvas.drawPath(path, mPaint)
+    }
+
+    private fun getBaseline(paint: Paint, tempY: Float): Float {
+        //绘制字体的参数，受字体大小样式影响
+        val fmi = paint.fontMetricsInt
+        //top为基线到字体上边框的距离（负数），bottom为基线到字体下边框的距离（正数）
+        //基线中间点的y轴计算公式，即中心点加上字体高度的一半，基线中间点x就是中心点x
+        return tempY - (fmi.top + fmi.bottom) / 2f
+    }
+
+    // 里面多边形
+    private fun drawInner(canvas: Canvas) {
+        // 里面多边形路径
+        val path = Path()
+        path.moveTo(data[0].curX, data[0].curY)
+
+        // 循环绘制
+        mPaint.color = mInPointColor
+        mPaint.style = Paint.Style.FILL
+        for (point in data) {
+            // 绘制点
+            canvas.drawCircle(point.curX, point.curY, mPointRadius, mPaint)
+
+            // 添加外边路径到path
+            path.lineTo(point.curX, point.curY)
+        }
+        // 封闭
+        path.close()
+
+        // 绘制路径
+        mPaint.color = mInLineColor
+        mPaint.style = Paint.Style.STROKE
+        canvas.drawPath(path, mPaint)
+
+        // 绘制内部填充
+        mPaint.color = mInFillColor
+        mPaint.style = Paint.Style.FILL
+        mPaint.alpha = mFillAlpha
+        canvas.drawPath(path, mPaint)
+        // 恢复style
+        mPaint.style = Paint.Style.STROKE
+    }
+
+    data class Pair(var x: Float, var y: Float)
 
     // 数据类，标题、分数、外边点坐标、分数点坐标
     data class PointInfo(var name: String, var rank: Int,

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.silencefly96.module_common.view.HexagonRankView
+    <com.silencefly96.module_common.view.PieChartView
         android:id="@+id/hhView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

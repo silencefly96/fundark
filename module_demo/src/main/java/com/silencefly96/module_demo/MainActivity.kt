@@ -20,10 +20,7 @@ class MainActivity : BaseActivity() {
 
     override fun doBusiness(context: Context) {
         //startActivity(Intent(this, PlanActivity::class.java))
-        for (i in 0..5) {
-            val point = HexagonRankView.PointInfo("name$i", (Math.random() * 100).toInt())
-            binding.hhView.data.add(point)
-        }
+        binding.hhView.data = arrayListOf(1, 2, 3, 4 ,5)
 
         Log.e(TAG, "doBusiness: ${binding.hhView.data}")
     }

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.silencefly96.module_common.view.RedDomView
+    <com.silencefly96.module_common.view.PatternLockView
         android:id="@+id/hhView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

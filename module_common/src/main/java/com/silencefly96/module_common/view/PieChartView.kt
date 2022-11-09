@@ -19,6 +19,8 @@ import kotlin.math.*
  * 2、扇形图能够单指旋转、二指放大、三指移动，四指以上同时按下进行复位
  * 3、旋转、放大、平移效果能够叠加
  *
+ * @author silence
+ * @date 2022-11-04
  */
 class PieChartView @JvmOverloads constructor(
     context: Context,

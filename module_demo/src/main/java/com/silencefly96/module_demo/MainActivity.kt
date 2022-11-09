@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import com.silencefly96.module_base.base.BaseActivity
 import com.silencefly96.module_common.view.HexagonRankView
+import com.silencefly96.module_common.view.RedDomView
 import com.silencefly96.module_demo.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {
@@ -20,9 +21,14 @@ class MainActivity : BaseActivity() {
 
     override fun doBusiness(context: Context) {
         //startActivity(Intent(this, PlanActivity::class.java))
-        binding.hhView.data = arrayListOf(1, 2, 3, 4 ,5)
-
-        Log.e(TAG, "doBusiness: ${binding.hhView.data}")
+        binding.hhView.domPercent = 0.05f
+        binding.hhView.disappearPercent = 0.25f
+        binding.hhView.listener = object : RedDomView.OnDisappearListener {
+            override fun onDisappear() {
+                showToast("小红点消失了")
+            }
+        }
+        binding.hhView.setOnClickListener { binding.hhView.reset() }
     }
 
 }

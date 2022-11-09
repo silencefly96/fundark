@@ -140,7 +140,7 @@ class RedDomView @JvmOverloads constructor(
                 val dx = event.x - mLastX
                 val dy = event.y - mLastY
 
-                        // 移动圆心
+                // 移动圆心
                 mRadiusX += dx * mDraggingScale
                 mRadiusY += dy * mDraggingScale
 
@@ -231,9 +231,9 @@ class RedDomView @JvmOverloads constructor(
                 // 接近圆不是圆
                 path.cubicTo(tempX1, tempY1, tempX2, tempY2, x2, y2)
 
-                // 尾焰，第一个控制点在切线延长线上，第二个控制点在圆心连线上(越短尾越尖)
-                tempX1 = x2 - length * cos(radiansLine - radiansCenter)
-                tempY1 = y2 - length * sin(radiansLine - radiansCenter)
+                // 尾焰，第一个控制点在切线延长线上，第二个控制点在圆心连线上(取值和效果有关)
+                tempX1 = x2 - mDomRadius * cos(radiansLine - radiansCenter)
+                tempY1 = y2 - mDomRadius * sin(radiansLine - radiansCenter)
                 tempX2 = width / 2f + (lineLength * 0.25f * cos(radiansLine))
                 tempY2 = height / 2f + (lineLength * 0.25f * sin(radiansLine))
                 // 第一条
@@ -242,8 +242,8 @@ class RedDomView @JvmOverloads constructor(
                 // 另一段
                 tempX1 = tempX2
                 tempY1 = tempY2
-                tempX2 = x1 - (length * cos(radiansLine + radiansCenter))
-                tempY2 = y1 - ( length * sin(radiansLine + radiansCenter))
+                tempX2 = x1 - (mDomRadius * cos(radiansLine + radiansCenter))
+                tempY2 = y1 - (mDomRadius * sin(radiansLine + radiansCenter))
 
                 path.cubicTo(tempX1, tempY1, tempX2, tempY2, x1, y1)
                 path.close()

@@ -1,12 +1,11 @@
 package com.silencefly96.module_demo
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.view.View
 import com.silencefly96.module_base.base.BaseActivity
-import com.silencefly96.module_common.view.HexagonRankView
 import com.silencefly96.module_common.view.PatternLockView
-import com.silencefly96.module_common.view.RedDomView
 import com.silencefly96.module_demo.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {
@@ -18,6 +17,16 @@ class MainActivity : BaseActivity() {
         //禁用沉浸状态栏
         isSteepStatusBar = false
         return binding.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        Log.d(TAG, "onSaveInstanceState()")
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        Log.d(TAG, "onRestoreInstanceState()")
+        super.onRestoreInstanceState(savedInstanceState)
     }
 
     override fun doBusiness(context: Context) {

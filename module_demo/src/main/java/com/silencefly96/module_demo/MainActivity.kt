@@ -31,14 +31,8 @@ class MainActivity : BaseActivity() {
 
     override fun doBusiness(context: Context) {
         //startActivity(Intent(this, PlanActivity::class.java))
-        for (i in intArrayOf(0, 1 ,2, 4, 6, 7, 8)) {
-            binding.hhView.preData.add(i)
-        }
-        binding.hhView.listener = object : PatternLockView.OnMoveUpListener {
-            override fun onMoveUp(success: Boolean) {
-                showToast(if (success) "验证成功！" else "验证失败！")
-            }
-        }
+        Log.e("TAG", "doBusiness: ")
+
     }
 
 }

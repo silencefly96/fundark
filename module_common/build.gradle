@@ -34,31 +34,14 @@ android {
 }
 
 dependencies {
-
-    //基础库,向其他模块暴露
-    api rootProject.ext.dependencies.kotlin
-    api rootProject.ext.dependencies.core_ktx
-    api rootProject.ext.dependencies.appcompat
-    api rootProject.ext.dependencies.material
-    api rootProject.ext.dependencies.constraintlayout
-
-    //共享BASE库相关功能
+    // 共享BASE库相关功能
     api project(':module_base')
 
-    //Jetpack lifecycle
-    api rootProject.ext.dependencies.lifecycle_extensions
-    api rootProject.ext.dependencies.lifecycle_viewmodel_ktx
-    api rootProject.ext.dependencies.lifecycle_livedata_ktx
-
-    //Jetpack Room 数据库框架
-//    implementation rootProject.ext.dependencies.room_runtime
+    // Jetpack Room数据库框架, kapt不能传递，需要在使用的地方引入
+//    api rootProject.ext.dependencies.room_runtime
 //    kapt rootProject.ext.dependencies.room_compiler
 
-    //Retrofit 网络通信框架
+    // Retrofit网络通信框架
     api rootProject.ext.dependencies.retrofit
     api rootProject.ext.dependencies.converter_gson
-
-    //协程
-    api rootProject.ext.dependencies.kotlinx_coroutines_core
-    api rootProject.ext.dependencies.kotlinx_coroutines_android
 }

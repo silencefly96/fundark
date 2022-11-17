@@ -1,4 +1,5 @@
 include ':app'
 include ':module_base'
-include ':module_demo'
+include ':module_plan'
 include ':module_common'
+include ':module_views'

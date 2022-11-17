@@ -51,9 +51,8 @@ abstract class BaseFragment : Fragment(), IPermissionHelper {
         Log.d(TAG, "BaseFragment-->onCreateView()")
 
         //绑定视图，而不是布局
-        val mView = bindView()
+        val mView = bindView(inflater, container)
         mContextView = mView ?: inflater.inflate(bindLayout(), container, false)
-
 
         //初始化控件
         initData(activity?.intent)
@@ -69,7 +68,7 @@ abstract class BaseFragment : Fragment(), IPermissionHelper {
      *
      * @return view
      */
-    open fun bindView(): View?{
+    open fun bindView(inflater: LayoutInflater, container: ViewGroup?): View?{
         return null
     }
 

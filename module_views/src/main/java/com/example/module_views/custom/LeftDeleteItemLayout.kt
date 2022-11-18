@@ -82,7 +82,7 @@ class LeftDeleteItemLayout : ConstraintLayout {
         deleteView.text = "删除"
         deleteView.gravity = Gravity.CENTER
         deleteView.setTextColor(Color.WHITE)
-        deleteView.textSize = sp2px(context,18f).toFloat()
+        deleteView.textSize = sp2px(context,13f).toFloat()
         deleteView.setBackgroundColor(Color.RED)
 
         //设置点击回调
@@ -92,14 +92,12 @@ class LeftDeleteItemLayout : ConstraintLayout {
     }
 
     //拦截事件
-    override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
-        event?.let {
-            when(event.action) {
-                //down事件记录x，不拦截，当move的时候才会用到
-                MotionEvent.ACTION_DOWN -> mLastX = event.x
-                //拦截本控件内的移动事件
-                MotionEvent.ACTION_MOVE -> return true
-            }
+    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+        when(event.action) {
+            //down事件记录x，不拦截，当move的时候才会用到
+            MotionEvent.ACTION_DOWN -> mLastX = event.x
+            //拦截本控件内的移动事件
+            MotionEvent.ACTION_MOVE -> return true
         }
         return super.onInterceptTouchEvent(event)
     }
@@ -108,6 +106,7 @@ class LeftDeleteItemLayout : ConstraintLayout {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when(event.action) {
+            MotionEvent.ACTION_DOWN -> return true
             MotionEvent.ACTION_MOVE -> moveItem(event)
             MotionEvent.ACTION_UP -> stopMove()
         }

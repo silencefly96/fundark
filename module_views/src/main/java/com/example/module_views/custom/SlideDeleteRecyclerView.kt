@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.widget.Scroller
 import androidx.core.view.forEach
@@ -39,20 +40,18 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     //增加手势控制，双击快速完成侧滑，还是为了练习
     private var mGestureDetector: GestureDetector
         = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener(){
-            override fun onDoubleTap(e: MotionEvent?): Boolean {
-                e?.let { event->
-                    getSelectItem(event)
-                    mItem?.let {
-                        val deleteWidth = it.getChildAt(it.childCount - 1).width
-                        //触发移动至完全展开deleteWidth
-                        if (it.scrollX == 0) {
-                            mScroller.startScroll(0, 0, deleteWidth, 0)
-                        }else {
-                            mScroller.startScroll(it.scrollX, 0, -it.scrollX, 0)
-                        }
-                        invalidate()
-                        return true
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                getSelectItem(e)
+                mItem?.let {
+                    val deleteWidth = it.getChildAt(it.childCount - 1).width
+                    //触发移动至完全展开deleteWidth
+                    if (it.scrollX == 0) {
+                        mScroller.startScroll(0, 0, deleteWidth, 0)
+                    }else {
+                        mScroller.startScroll(it.scrollX, 0, -it.scrollX, 0)
                     }
+                    invalidate()
+                    return true
                 }
 
                 //不进行拦截，只是作为工具判断下双击
@@ -81,32 +80,30 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     }
 
     //viewGroup对子控件的事件拦截，一旦拦截，后续事件序列不会再调用onInterceptTouchEvent
-    override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
-        e?.let {
-            when (e.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    //这里的优化会阻止双击滑动的使用，实际也没什么好优化的
+    override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
+        when (e.action) {
+            MotionEvent.ACTION_DOWN -> {
+                //这里的优化会阻止双击滑动的使用，实际也没什么好优化的
 //                    //防止快速按下情况出问题
 //                    if (!mScroller.isFinished) {
 //                        mScroller.abortAnimation()
 //                    }
 
-                    //获取点击位置
-                    getSelectItem(e)
-                    //设置点击的横坐标
-                    mLastX = e.x
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    //判断是否拦截
-                    //如果拦截了ACTION_MOVE，后续事件就不触发onInterceptTouchEvent了
-                    return moveItem(e)
-                }
-                //拦截了ACTION_MOVE，ACTION_UP也不会触发
+                //获取点击位置
+                getSelectItem(e)
+                //设置点击的横坐标
+                mLastX = e.x
+            }
+            MotionEvent.ACTION_MOVE -> {
+                //判断是否拦截
+                //如果拦截了ACTION_MOVE，后续事件就不触发onInterceptTouchEvent了
+                return moveItem(e)
+            }
+            //拦截了ACTION_MOVE，ACTION_UP也不会触发
 //                MotionEvent.ACTION_UP -> {
 //                    //判断结果
 //                    stopMove()
 //                }
-            }
         }
         return super.onInterceptTouchEvent(e)
     }
@@ -115,22 +112,21 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     //如果不消耗，则在同一事件序列中，当前View无法再次接受事件
     //performClick会被onTouchEvent拦截，我们这不需要点击，全都交给super实现去了
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(e: MotionEvent?): Boolean {
-        e?.let {
-            when (e.action) {
-                //没有拦截，也不能拦截，所以不需要处理
-//                MotionEvent.ACTION_DOWN -> {}
-                //拦截了ACTION_MOVE后，后面一系列event都会交到本view处理
-                MotionEvent.ACTION_MOVE -> {
-                    //移动控件
-                    moveItem(e)
-                    //更新点击的横坐标
-                    mLastX = e.x
-                }
-                MotionEvent.ACTION_UP -> {
-                    //判断结果
-                    stopMove()
-                }
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+        when (e.action) {
+            //没有拦截，也不能拦截，所以不需要处理
+            MotionEvent.ACTION_DOWN -> {}
+            //拦截了ACTION_MOVE后，后面一系列event都会交到本view处理
+            MotionEvent.ACTION_MOVE -> {
+                // Log.e("TAG", "onTouchEvent: ACTION_MOVE")
+                //移动控件
+                moveItem(e)
+                //更新点击的横坐标
+                mLastX = e.x
+            }
+            MotionEvent.ACTION_UP -> {
+                //判断结果
+                stopMove()
             }
         }
         return super.onTouchEvent(e)
@@ -188,7 +184,7 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
         mItem?.let {
             val dx = mLastX - e.x
             //最小的移动距离应该舍弃，onInterceptTouchEvent不拦截，onTouchEvent内才更新mLastX
-            if(abs(dx) > mTouchSlop) {
+            //if(abs(dx) > mTouchSlop) {
                 //检查mItem移动后应该在[-deleteLength, 0]内
                 val deleteWidth = it.getChildAt(it.childCount - 1).width
                 if ((it.scrollX + dx) <= deleteWidth && (it.scrollX + dx) >= 0) {
@@ -200,7 +196,7 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
                     mVelocityTracker!!.addMovement(e)
                     return true
                 }
-            }
+            //}
         }
         return false
     }

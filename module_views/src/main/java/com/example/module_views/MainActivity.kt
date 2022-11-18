@@ -11,8 +11,6 @@ class MainActivity : BaseActivity() {
 
     override fun bindView(): View {
         binding = ActivityMainBinding.inflate(layoutInflater)
-        //禁用沉浸状态栏
-        isSteepStatusBar = false
         return binding.root
     }
 

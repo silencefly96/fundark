@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
@@ -105,18 +106,16 @@ class LeftDeleteItemLayout : ConstraintLayout {
 
     //处理事件
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        event?.let {
-            when(event.action) {
-                MotionEvent.ACTION_MOVE -> moveItem(event)
-                MotionEvent.ACTION_UP -> stopMove()
-            }
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when(event.action) {
+            MotionEvent.ACTION_MOVE -> moveItem(event)
+            MotionEvent.ACTION_UP -> stopMove()
         }
         return super.onTouchEvent(event)
     }
 
     private fun moveItem(e: MotionEvent) {
-        //Log.e("TAG", "moveItem: mLastX=$mLastX")
+        Log.e("TAG", "moveItem: mLastX=$mLastX")
         //如果没有收到down事件，不应该移动
         if (mLastX == -1f) return
 

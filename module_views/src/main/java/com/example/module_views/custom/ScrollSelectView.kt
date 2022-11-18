@@ -14,7 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.MeasureSpec.*
 import androidx.core.animation.addListener
-import com.silencefly96.module_common.R
+import com.example.module_views.R
 import kotlin.math.abs
 import kotlin.math.min
 

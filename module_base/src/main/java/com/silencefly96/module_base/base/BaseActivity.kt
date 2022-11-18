@@ -58,7 +58,7 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionHelper {
     /**
      * 是否沉浸状态栏
      */
-    var isSteepStatusBar = true
+    var isSteepStatusBar = false
 
     /**
      * 是否全屏

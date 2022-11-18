@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import androidx.core.animation.addListener
 import androidx.core.view.forEach
-import com.silencefly96.module_common.R
+import com.example.module_views.R
 import kotlin.math.abs
 
 /**

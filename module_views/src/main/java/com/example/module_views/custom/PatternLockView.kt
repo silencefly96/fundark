@@ -11,7 +11,7 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.silencefly96.module_common.R
+import com.example.module_views.R
 import java.util.*
 import kotlin.math.sqrt
 

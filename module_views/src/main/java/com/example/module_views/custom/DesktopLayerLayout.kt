@@ -13,7 +13,7 @@ import android.view.ViewConfiguration
 import android.view.ViewGroup
 import androidx.core.animation.addListener
 import androidx.core.view.children
-import com.silencefly96.module_common.R
+import com.example.module_views.R
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max

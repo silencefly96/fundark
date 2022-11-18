@@ -6,7 +6,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import com.silencefly96.module_common.R
+import com.example.module_views.R
 import kotlin.math.cos
 import kotlin.math.sin
 

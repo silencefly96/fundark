@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -45,4 +47,10 @@ dependencies {
 
     // 从基础库继承各个依赖
     implementation project(':module_common')
+
+    // navigation
+    def nav_version = "2.5.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
 }

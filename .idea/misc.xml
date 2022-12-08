@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/WorkSpace/cordova-test/fundark/module_mvvm/src/main/res/layout/item_plan.xml" value="0.1" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/activity_main.xml" value="0.12454710144927536" />
+        <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/activity_plan.xml" value="0.16621376811594202" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/item_plan.xml" value="0.14447463768115942" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable-v24/bg_radius_5.xml" value="0.19895833333333332" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/bg_radius_5.xml" value="0.19895833333333332" />

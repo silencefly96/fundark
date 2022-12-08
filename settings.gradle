@@ -1,5 +1,5 @@
 include ':app'
 include ':module_base'
-include ':module_plan'
+include ':module_mvvm'
 include ':module_common'
 include ':module_views'

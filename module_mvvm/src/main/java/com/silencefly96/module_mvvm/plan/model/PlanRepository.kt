@@ -1,6 +1,5 @@
 package com.silencefly96.module_mvvm.plan.model
 
-import com.silencefly96.module_common.net.BaseRepository
 import kotlinx.coroutines.Dispatchers
 
 class PlanRepository(

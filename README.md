@@ -24,6 +24,7 @@
 │   │   ├── 传感器                   #TODO 传感器
 │   │   ├── usb                     #TODO U盘
 │   │   ├── 电源                     #TODO 电源管理
+│   │   ├── 人脸识别                  #TODO 电源管理
 │   ├── module_media            #多媒体
 │   ├── module_map              #地图功能
 │   ├── module_aidl             #多进程

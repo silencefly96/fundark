@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.module_views.MainFragment"
+        android:name="com.silencefly96.module_views.MainFragment"
         android:label="@string/main_fragment"
         tools:layout="@layout/fragment_main">
 
@@ -63,73 +63,73 @@
 
     <fragment
         android:id="@+id/slideDeleteRecyclerViewDemo"
-        android:name="com.example.module_views.custom.demo.SlideDeleteRecyclerViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.SlideDeleteRecyclerViewDemo"
         android:label="@string/slide_delete_fragment"
         tools:layout="@layout/fragment_slide_delete" />
 
     <fragment
         android:id="@+id/leftDeleteItemLayout"
-        android:name="com.example.module_views.custom.demo.LeftDeleteItemLayoutDemo"
+        android:name="com.silencefly96.module_views.custom.demo.LeftDeleteItemLayoutDemo"
         android:label="@string/left_delete_fragment"
         tools:layout="@layout/fragment_left_delete" />
 
     <fragment
         android:id="@+id/headerFooterViewDemo"
-        android:name="com.example.module_views.custom.demo.HeaderFooterViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.HeaderFooterViewDemo"
         android:label="@string/left_delete_fragment"
         tools:layout="@layout/fragment_header_footer" />
 
     <fragment
         android:id="@+id/scrollSelectViewDemo"
-        android:name="com.example.module_views.custom.demo.ScrollSelectViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.ScrollSelectViewDemo"
         android:label="@string/scroll_select_fragment"
         tools:layout="@layout/fragment_scroll_select" />
 
     <fragment
         android:id="@+id/twoLayerSlideLayoutDemo"
-        android:name="com.example.module_views.custom.demo.TwoLayerSlideLayoutDemo"
+        android:name="com.silencefly96.module_views.custom.demo.TwoLayerSlideLayoutDemo"
         android:label="@string/layer_slide_fragment"
         tools:layout="@layout/fragment_layer_slide" />
 
     <fragment
         android:id="@+id/scrollingCollapseTopDemo"
-        android:name="com.example.module_views.custom.demo.ScrollingCollapseTopDemo"
+        android:name="com.silencefly96.module_views.custom.demo.ScrollingCollapseTopDemo"
         android:label="@string/scrolling_collapse_fragment"
         tools:layout="@layout/fragment_scrolling_collapse" />
 
     <fragment
         android:id="@+id/desktopLayerLayoutDemo"
-        android:name="com.example.module_views.custom.demo.DesktopLayerLayoutDemo"
+        android:name="com.silencefly96.module_views.custom.demo.DesktopLayerLayoutDemo"
         android:label="@string/desktop_layer_fragment"
         tools:layout="@layout/fragment_desktop_layer" />
 
     <fragment
         android:id="@+id/hexagonRankViewDemo"
-        android:name="com.example.module_views.custom.demo.HexagonRankViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.HexagonRankViewDemo"
         android:label="@string/hexagon_rank_fragment"
         tools:layout="@layout/fragment_hexagon_rank" />
 
     <fragment
         android:id="@+id/pieChartViewDemo"
-        android:name="com.example.module_views.custom.demo.PieChartViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.PieChartViewDemo"
         android:label="@string/pie_chart_fragment"
         tools:layout="@layout/fragment_pie_chart" />
 
     <fragment
         android:id="@+id/redDomViewDemo"
-        android:name="com.example.module_views.custom.demo.RedDomViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.RedDomViewDemo"
         android:label="@string/red_dom_fragment"
         tools:layout="@layout/fragment_red_dom" />
 
     <fragment
         android:id="@+id/patternLockViewDemo"
-        android:name="com.example.module_views.custom.demo.PatternLockViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.PatternLockViewDemo"
         android:label="@string/pattern_lock_fragment"
         tools:layout="@layout/fragment_pattern_lock" />
 
     <fragment
         android:id="@+id/particleLinesBgViewDemo"
-        android:name="com.example.module_views.custom.demo.ParticleLinesBgViewDemo"
+        android:name="com.silencefly96.module_views.custom.demo.ParticleLinesBgViewDemo"
         android:label="@string/particle_lines_fragment"
         tools:layout="@layout/fragment_particle_lines" />
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.example.module_views.custom.TwoLayerSlideLayout
+    <com.silencefly96.module_views.custom.TwoLayerSlideLayout
         android:id="@+id/hhView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -54,6 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    </com.example.module_views.custom.TwoLayerSlideLayout>
+    </com.silencefly96.module_views.custom.TwoLayerSlideLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,6 @@
 package com.silencefly96.module_mvvm.plan.model.remote
 
 import androidx.annotation.VisibleForTesting
-import com.silencefly96.module_common.net.ServiceCreator
 import com.silencefly96.module_mvvm.plan.model.Plan
 import com.silencefly96.module_mvvm.plan.model.PlanDataSource
 

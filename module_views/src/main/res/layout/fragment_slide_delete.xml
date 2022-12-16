@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.module_views.custom.SlideDeleteRecyclerView
+    <com.silencefly96.module_views.custom.SlideDeleteRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

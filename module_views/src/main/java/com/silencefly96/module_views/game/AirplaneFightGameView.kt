@@ -38,7 +38,7 @@ class AirplaneFightGameView @JvmOverloads constructor(
         const val DEFAULT_MOVE_LENGTH = 10
 
         // 控制逻辑刷新速度，fps = 1000 / DEFAULT_GAME_SPEED = 20
-        const val DEFAULT_GAME_SPEED = 50L
+        const val DEFAULT_GAME_SPEED = 250L
     }
 
     // 预设生命值
@@ -176,13 +176,15 @@ class AirplaneFightGameView @JvmOverloads constructor(
     ) {
         // 重置，位置隐藏
         fun reset() {
+            isShow = false
             live = 1
             posX = -spriteView.width
             posY = -spriteView.height
         }
 
-        fun move() {
-            posY += DEFAULT_MOVE_LENGTH
+        fun move(deltaX: Int, deltaY: Int) {
+            posX += deltaX
+            posY += deltaY
         }
 
         fun checkAttack(x: Float, y: Float) {
@@ -215,31 +217,51 @@ class AirplaneFightGameView @JvmOverloads constructor(
         // 敌机间隔控制，3秒才一个
         private var timeCount = 0
         override fun handleMessage(msg: Message) {
-            // 选择新出现得sprite
+            mRef.get()?.let {
+                // 选择新出现得sprite
+                val sprite = chooseSprite()
+                sprite?.let { choose->
+                    choose.isShow = true
+                    choose.spriteView.let { view ->
+                        choose.posX = view.width / 2 + (Math.random() * it.width - view.width).toInt()
+                        choose.posY = view.height
+                    }
+                }
 
-            // 更新sprite运动
 
-            // 刷新页面
+                // TODO 更新sprite运动
+                for (peer in it.mSpriteList) {
+                    if (peer.isShow) peer.move(0, 0)
+                }
 
-            // 碰撞检测
 
+                // TODO 刷新页面
 
-            timeCount++
-            mRef.get()?.mHandler?.sendEmptyMessageDelayed(0, DEFAULT_GAME_SPEED)
+                // TODO 碰撞检测
+                timeCount++
+                it.mHandler.sendEmptyMessageDelayed(0, DEFAULT_GAME_SPEED)
+            }
         }
 
-        private fun chooseSprite() {
-            if (mRef.get()?.mSceneInfo.currentEnemyCount < 4
-                && timeCount == 3000 / DEFAULT_GAME_SPEED.toInt()
-                && mRef.get()?.mSceneInfo.enemyKilledCount < 30) {
-                    val random = SPRITE_TYPE_LIVE + (Math.random() * 3).toInt()
+        private fun chooseSprite(): Sprite? {
+            mRef.get()?.let {
+                if (it.mSceneInfo.currentEnemyCount < 4
+                    && timeCount == 3000 / DEFAULT_GAME_SPEED.toInt()
+                    && it.mSceneInfo.enemyKilledCount < 30) {
+                    for (i in SPRITE_TYPE_LIVE..SPRITE_TYPE_ENEMY3) {
+                        if (!it.mSpriteList[i].isShow) {
+                            return it.mSpriteList[i]
+                        }
+                    }
                     timeCount = 0
-            }
+                }
 
-            // 击败三十次出现BOSS
-            if (mRef.get()?.mSceneInfo.enemyKilledCount == 30) {
-
+                // 击败三十次出现BOSS
+                if (it.mSceneInfo.enemyKilledCount == 30) {
+                    return  mRef.get()?.mBossSprite
+                }
             }
+            return null
         }
     }
 }

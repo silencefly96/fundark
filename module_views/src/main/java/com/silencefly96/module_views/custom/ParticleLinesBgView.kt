@@ -113,7 +113,7 @@ class ParticleLinesBgView @JvmOverloads constructor(
 
         // 测量完毕，开始作图
         // 第一个点
-        generateNewParticle(w / 2f, h / 2f)
+        generateNewParticle(this,w / 2f, h / 2f)
         // 通过发送消息给handler实现间隔添加其他点
         val message = mHandler.obtainMessage()
         message.arg1 = w
@@ -122,13 +122,13 @@ class ParticleLinesBgView @JvmOverloads constructor(
     }
 
     // 创建新的粒子
-    private fun generateNewParticle(x: Float, y: Float) {
+    private fun generateNewParticle(view: ParticleLinesBgView, x: Float, y: Float) {
 
         // 创建新粒子
         val particle = Particle(x, y)
-        mParticles[nextIndex] = particle
+        view.mParticles[nextIndex] = particle
 
-        invalidate()
+        view.invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -194,12 +194,14 @@ class ParticleLinesBgView @JvmOverloads constructor(
             val y = (Math.random() * msg.arg2).toFloat()
 
             // 新增点
-            mRef.get()?.generateNewParticle(x, y)
-            // 循环发送
-            val message = obtainMessage()
-            message.arg1 = msg.arg1
-            message.arg2 = msg.arg2
-            mRef.get()?.mHandler?.sendMessageDelayed(message, ADD_POINT_TIME)
+            mRef.get()?.let {
+                it.generateNewParticle(it, x, y)
+                // 循环发送
+                val message = obtainMessage()
+                message.arg1 = msg.arg1
+                message.arg2 = msg.arg2
+                it.mHandler.sendMessageDelayed(message, ADD_POINT_TIME)
+            }
         }
     }
 }

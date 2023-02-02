@@ -2,16 +2,8 @@
 <resources>
     <declare-styleable name ="AirplaneFightGameView">
         <attr name="liveSize" format="integer"/>
-    </declare-styleable>
-    <declare-styleable name ="AirplaneFightGameView.Layout">
-        <attr name ="sprite_type">
-            <enum name ="airplane" value="0" />
-            <enum name ="bullet" value="1" />
-            <enum name ="live" value="2" />
-            <enum name ="enemy1" value="3" />
-            <enum name ="enemy2" value="4" />
-            <enum name ="enemy3" value="5" />
-            <enum name ="boss" value="6" />
-        </attr >
+        <attr name="airplane" format="reference"/>
+        <attr name="bullet" format="reference"/>
+        <attr name="enemy" format="reference"/>
     </declare-styleable>
 </resources>

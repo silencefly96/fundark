@@ -54,6 +54,9 @@ class MainFragment: BaseFragment() {
 
         add(Item(12, "粒子线条控件: ParticleLinesBgView",
             "继承View实现粒子线条效果"))
+
+        add(Item(13, "飞机大战: AirplaneFightGameView",
+            "简单的飞机大战游戏"))
     }
 
     // 适配器
@@ -93,6 +96,7 @@ class MainFragment: BaseFragment() {
 
                     11 -> R.id.action_main_to_pattern_lock
                     12 -> R.id.action_main_to_particle_lines
+                    13 -> R.id.action_main_to_airplane_fight
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

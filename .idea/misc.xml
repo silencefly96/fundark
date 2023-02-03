@@ -12,8 +12,11 @@
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/item_plan.xml" value="0.14447463768115942" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable-v24/bg_radius_5.xml" value="0.19895833333333332" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/bg_radius_5.xml" value="0.19895833333333332" />
+        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_airplane.xml" value="0.2" />
+        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_bullet.xml" value="0.1" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/activity_main.xml" value="0.12454710144927536" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/activity_view_demo.xml" value="0.15942028985507245" />
+        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_airplane_game.xml" value="0.18385416666666668" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_desktop_layer.xml" value="0.1" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_header_footer.xml" value="0.1598731884057971" />
         <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_hexagon_rank.xml" value="0.1598731884057971" />

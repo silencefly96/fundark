@@ -59,6 +59,10 @@
             app:destination="@id/particleLinesBgViewDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_airplane_fight"
+            app:destination="@id/airplaneFightGameDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -132,5 +136,11 @@
         android:name="com.silencefly96.module_views.custom.demo.ParticleLinesBgViewDemo"
         android:label="@string/particle_lines_fragment"
         tools:layout="@layout/fragment_particle_lines" />
+
+    <fragment
+        android:id="@+id/airplaneFightGameDemo"
+        android:name="com.silencefly96.module_views.game.demo.AirplaneFightGameDemo"
+        android:label="@string/airplane_fight_fragment"
+        tools:layout="@layout/fragment_airplane_game" />
 
 </navigation>

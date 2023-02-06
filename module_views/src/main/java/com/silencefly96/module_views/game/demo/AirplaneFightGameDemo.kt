@@ -6,7 +6,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.silencefly96.module_views.databinding.FragmentLayerSlideBinding
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_views.databinding.FragmentAirplaneGameBinding
 
@@ -26,6 +25,8 @@ class AirplaneFightGameDemo: BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // 资源回收
+        binding.gamaView.recycle()
         _binding = null
     }
 }

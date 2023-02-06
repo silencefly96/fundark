@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black"
-        app:liveSize="10"
+        app:liveSize="3"
         app:airplane="@drawable/ic_airplane"
         app:bullet="@drawable/ic_bullet"
         app:enemy="@drawable/ic_enemy"

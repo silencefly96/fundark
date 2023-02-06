@@ -3,14 +3,17 @@
 package com.silencefly96.module_views.game
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.silencefly96.module_views.R
@@ -47,8 +50,10 @@ class AirplaneFightGameView @JvmOverloads constructor(
         const val UPDATE_ENEMY_TIME = 200L
         // 敌人移动距离
         const val ENEMY_MOVE_DISTANCE = 50
+        // 子弹添加隔时间
+        const val ADD_BULLET_TIME = 150L
         // 子弹更新隔时间
-        const val ADD_BULLET_TIME = 100L
+        const val UPDATE_BULLET_TIME = 100L
         // 子弹移动距离
         const val BULLET_MOVE_DISTANCE = 50
 
@@ -146,12 +151,33 @@ class AirplaneFightGameView @JvmOverloads constructor(
     // 完成测量开始游戏
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        // 开始游戏
+        load(w, h)
+    }
+
+    // 加载
+    private fun load(w: Int, h: Int) {
         mGameController.removeMessages(0)
         // 设置好飞机位置，坐标未中心坐标，方便计算碰撞
         mAirPlane.bitmap = mAirPlaneMask
         mAirPlane.live = mDefaultLiveSize
         mAirPlane.posX = w / 2 - mAirPlaneMask!!.width / 2
         mAirPlane.posY = h - mAirPlaneMask.height / 2 - 50
+        mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+    }
+
+    // 重新加载
+    private fun reload(w: Int, h: Int) {
+        mGameController.removeMessages(0)
+        // 清空界面
+        mBulletList.clear()
+        mEnemyList.clear()
+        // 重置好飞机位置、生命值、得分
+        mScore = 0
+        mAirPlane.live = mDefaultLiveSize
+        mAirPlane.posX = w / 2 - mAirPlaneMask!!.width / 2
+        mAirPlane.posY = h - mAirPlaneMask.height / 2 - 50
+        mGameController.isGameOver = false
         mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
     }
 
@@ -196,10 +222,9 @@ class AirplaneFightGameView @JvmOverloads constructor(
             MotionEvent.ACTION_MOVE -> {
                 val len = event.x - mLastX
                 val preX = mAirPlane.posX + len
-                if (preX > mAirPlaneMask!!.width / 2 ||
+                if (preX > mAirPlaneMask!!.width / 2 &&
                         preX < (width - mAirPlaneMask.width / 2)) {
                     mAirPlane.posX += len.toInt()
-                    Log.e("TAG", "onTouchEvent: mAirPlane.posX = ${mAirPlane.posX}")
                     invalidate()
                 }
                 mLastX = event.x
@@ -209,24 +234,36 @@ class AirplaneFightGameView @JvmOverloads constructor(
         return true
     }
 
+    private fun gameOver() {
+        AlertDialog.Builder(context)
+            .setTitle("继续游戏")
+            .setMessage("请点击确认继续游戏")
+            .setPositiveButton("确认") { _, _ -> reload(width, height) }
+            .setNegativeButton("取消", null)
+            .create()
+            .show()
+    }
+
     // kotlin自动编译为Java静态类，控件引用使用弱引用
     class GameController(view: AirplaneFightGameView): Handler(Looper.getMainLooper()){
         // 控件引用
         private val mRef: WeakReference<AirplaneFightGameView> = WeakReference(view)
         // 子弹更新频率限制
         private var bulletCounter = 0
+        // 子弹出现频率控制
+        private var bulletUpdateCounter = 0
         // 敌人更新频率控制
         private var enemyCounter = 0
         // 敌人出现频率控制
         private var enemyUpdateCounter = 0
         // 游戏结束标志
-        private var isGameOver = false
+        internal var isGameOver = false
 
         override fun handleMessage(msg: Message) {
             mRef.get()?.let { gameView ->
                 // 移动已有子弹
                 bulletCounter++
-                if (bulletCounter == (ADD_BULLET_TIME / GAME_FLUSH_TIME).toInt()) {
+                if (bulletCounter == (UPDATE_BULLET_TIME / GAME_FLUSH_TIME).toInt()) {
                     var mark = -1
                     for (i in 0 until gameView.mBulletList.size) {
                         val bullet = gameView.mBulletList[i]
@@ -238,18 +275,17 @@ class AirplaneFightGameView @JvmOverloads constructor(
                     // 移除出界子弹
                     if (mark >= 0) gameView.mBulletList.remove(gameView.mBulletList[mark])
 
-                    // 添加新子弹，横向在飞机上居中
-                    gameView.mBulletList.add(Sprite(gameView.mAirPlane.posX,
-                        gameView.mAirPlane.posY, 1, gameView.mBulletMask))
-
                     bulletCounter = 0
                 }
 
                 // 移动敌人,并验证碰撞
                 enemyUpdateCounter++
                 if (enemyUpdateCounter == (UPDATE_ENEMY_TIME / GAME_FLUSH_TIME).toInt()) {
+                    // 可能同时有子弹和敌人碰撞
                     val removeEnemyList = ArrayList<Sprite>()
                     val removeBulletList = ArrayList<Sprite>()
+                    // 敌人和飞机碰撞标志
+                    var mark = -1
                     for (i in 0 until gameView.mEnemyList.size) {
                         val enemy = gameView.mEnemyList[i]
                         enemy.posY += ENEMY_MOVE_DISTANCE
@@ -271,8 +307,8 @@ class AirplaneFightGameView @JvmOverloads constructor(
                                 enemy.posX, enemy.posY)
                             <= COLLISION_DISTANCE) {
                             // 发生碰撞
-                            gameView.mEnemyList.remove(enemy)
-                            if (gameView.mAirPlane.live-- <= 0) {
+                            mark = i
+                            if (--gameView.mAirPlane.live <= 0) {
                                 isGameOver = true
                             }
                         }
@@ -281,6 +317,7 @@ class AirplaneFightGameView @JvmOverloads constructor(
                     // 统一移除
                     for (enemy in removeEnemyList) gameView.mEnemyList.remove(enemy)
                     for (bullet in removeBulletList) gameView.mBulletList.remove(bullet)
+                    if (mark >= 0) gameView.mEnemyList.remove(gameView.mEnemyList[mark])
 
                     enemyUpdateCounter = 0
                 }
@@ -296,10 +333,21 @@ class AirplaneFightGameView @JvmOverloads constructor(
                     enemyCounter = 0
                 }
 
+                bulletUpdateCounter++
+                if (bulletUpdateCounter == (ADD_BULLET_TIME / GAME_FLUSH_TIME).toInt()) {
+                    // 添加新子弹，横向在飞机上居中
+                    gameView.mBulletList.add(Sprite(gameView.mAirPlane.posX,
+                        gameView.mAirPlane.posY, 1, gameView.mBulletMask))
+
+                    bulletUpdateCounter = 0
+                }
+
                 // 循环发送消息，刷新页面
                 gameView.invalidate()
                 if (!isGameOver) {
-                    mRef.get()?.mGameController?.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+                    gameView.mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+                }else {
+                    gameView.gameOver()
                 }
             }
         }

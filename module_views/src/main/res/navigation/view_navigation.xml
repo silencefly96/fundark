@@ -63,6 +63,10 @@
             app:destination="@id/airplaneFightGameDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_snark"
+            app:destination="@id/snarkGameDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -143,4 +147,9 @@
         android:label="@string/airplane_fight_fragment"
         tools:layout="@layout/fragment_airplane_game" />
 
+    <fragment
+        android:id="@+id/snarkGameDemo"
+        android:name="com.silencefly96.module_views.game.demo.SnarkGameDemo"
+        android:label="@string/snark_game_fragment"
+        tools:layout="@layout/fragment_snark_game" />
 </navigation>

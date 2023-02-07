@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package com.silencefly96.module_views.custom
 
 import android.annotation.SuppressLint
@@ -37,12 +35,23 @@ class ParticleLinesBgView @JvmOverloads constructor(
 ): View(context, attributeSet, defStyleAttr){
 
     companion object{
+        // 屏幕刷新时间，每秒20次
+        const val SCREEN_FLUSH_TIME = 50L
+
+        // 新增点的间隔时间
+        const val POINT_ADD_TIME = 200L
+
+        // 粒子存活时间
+        const val POINT_ALIVE_TIME = 18000L
+
+        // 吸引的合适距离
+        const val ATTRACT_LENGTH = 250f
 
         // 维持的合适距离
         const val PROPER_LENGTH = 150f
 
-        // 新增点的间隔时间
-        const val ADD_POINT_TIME = 100L
+        // 粒子被吸引每次接近的距离
+        const val POINT_MOVE_LENGTH = 30f
 
         // 距离计算公式
         fun getDistance(x1: Float, y1: Float, x2: Float, y2: Float): Float {
@@ -51,22 +60,14 @@ class ParticleLinesBgView @JvmOverloads constructor(
         }
     }
 
-    // 存放的粒子, LRU
-    private var nextIndex = 0
-    private val mParticles =
-        object: LinkedHashMap<Int, Particle>(200, 0.75f, true){
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Int, Particle>): Boolean {
-            val result = size > 200
-            if (result) nextIndex = eldest.key else nextIndex++
-            return result
-        }
-    }
-
-    // 处理的handler
-    private val mHandler = ParticleHandler(this)
+    // 存放的粒子
+    private val mParticles = ArrayList<Particle>(64)
 
     // 手指按下位置
     private var mTouchParticle: Particle? = null
+
+    // 处理的handler
+    private val mHandler = ParticleHandler(this)
 
     // 画笔
     private val mPaint = Paint().apply {
@@ -76,20 +77,51 @@ class ParticleLinesBgView @JvmOverloads constructor(
         flags = Paint.ANTI_ALIAS_FLAG
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val width = getDefaultSize(480, widthMeasureSpec)
-        val height = getDefaultSize(720, heightMeasureSpec)
-        // 自定义控件需要有默认值，不然无法使用wrap_content
-        setMeasuredDimension(width, height)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        // 通过发送消息给handler实现间隔添加点
+        mHandler.removeMessages(0)
+        mHandler.sendEmptyMessageDelayed(0, POINT_ADD_TIME)
     }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        // 绘制点和线
+        for (i in 0 until mParticles.size) {
+            val point = mParticles[i]
+            canvas.drawPoint(point.x, point.y, mPaint)
+            // 连线
+            for (j in (i + 1) until mParticles.size) {
+                val another = mParticles[j]
+                val distance = getDistance(point.x, point.y, another.x, another.y)
+                if (distance <= PROPER_LENGTH) {
+                    canvas.drawLine(point.x, point.y, another.x, another.y, mPaint)
+                }
+            }
+        }
+
+        mTouchParticle?.let {
+            // 手指按下点与附近连线
+            for(point in mParticles) {
+                val distance = getDistance(point.x, point.y, it.x, it.y)
+                if (distance <= PROPER_LENGTH) {
+                    canvas.drawLine(point.x, point.y, it.x, it.y, mPaint)
+                }
+            }
+
+            // 吸引范围显示
+            mPaint.color = Color.BLUE
+            canvas.drawCircle(it.x, it.y, PROPER_LENGTH, mPaint)
+            mPaint.color = Color.LTGRAY
+        }
+    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
-                mTouchParticle = Particle(event.x, event.y)
-                mHandler.removeCallbacksAndMessages(null)
+                mTouchParticle = Particle(event.x, event.y, 0)
             }
             MotionEvent.ACTION_MOVE -> {
                 mTouchParticle!!.x = event.x
@@ -98,109 +130,66 @@ class ParticleLinesBgView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP -> {
                 mTouchParticle = null
-                // 重新更新
-                val message = mHandler.obtainMessage()
-                message.arg1 = width
-                message.arg2 = height
-                mHandler.sendMessageDelayed(message, ADD_POINT_TIME)
             }
         }
         return true
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-
-        // 测量完毕，开始作图
-        // 第一个点
-        generateNewParticle(this,w / 2f, h / 2f)
-        // 通过发送消息给handler实现间隔添加其他点
-        val message = mHandler.obtainMessage()
-        message.arg1 = w
-        message.arg2 = h
-        mHandler.sendMessageDelayed(message, ADD_POINT_TIME)
-    }
-
-    // 创建新的粒子
-    private fun generateNewParticle(view: ParticleLinesBgView, x: Float, y: Float) {
-
-        // 创建新粒子
-        val particle = Particle(x, y)
-        view.mParticles[nextIndex] = particle
-
-        view.invalidate()
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-
-        // 更新
-        for (i in mParticles.values) {
-            // 随机移动
-            var dx = (Math.random() * 4).toFloat() - 2
-            var dy = (Math.random() * 4).toFloat() - 2
-            if (mTouchParticle != null) {
-                val distance = getDistance(mTouchParticle!!.x, mTouchParticle!!.y, i.x, i.y)
-                if (distance < 2 * PROPER_LENGTH && distance > PROPER_LENGTH) {
-                    // 趋向于中心
-                    dx = (mTouchParticle!!.x - i.x) / 10f
-                    dy = (mTouchParticle!!.y - i.y) / 10f
-                }
-            }
-
-            if (i.x + dx > width || i.x + dx < 0) i.x -= dx else i.x += dx
-            if (i.y + dy > height || i.y + dy < 0) i.y -= dy else i.y += dy
-        }
-
-        // 遍历连线
-        for (i in 0 until mParticles.size) {
-            for (j in i until mParticles.size) {
-                if (getDistance(mParticles[i]!!.x, mParticles[i]!!.y,
-                        mParticles[j]!!.x, mParticles[j]!!.y) < PROPER_LENGTH
-                ) {
-                    canvas.drawLine(mParticles[i]!!.x, mParticles[i]!!.y,
-                        mParticles[j]!!.x, mParticles[j]!!.y, mPaint)
-                }
-            }
-
-            // 和手指的点连线
-            if (mTouchParticle != null && getDistance(mParticles[i]!!.x, mParticles[i]!!.y,
-                    mTouchParticle!!.x, mTouchParticle!!.y) < PROPER_LENGTH
-            ) {
-                canvas.drawLine(mParticles[i]!!.x, mParticles[i]!!.y,
-                    mTouchParticle!!.x, mTouchParticle!!.y, mPaint)
-            }
-        }
-
-        // 吸引范围
-        mTouchParticle?.let {
-            mPaint.color = Color.BLUE
-            canvas.drawCircle(mTouchParticle!!.x, mTouchParticle!!.y, PROPER_LENGTH, mPaint)
-            mPaint.color = Color.LTGRAY
-        }
-    }
-
-
     // 粒子
-    class Particle(var x: Float, var y: Float)
+    class Particle(var x: Float, var y: Float, var counter: Int)
 
     // kotlin自动编译为Java静态类，控件引用使用弱引用
     class ParticleHandler(view: ParticleLinesBgView): Handler(Looper.getMainLooper()){
         // 控件引用
         private val mRef: WeakReference<ParticleLinesBgView> = WeakReference(view)
-        override fun handleMessage(msg: Message) {
-            // 从msg拿到宽高
-            val x = (Math.random() * msg.arg1).toFloat()
-            val y = (Math.random() * msg.arg2).toFloat()
+        // 粒子出现控制
+        private var mPointCounter = 0
 
-            // 新增点
-            mRef.get()?.let {
-                it.generateNewParticle(it, x, y)
+        override fun handleMessage(msg: Message) {
+            mRef.get()?.let {view->
+                // 新增点
+                mPointCounter++
+                if (mPointCounter == (POINT_ADD_TIME / SCREEN_FLUSH_TIME).toInt()) {
+                    // 随机位置
+                    val x = (Math.random() * view.width).toFloat()
+                    val y = (Math.random() * view.height).toFloat()
+                    view.mParticles.add(Particle(x, y, 0))
+                    mPointCounter = 0
+                }
+
+                val iterator = view.mParticles.iterator()
+                while (iterator.hasNext()) {
+                    val point = iterator.next()
+
+                    // 移除失活粒子
+                    if (point.counter == (POINT_ALIVE_TIME / SCREEN_FLUSH_TIME).toInt()) {
+                        iterator.remove()
+                    }
+
+                    // 手指按下时，粒子朝合适的距离移动
+                    view.mTouchParticle?.let {
+                        val distance = getDistance(point.x, point.y, it.x, it.y)
+                        if(distance in PROPER_LENGTH..ATTRACT_LENGTH) {
+                            // 横向接近
+                            if (point.x < it.x) point.x += POINT_MOVE_LENGTH
+                            else point.x -= POINT_MOVE_LENGTH
+                            // 纵向接近
+                            if (point.y < it.y) point.y += POINT_MOVE_LENGTH
+                            else point.y -= POINT_MOVE_LENGTH
+                        }else if(distance <= PROPER_LENGTH) {
+                            // 横向远离
+                            if (point.x < it.x) point.x -= POINT_MOVE_LENGTH
+                            else point.x += POINT_MOVE_LENGTH
+                            // 纵向远离
+                            if (point.y < it.y) point.y -= POINT_MOVE_LENGTH
+                            else point.y += POINT_MOVE_LENGTH
+                        }
+                    }
+                }
+
                 // 循环发送
-                val message = obtainMessage()
-                message.arg1 = msg.arg1
-                message.arg2 = msg.arg2
-                it.mHandler.sendMessageDelayed(message, ADD_POINT_TIME)
+                view.invalidate()
+                view.mHandler.sendEmptyMessageDelayed(0, POINT_ADD_TIME)
             }
         }
     }

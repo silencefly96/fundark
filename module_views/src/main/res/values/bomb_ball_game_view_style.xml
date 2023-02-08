@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BombBallGameView">
+        <attr name="length" format="integer"/>
+        <attr name="row" format="integer"/>
+        <attr name="col" format="integer"/>
+        <attr name="ballMask" format="reference"/>
+        <attr name="targetMask" format="reference"/>
+        <attr name="targetConfig" format="reference"/>
+    </declare-styleable>
+    <string-array name="BombBallGameConfig">
+        <item>(0,5)</item>
+        <item>(0,6)</item>
+        <item>(0,7)</item>
+        <item>(0,8)</item>
+        <item>(0,9)</item>
+
+        <item>(0,10)</item>
+        <item>(0,11)</item>
+        <item>(0,12)</item>
+        <item>(0,13)</item>
+        <item>(0,14)</item>
+
+        <item>(1,3)</item>
+        <item>(1,5)</item>
+        <item>(1,7)</item>
+        <item>(1,9)</item>
+        <item>(1,11)</item>
+        <item>(1,13)</item>
+        <item>(1,15)</item>
+    </string-array>
+</resources>

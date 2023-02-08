@@ -60,6 +60,9 @@ class MainFragment: BaseFragment() {
 
         add(Item(14, "贪吃蛇: SnarkGameView",
             "简单的贪吃蛇游戏"))
+
+        add(Item(15, "弹球游戏: BombBallGameView",
+            "简单的弹球游戏"))
     }
 
     // 适配器
@@ -101,6 +104,7 @@ class MainFragment: BaseFragment() {
                     12 -> R.id.action_main_to_particle_lines
                     13 -> R.id.action_main_to_airplane_fight
                     14 -> R.id.action_main_to_snark
+                    15 -> R.id.action_main_to_bomb_ball
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

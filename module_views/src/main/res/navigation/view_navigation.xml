@@ -67,6 +67,10 @@
             app:destination="@id/snarkGameDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_bomb_ball"
+            app:destination="@id/bombBallGameDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -152,4 +156,10 @@
         android:name="com.silencefly96.module_views.game.demo.SnarkGameDemo"
         android:label="@string/snark_game_fragment"
         tools:layout="@layout/fragment_snark_game" />
+
+    <fragment
+        android:id="@+id/bombBallGameDemo"
+        android:name="com.silencefly96.module_views.game.demo.BombBallGameDemo"
+        android:label="@string/bomb_ball_game_fragment"
+        tools:layout="@layout/fragment_bomb_ball_game" />
 </navigation>

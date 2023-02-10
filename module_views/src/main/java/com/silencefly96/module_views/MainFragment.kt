@@ -63,6 +63,9 @@ class MainFragment: BaseFragment() {
 
         add(Item(15, "弹球游戏: BombBallGameView",
             "简单的弹球游戏"))
+
+        add(Item(16, "俄罗斯方块: TetrisGameView",
+            "俄罗斯方块"))
     }
 
     // 适配器
@@ -105,6 +108,7 @@ class MainFragment: BaseFragment() {
                     13 -> R.id.action_main_to_airplane_fight
                     14 -> R.id.action_main_to_snark
                     15 -> R.id.action_main_to_bomb_ball
+                    16 -> R.id.action_main_to_tetris
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

@@ -71,6 +71,10 @@
             app:destination="@id/bombBallGameDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_tetris"
+            app:destination="@id/tetrisGameDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -162,4 +166,10 @@
         android:name="com.silencefly96.module_views.game.demo.BombBallGameDemo"
         android:label="@string/bomb_ball_game_fragment"
         tools:layout="@layout/fragment_bomb_ball_game" />
+
+    <fragment
+        android:id="@+id/tetrisGameDemo"
+        android:name="com.silencefly96.module_views.game.demo.TetrisGameDemo"
+        android:label="@string/tetris_game_fragment"
+        tools:layout="@layout/fragment_tetris_game" />
 </navigation>

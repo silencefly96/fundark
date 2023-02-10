@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name ="TetrisGameView">
+        <attr name="rowNumber" format="integer"/>
+        <attr name="colNumber" format="integer"/>
+        <attr name="tetrisMask" format="reference"/>
+    </declare-styleable>
+</resources>

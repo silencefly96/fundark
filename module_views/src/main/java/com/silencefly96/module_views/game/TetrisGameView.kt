@@ -199,7 +199,8 @@ class TetrisGameView @JvmOverloads constructor(
                 // 只更改方向，逻辑由GameController处理，方向更改成功与否需要确认
                 if (abs(lenX) > abs(lenY)) {
                     // 左右移动
-                    mGameController.colDelta = if (lenX > 0) 1 else -1
+                    val delta = (lenX / mColDelta).toInt()
+                    mGameController.colDelta = if (lenX > 0) delta else -delta
                 }else {
                     if (lenY >= 0) {
                         // 往下滑动加快
@@ -248,11 +249,11 @@ class TetrisGameView @JvmOverloads constructor(
                 // 移动前先校验旋转和左右移动
                 preMoveCheck(gameView)
 
-                // 检查定型
-                checkTetris(gameView)
-
                 // 移动砖块
                 moveTetris(gameView)
+
+                // 检查定型
+                settleTetris(gameView)
 
                 // 检查消除底层
                 checkRemove(gameView)
@@ -288,6 +289,7 @@ class TetrisGameView @JvmOverloads constructor(
         }
 
         private fun preMoveCheck(gameView: TetrisGameView) {
+            // 校验旋转和左右移动可以放一起
             if (newDirection != DIR_NULL || colDelta != 0) {
                 val positions = ArrayList<MutableTriple<Int, Int, Boolean>>(8)
                 val tetris = gameView.mTetris
@@ -343,67 +345,11 @@ class TetrisGameView @JvmOverloads constructor(
             }
         }
 
-        private fun checkTetris(gameView: TetrisGameView) {
-            // 这里取个巧吧，实际方块停住的情况就两种：触底、碰到其他砖块，这里让方块再向下一步检查冲突就可以
-            val positions = ArrayList<MutableTriple<Int, Int, Boolean>>(8)
-            val tetris = gameView.mTetris
-            val posRow = tetris.posRow + 1
-            val posCol = tetris.posCol
-
-            // 先检查是否触底，再检查向下一步的可能
-            var mark = true
-            // 获取再向下一步后可能的位置
-            for (i in 0..1) for (j in 0..3) {
-                val index = i * 4 + j
-                // 按位取得配置
-                val mask = 1 shl (index)
-                val flag = tetris.config and mask == mask
-                // 将不同方向对应的位置转换到config的顺序，并保存该位置是否绘制的flag
-                positions.add(when(tetris.dir) {
-                    DIR_RIGHT -> MutableTriple(posRow + i, posCol + j, flag)
-                    DIR_DOWN -> MutableTriple(posRow + j,posCol - i,  flag)
-                    DIR_LEFT ->MutableTriple(posRow - i, posCol - j, flag)
-                    DIR_UP ->MutableTriple(posRow - j,posCol + i,  flag)
-                    else -> MutableTriple(0, 0, false)
-                })
-            }
-
-            // 校验
-            for (pos in positions) {
-                // 触底
-                if (pos.first >= gameView.mRowNumb) {
-                    mark = false
-                    break
-                }
-                // 旋转后有冲突则否决此次旋转
-                if (pos.third && gameView.mGameMap[pos.first][pos.second] > 0) {
-                    mark = false
-                    break
-                }
-            }
-
-            // mark为true则可以继续移动(即不做处理)，否则触底
-            if (!mark) {
-                // 固定砖块的位置，moveTetris已经将位置放到了gameView.mPositions中
-                for (pos in gameView.mPositions) {
-                    if (pos.third) {
-                        // 注意这里位置超出屏幕上方就是游戏结束
-                        if (pos.first < 0) {
-                            isGameOver
-                        }else {
-                            gameView.mGameMap[pos.first][pos.second] = 1
-                        }
-                    }
-                }
-
-                isNewTurn = true
-            }
-        }
 
         private fun moveTetris(gameView: TetrisGameView) {
             val tetris = gameView.mTetris
             val positions = gameView.mPositions
-            // 移动Y坐标就行
+            // 向下移动
             tetris.posRow++
             val posRow = tetris.posRow
             val posCol = tetris.posCol
@@ -435,6 +381,34 @@ class TetrisGameView @JvmOverloads constructor(
                     }
                     else -> {}
                 }
+            }
+        }
+
+        private fun settleTetris(gameView: TetrisGameView) {
+            var mark = true
+            for (pos in gameView.mPositions) {
+                // 触底
+                if (pos.first == gameView.mRowNumb - 1) {
+                    mark = false
+                    break
+                }
+            }
+
+            // mark为true则可以继续移动(即不做处理)，否则触底
+            if (!mark) {
+                // 固定砖块的位置，moveTetris已经将位置放到了gameView.mPositions中
+                for (pos in gameView.mPositions) {
+                    if (pos.third) {
+                        // 注意这里位置超出屏幕上方就是游戏结束
+                        if (pos.first < 0) {
+                            isGameOver
+                        }else {
+                            gameView.mGameMap[pos.first][pos.second] = 1
+                        }
+                    }
+                }
+
+                isNewTurn = true
             }
         }
 

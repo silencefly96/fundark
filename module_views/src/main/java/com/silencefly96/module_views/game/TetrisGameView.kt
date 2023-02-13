@@ -30,6 +30,8 @@ class TetrisGameView @JvmOverloads constructor(
     companion object {
         // 游戏更新间隔，一秒5次
         const val GAME_FLUSH_TIME = 200L
+        // 快速模式把更新时间等分
+        const val FAST_MOD_TIMES = 10
 
         // 四个方向
         const val DIR_NULL = -1
@@ -268,7 +270,13 @@ class TetrisGameView @JvmOverloads constructor(
                 // 循环发送消息，刷新页面
                 gameView.invalidate()
                 if (!isGameOver) {
-                    gameView.mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+                    if (gameView.mTetris.fastMode) {
+                        gameView.mGameController.sendEmptyMessageDelayed(0,
+                            GAME_FLUSH_TIME / FAST_MOD_TIMES)
+                    }else {
+                        gameView.mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+
+                    }
                 }else {
                     gameView.gameOver()
                 }
@@ -279,8 +287,8 @@ class TetrisGameView @JvmOverloads constructor(
             if (isNewTurn) {
                 // 保留旋转空余
                 val col = (3 + Math.random() * (gameView.mColNumb - 6)).toInt()
-                val type = sTypeArray[(Math.random() * 3).toInt()]
-                gameView.mTetris.dir = (Math.random() * 3).toInt()
+                val type = sTypeArray[(Math.random() * 4).toInt()]
+                gameView.mTetris.dir = (Math.random() * 4).toInt()
                 // 因为旋转所以要保证在界面内
                 gameView.mTetris.posRow = 0 + when(gameView.mTetris.dir) {
                     DIR_LEFT -> 1
@@ -338,21 +346,48 @@ class TetrisGameView @JvmOverloads constructor(
                 val triple = positions[index]
                 // 将不同方向对应的位置转换到config的顺序，并保存该位置是否绘制的flag
                 triple.third = flag
-                when(dir) {
+                var optimizedDir = dir
+                // 对方块类型特别优化
+                if (tetris.config == CONFIG_TYPE_O) optimizedDir = DIR_RIGHT
+                when(optimizedDir) {
+                    // 以o为锚点旋转，再优化，左边为旋转后，右边为优化后，目的：减小影响范围，限制在矩形内
+                    // 一开始以右向左上角旋转，范围是7*7，可通过取值的变换，变换为5*5或者4*4的矩阵
+                    // - x x - -
+                    // - x x x -      - x x -
+                    // x x o x x      x o o x
+                    // x x x x x      x o o x
+                    // - - x x -  =>  - x x -
+
+                    // 右向，基础型
+                    // o x x x      x o x x
+                    // x x x x  ->  x x x x
                     DIR_RIGHT -> {
                         triple.first = posRow + i
-                        triple.second = posCol + j
+                        triple.second = posCol + j - 1
                     }
+                    // 下向
+                    // x o      x x
+                    // x x      x o
+                    // x x      x x
+                    // x x  ->  x x
                     DIR_DOWN -> {
-                        triple.first = posRow + j
-                        triple.second = posCol - i
+                        triple.first = posRow + j - 1
+                        triple.second = posCol - i + 1
                     }
+                    // 左向
+                    // x x x o      x x x x
+                    // x x x x  ->  x x o x
                     DIR_LEFT -> {
-                        triple.first = posRow - i
-                        triple.second = posCol - j
+                        triple.first = posRow - i - 1
+                        triple.second = posCol - j + 1
                     }
+                    // 上向
+                    // x x      x x
+                    // x x      x x
+                    // x x      o x
+                    // o x  ->  x x
                     DIR_UP -> {
-                        triple.first = posRow - j
+                        triple.first = posRow - j + 1
                         triple.second = posCol + i
                     }
                     else -> {}
@@ -414,30 +449,34 @@ class TetrisGameView @JvmOverloads constructor(
         }
 
         private fun checkRemove(gameView: TetrisGameView) {
-            // 校验底层是否有0，有0就不能消除
-            val array = gameView.mGameMap.last()
-            var flag = true
-            for (peer in array) {
-                if (peer <= 0) {
-                    flag = false
-                    break
+            // 从底层开始校验，全为1则消除
+            for (i in gameView.mGameMap.size - 1 downTo 0) {
+                val array = gameView.mGameMap[i]
+                var isFull = true
+                var isFullEmpty = true
+                for (peer in array) {
+                    if (peer <= 0) {
+                        isFull = false
+                    }
+                    if (peer > 0) {
+                        isFullEmpty = false
+                    }
                 }
-            }
 
-            // 消除，数组移位就行了
-            val gameMap = gameView.mGameMap
-            if (flag) {
-                for (i in gameMap.size - 1 downTo 0) {
-                    val cur = gameMap[i]
-                    if (i == 0) {
-                        // 第一层填 0
-                        cur.fill(0)
-                    }else {
-                        // 从后往前，一层填一层
-                        val another = gameMap[i - 1]
-                        for (j in cur.indices1) {
-                            cur[j] = another[j]
+                // 全层为空，后续无需校验
+                if (isFullEmpty) break
+                // 消除，数组移位就行了
+                val gameMap = gameView.mGameMap
+                if (isFull) {
+                    // 把上面一层的数据填到当前层即可，最后会填到空层
+                    val temp = i - 1
+                    if (temp >= 0) {
+                        val another = gameMap[temp]
+                        for (k in array.indices1) {
+                            array[k] = another[k]
                         }
+                    }else {
+                        array.fill(0)
                     }
                 }
             }

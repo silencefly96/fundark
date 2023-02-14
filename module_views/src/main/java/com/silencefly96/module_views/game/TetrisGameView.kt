@@ -154,14 +154,14 @@ class TetrisGameView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        // 绘制网格
+        // 绘制网格，mColDelta * mColNumb.toFloat() != width
         for (i in 0..mRowNumb) {
             canvas.drawLine(0f, mRowDelta * i.toFloat(),
-                width.toFloat(), mRowDelta * i.toFloat(), mPaint)
+                mColDelta * mColNumb.toFloat(), mRowDelta * i.toFloat(), mPaint)
         }
         for (i in 0..mColNumb) {
             canvas.drawLine(mColDelta * i.toFloat(), 0f,
-                mColDelta * i.toFloat(), height.toFloat(), mPaint)
+                mColDelta * i.toFloat(), mRowDelta * mRowNumb.toFloat(), mPaint)
         }
 
         // 绘制地图元素, (i, j)表示第i行，第j列
@@ -345,7 +345,7 @@ class TetrisGameView @JvmOverloads constructor(
             for (i in 0..1) for (j in 0..3) {
                 val index = i * 4 + j
                 // 按位取得配置
-                val mask = 1 shl (index)
+                val mask = 1 shl (7 - index)
                 val flag = tetris.config and mask == mask
                 val triple = positions[index]
                 // 将不同方向对应的位置转换到config的顺序，并保存该位置是否绘制的flag
@@ -353,7 +353,7 @@ class TetrisGameView @JvmOverloads constructor(
                 var optimizedDir = dir
                 // 对方块和条形类型特别优化
                 if (tetris.config == CONFIG_TYPE_O) optimizedDir = DIR_RIGHT
-                if (tetris.config == CONFIG_TYPE_O && dir >= DIR_DOWN) {
+                if (tetris.config == CONFIG_TYPE_I && dir >= DIR_DOWN) {
                     optimizedDir = dir - 2
                 }
                 when(optimizedDir) {

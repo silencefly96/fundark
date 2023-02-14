@@ -30,6 +30,8 @@ class TetrisGameView @JvmOverloads constructor(
     companion object {
         // 游戏更新间隔，一秒5次
         const val GAME_FLUSH_TIME = 200L
+        // 砖块移动间隔，一秒2.5次
+        const val TETRIS_MOVE_TIME = 400L
         // 快速模式把更新时间等分
         const val FAST_MOD_TIMES = 10
 
@@ -42,10 +44,10 @@ class TetrisGameView @JvmOverloads constructor(
 
         // 四种砖块对应的配置，是一个2 * 8的数组, 这里用二进制来保存
         // 顶点左上角，二行四列，默认朝右，方向变换咦左上角旋转
-        private const val CONFIG_TYPE_L = 0b0010_1110
+        private const val CONFIG_TYPE_L = 0b1110_1000
         private const val CONFIG_TYPE_T = 0b1110_0100
         private const val CONFIG_TYPE_I = 0b1111_0000
-        private const val CONFIG_TYPE_O = 0b1100_1100
+        private const val CONFIG_TYPE_O = 0b0110_0110
 
         // 砖块类型数组，用于随机生成
         val sTypeArray = intArrayOf(CONFIG_TYPE_L, CONFIG_TYPE_T, CONFIG_TYPE_I, CONFIG_TYPE_O)
@@ -248,6 +250,8 @@ class TetrisGameView @JvmOverloads constructor(
         internal var newDirection = DIR_NULL
         // 游戏结束标志
         internal var isGameOver = false
+        // 砖块移动控制变量，让左右移动能比向下移动快一步
+        private var mMoveCounter = 0
 
         override fun handleMessage(msg: Message) {
             mRef.get()?.let { gameView ->
@@ -335,7 +339,7 @@ class TetrisGameView @JvmOverloads constructor(
                 gameView.mGameMap)
         }
 
-        // 根据条件获得positions
+        // 根据条件获得positions，直接定义不同方向的dir_type会更好吗？其实也要确定锚点，一样的
         private fun getPositions(positions: ArrayList<MutableTriple<Int, Int, Boolean>>,
             tetris: Tetris, posRow: Int, posCol: Int, dir: Int) {
             for (i in 0..1) for (j in 0..3) {
@@ -347,8 +351,11 @@ class TetrisGameView @JvmOverloads constructor(
                 // 将不同方向对应的位置转换到config的顺序，并保存该位置是否绘制的flag
                 triple.third = flag
                 var optimizedDir = dir
-                // 对方块类型特别优化
+                // 对方块和条形类型特别优化
                 if (tetris.config == CONFIG_TYPE_O) optimizedDir = DIR_RIGHT
+                if (tetris.config == CONFIG_TYPE_O && dir >= DIR_DOWN) {
+                    optimizedDir = dir - 2
+                }
                 when(optimizedDir) {
                     // 以o为锚点旋转，再优化，左边为旋转后，右边为优化后，目的：减小影响范围，限制在矩形内
                     // 一开始以右向左上角旋转，范围是7*7，可通过取值的变换，变换为5*5或者4*4的矩阵
@@ -372,13 +379,13 @@ class TetrisGameView @JvmOverloads constructor(
                     // x x  ->  x x
                     DIR_DOWN -> {
                         triple.first = posRow + j - 1
-                        triple.second = posCol - i + 1
+                        triple.second = posCol - i
                     }
                     // 左向
-                    // x x x o      x x x x
-                    // x x x x  ->  x x o x
+                    // x x x x      x x x x
+                    // x x x o  ->  x x o x
                     DIR_LEFT -> {
-                        triple.first = posRow - i - 1
+                        triple.first = posRow - i
                         triple.second = posCol - j + 1
                     }
                     // 上向
@@ -428,7 +435,12 @@ class TetrisGameView @JvmOverloads constructor(
 
         private fun moveTetris(gameView: TetrisGameView) {
             val tetris = gameView.mTetris
-            tetris.posRow += 1
+            // 对向下移动控制，左右移动、旋转不限制
+            mMoveCounter++
+            if (mMoveCounter == (TETRIS_MOVE_TIME / GAME_FLUSH_TIME).toInt()) {
+                tetris.posRow += 1
+                mMoveCounter = 0
+            }
             getPositions(gameView.mPositions, tetris, tetris.posRow, tetris.posCol, tetris.dir)
         }
 
@@ -449,35 +461,29 @@ class TetrisGameView @JvmOverloads constructor(
         }
 
         private fun checkRemove(gameView: TetrisGameView) {
-            // 从底层开始校验，全为1则消除
-            for (i in gameView.mGameMap.size - 1 downTo 0) {
-                val array = gameView.mGameMap[i]
+            // 应该从顶层到底层检查，这样消除后的移动逻辑才没错，就是复杂了点
+            val gameMap = gameView.mGameMap
+            for (i in gameMap.indices1) {
+                val array = gameMap[i]
                 var isFull = true
-                var isFullEmpty = true
                 for (peer in array) {
                     if (peer <= 0) {
                         isFull = false
                     }
-                    if (peer > 0) {
-                        isFullEmpty = false
-                    }
                 }
 
-                // 全层为空，后续无需校验
-                if (isFullEmpty) break
                 // 消除，数组移位就行了
-                val gameMap = gameView.mGameMap
                 if (isFull) {
-                    // 把上面一层的数据填到当前层即可，最后会填到空层
-                    val temp = i - 1
-                    if (temp >= 0) {
-                        val another = gameMap[temp]
-                        for (k in array.indices1) {
-                            array[k] = another[k]
+                    for (j in (i - 1) downTo 0) {
+                        // 把上面一层的数据填到当前层即可，最后会填到空层
+                        val cur = gameMap[j + 1]
+                        val another = gameMap[j]
+                        for (k in cur.indices1) {
+                            cur[k] = another[k]
                         }
-                    }else {
-                        array.fill(0)
                     }
+                    // 最顶上填空
+                    gameMap[0].fill(0)
                 }
             }
         }

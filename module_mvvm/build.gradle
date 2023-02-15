@@ -48,7 +48,7 @@ dependencies {
     androidTestImplementation rootProject.ext.dependencies.espresso_core
 
     // 从基础库继承各个依赖
-    implementation project(':module_common')
+    implementation project(':module_base')
 
     // Room, kapt不能使用api传递
     implementation rootProject.ext.dependencies.room_runtime

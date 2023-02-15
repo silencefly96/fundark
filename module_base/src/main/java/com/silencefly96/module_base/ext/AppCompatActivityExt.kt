@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.silencefly96.module_common.ext
+package com.silencefly96.module_base.ext
 
 /**
  * Various extension functions for AppCompatActivity.

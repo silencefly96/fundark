@@ -52,4 +52,12 @@ dependencies {
     api rootProject.ext.dependencies.lifecycle_extensions
     api rootProject.ext.dependencies.lifecycle_viewmodel_ktx
     api rootProject.ext.dependencies.lifecycle_livedata_ktx
+
+    // Jetpack Room数据库框架, kapt不能传递，需要在使用的地方引入
+//    api rootProject.ext.dependencies.room_runtime
+//    kapt rootProject.ext.dependencies.room_compiler
+
+    // Retrofit网络通信框架
+    api rootProject.ext.dependencies.retrofit
+    api rootProject.ext.dependencies.converter_gson
 }

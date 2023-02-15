@@ -1,6 +1,6 @@
-package com.silencefly96.module_common.net.httpUrlConnection
+package com.silencefly96.module_base.net.httpUrlConnection
 
-import com.silencefly96.module_common.net.NetModule
+import com.silencefly96.module_base.net.NetModule
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream

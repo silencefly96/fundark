@@ -7,11 +7,8 @@
 │   │   ├── base                    #Activity、Fragment、Dialog、Adapter基类
 │   │   ├── crash                   #崩溃日志捕捉
 │   │   ├── utils                   #工具类
-│   ├── module_common           #通用功能库
 │   │   ├── ext                     #kotlin扩展
-│   │   ├── net                     #网络辅助类
-│   │   ├── version                 #TODO 版本控制
-│   │   ├── push                    #TODO 推送
+│   │   ├── net                     #TODO 网络辅助类
 │   ├── module_mvvm             #mvvm架构：计划app
 │   ├── module_views            #自定义view
 │   │   ├── custom                  #自定义view
@@ -21,11 +18,11 @@
 │   │   ├── socket                  #TODO socket本地网络
 │   │   ├── camera                  #TODO 相机
 │   │   ├── nfc                     #TODO NFC
-│   │   ├── 传感器                   #TODO 传感器
+│   │   ├── sensor                  #TODO 传感器
 │   │   ├── usb                     #TODO U盘
-│   │   ├── 电源                     #TODO 电源管理
-│   │   ├── 人脸识别                  #TODO 电源管理
-│   ├── module_media            #多媒体
-│   ├── module_map              #地图功能
-│   ├── module_aidl             #多进程
+│   │   ├── power                   #TODO 电源管理
+│   │   ├── face                    #TODO 人脸识别
+│   ├── module_media            #TODO 多媒体
+│   ├── module_map              #TODO 地图功能
+│   ├── module_aidl             #TODO 多进程
 ```

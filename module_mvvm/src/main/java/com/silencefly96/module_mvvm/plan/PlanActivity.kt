@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.silencefly96.module_base.base.BaseActivity
 import com.silencefly96.module_mvvm.databinding.ActivityPlanBinding
 import com.silencefly96.module_mvvm.plan.model.Injection
-import com.silencefly96.module_common.ext.replaceFragment
+import com.silencefly96.module_base.ext.replaceFragment
 
 class PlanActivity : BaseActivity() {
 

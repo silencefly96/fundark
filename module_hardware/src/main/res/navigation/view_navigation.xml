@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.silencefly96.module_hardware.MainFragment"
+        android:label="@string/main_fragment"
+        tools:layout="@layout/fragment_main">
+
+        <action android:id="@+id/action_main_to_take_photo"
+            app:destination="@id/slideDeleteRecyclerViewDemo">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/slideDeleteRecyclerViewDemo"
+        android:name="com.silencefly96.module_hardware.camera.TakePhotoFragment"
+        android:label="@string/take_photo_fragment"
+        tools:layout="@layout/fragment_take_photo" />
+</navigation>

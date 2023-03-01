@@ -51,7 +51,7 @@ object FileUtil {
         //如果文件不存在，创建文件
         if (!exists()) createNewFile()
 
-        File(path).writeText("use kotlin is so easy a!")
+        // File(path).writeText("use kotlin is so easy a!")
     }
 
     /**

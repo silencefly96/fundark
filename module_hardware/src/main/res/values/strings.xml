@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">module_hardware</string>
+
+    <string name="take_photo_by_system">前往系统拍照</string>
+    <string name="pick_photo_by_system">前往相册选取</string>
+    <string name="main_fragment">首页</string>
+    <string name="take_photo_fragment">拍照</string>
+</resources>

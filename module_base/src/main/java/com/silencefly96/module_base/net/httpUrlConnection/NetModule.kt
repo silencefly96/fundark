@@ -1,4 +1,4 @@
-package com.silencefly96.module_base.net
+package com.silencefly96.module_base.net.httpUrlConnection
 
 interface NetModule {
     fun post(requestUrl: String, callBack: OnRequestCallBack)

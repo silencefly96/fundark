@@ -156,12 +156,6 @@ abstract class BaseFragment : Fragment(), IPermissionHelper {
     }
 
     /**
-     * 私有权限接口
-     */
-    override var mPermissionListener: IPermissionHelper.PermissionListener? = null
-
-
-    /**
      * 申请权限结果
      * @param requestCode 请求码
      * @param permissions 权限组

@@ -18,11 +18,6 @@ import java.util.ArrayList
 interface IPermissionHelper {
 
     /**
-     * 私有权限接口
-     */
-    var mPermissionListener: PermissionListener?
-
-    /**
      * 权限申请
      *
      * @param activity 活动
@@ -34,7 +29,7 @@ interface IPermissionHelper {
         permissions: Array<String>,
         listener: PermissionListener
     ) {
-        mPermissionListener = listener
+        sPermissionListener = listener
 
         //未同意的权限
         val permissionList: MutableList<String> = ArrayList()
@@ -94,11 +89,11 @@ interface IPermissionHelper {
 
                 if (deniedPermissions.isEmpty()) {
                     //全部通过
-                    mPermissionListener!!.onGranted()
+                    sPermissionListener?.onGranted()
                 } else {
                     //部分通过
-                    mPermissionListener!!.onDenied(deniedPermissions)
-                    mPermissionListener!!.onGranted(grantedPermissions)
+                    sPermissionListener?.onDenied(deniedPermissions)
+                    sPermissionListener?.onGranted(grantedPermissions)
                 }
             }
         }
@@ -110,6 +105,11 @@ interface IPermissionHelper {
          * 申请权限时用到的请求码
          */
         const val PERMISSION_REQUEST_CODE: Int = 128
+
+        /**
+         * 私有权限接口
+         */
+        var sPermissionListener: PermissionListener? = null
     }
 
     /**

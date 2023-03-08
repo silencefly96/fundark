@@ -2,6 +2,8 @@
     <string name="app_name">module_views</string>
 
     <string name="main_fragment">首页</string>
+
+    <string name="view_main_fragment">自定义view</string>
     <string name="slide_delete_fragment">左滑删除列表</string>
     <string name="left_delete_fragment">左滑删除控件</string>
     <string name="header_footer_fragment">带header和footer的Layout</string>
@@ -17,6 +19,7 @@
     <string name="pattern_lock_fragment">滑动解锁九宫格控件</string>
     <string name="particle_lines_fragment">粒子线条控件</string>
 
+    <string name="game_main_fragment">自定义game</string>
     <string name="airplane_fight_fragment">飞机大战</string>
     <string name="snark_game_fragment">飞机大战</string>
     <string name="bomb_ball_game_fragment">飞机大战</string>

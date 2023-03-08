@@ -11,6 +11,22 @@
         android:label="@string/main_fragment"
         tools:layout="@layout/fragment_main">
 
+        <action android:id="@+id/action_main_to_view"
+            app:destination="@id/viewMainFragment">
+        </action>
+
+        <action android:id="@+id/action_main_to_game"
+            app:destination="@id/gameMainFragment">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/viewMainFragment"
+        android:name="com.silencefly96.module_views.custom.demo.ViewMainFragment"
+        android:label="@string/view_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
         <action android:id="@+id/action_main_to_slide_delete"
             app:destination="@id/slideDeleteRecyclerViewDemo">
         </action>
@@ -58,23 +74,6 @@
         <action android:id="@+id/action_main_to_particle_lines"
             app:destination="@id/particleLinesBgViewDemo">
         </action>
-
-        <action android:id="@+id/action_main_to_airplane_fight"
-            app:destination="@id/airplaneFightGameDemo">
-        </action>
-
-        <action android:id="@+id/action_main_to_snark"
-            app:destination="@id/snarkGameDemo">
-        </action>
-
-        <action android:id="@+id/action_main_to_bomb_ball"
-            app:destination="@id/bombBallGameDemo">
-        </action>
-
-        <action android:id="@+id/action_main_to_tetris"
-            app:destination="@id/tetrisGameDemo">
-        </action>
-
     </fragment>
 
     <fragment
@@ -148,6 +147,29 @@
         android:name="com.silencefly96.module_views.custom.demo.ParticleLinesBgViewDemo"
         android:label="@string/particle_lines_fragment"
         tools:layout="@layout/fragment_particle_lines" />
+
+    <fragment
+        android:id="@+id/gameMainFragment"
+        android:name="com.silencefly96.module_views.game.demo.GameMainFragment"
+        android:label="@string/game_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_airplane_fight"
+            app:destination="@id/airplaneFightGameDemo">
+        </action>
+
+        <action android:id="@+id/action_main_to_snark"
+            app:destination="@id/snarkGameDemo">
+        </action>
+
+        <action android:id="@+id/action_main_to_bomb_ball"
+            app:destination="@id/bombBallGameDemo">
+        </action>
+
+        <action android:id="@+id/action_main_to_tetris"
+            app:destination="@id/tetrisGameDemo">
+        </action>
+    </fragment>
 
     <fragment
         android:id="@+id/airplaneFightGameDemo"

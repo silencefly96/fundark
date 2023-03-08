@@ -1,4 +1,4 @@
-package com.silencefly96.module_views
+package com.silencefly96.module_views.game.demo
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,19 +11,26 @@ import com.silencefly96.module_views.databinding.FragmentMainBinding
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.BaseRecyclerAdapter
 import com.silencefly96.module_base.base.ViewHolder
+import com.silencefly96.module_views.R
 
-class MainFragment: BaseFragment() {
+class GameMainFragment: BaseFragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
     // 数据
     private val mData = arrayListOf<Item>().apply {
-        add(Item(1, "custom view",
-            "自定义view练习"))
+        add(Item(1, "飞机大战: AirplaneFightGameView",
+            "简单的飞机大战游戏"))
 
-        add(Item(2, "custom game",
-            "自定义view做的小游戏"))
+        add(Item(2, "贪吃蛇: SnarkGameView",
+            "简单的贪吃蛇游戏"))
+
+        add(Item(3, "弹球游戏: BombBallGameView",
+            "简单的弹球游戏"))
+
+        add(Item(4, "俄罗斯方块: TetrisGameView",
+            "俄罗斯方块"))
     }
 
     // 适配器
@@ -49,8 +56,10 @@ class MainFragment: BaseFragment() {
             override fun onItemClick(view: View?, itemObj: Item, position: Int) {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
-                    1 -> R.id.action_main_to_view
-                    2 -> R.id.action_main_to_game
+                    1 -> R.id.action_main_to_airplane_fight
+                    2 -> R.id.action_main_to_snark
+                    3 -> R.id.action_main_to_bomb_ball
+                    4 -> R.id.action_main_to_tetris
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

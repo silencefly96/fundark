@@ -60,9 +60,9 @@ class BluetoothClientFragment: BaseFragment() {
                     isScanning = true
 
                     //清空列表
-                    val end = deviceList.size - 1
+                    val size = deviceList.size
                     deviceList.clear()
-                    adapter.notifyItemRangeRemoved(0, end)
+                    adapter.notifyItemRangeRemoved(0, size)
                 }
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
                     binding.state.text = "finished"
@@ -215,7 +215,7 @@ class BluetoothClientFragment: BaseFragment() {
         val pairedDevices = mBluetoothAdapter!!.bondedDevices
         deviceList.addAll(pairedDevices)
         adapter.notifyItemRangeInserted(deviceList.size - pairedDevices.size - 1,
-            deviceList.size - 1)
+            deviceList.size)
     }
 
     //通过设备名称连接蓝牙

@@ -3,11 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.silencefly96.module_hardware">
 
+    <!--  储存  -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
+    <!--  相机模块  -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!--  蓝牙模块  -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".HardwareApplication"

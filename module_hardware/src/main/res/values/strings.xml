@@ -1,6 +1,22 @@
 <resources>
     <string name="app_name">module_hardware</string>
 
+    <!--  蓝牙模块  -->
+    <string name="bluetooth_fragment">蓝牙模块</string>
+    <string name="bluetooth_client_fragment">蓝牙客户端</string>
+    <string name="bluetooth_server_fragment">蓝牙服务端</string>
+    <string name="open_server">打开服务端</string>
+    <string name="open_client">打开客户端</string>
+    <string name="input_target_name">输入目标名称</string>
+    <string name="set_target">设置目标</string>
+    <string name="send_message">发送消息</string>
+    <string name="state_idle">idle</string>
+    <string name="start_scan">扫描</string>
+    <string name="all">全部</string>
+    <string name="send">send</string>
+    <string name="wait_client_connect">"等待客户端连接...\n"</string>
+
+    <!--  相机模块  -->
     <string name="take_photo_by_system">前往系统拍照</string>
     <string name="pick_photo_by_system">前往相册选取</string>
     <string name="main_fragment">首页</string>

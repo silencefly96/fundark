@@ -15,4 +15,34 @@
     <color name="yellow">#FFFF00</color>
     <color name="purple">#FF00FF</color>
     <color name="cyan">#00FFFF</color>
+
+    <!--  微信设计颜色  -->
+    <color name="Light">#B2B2B2</color>
+    <color name="Grey">#888888</color>
+    <color name="Semi">#353535</color>
+    <color name="Black">#000000</color>
+    <color name="White">#FFFFFF</color>
+
+    <color name="BackGround">#F6F6F6</color>
+    <color name="ColorGap">#EFEFF4</color>
+    <color name="ColorButton">#F8F8F8</color>
+
+    <color name="GreenNormal">#09BB07</color>
+    <color name="GreenPress">#C6EAC6</color>
+    <color name="GreenDisable">#DDF0DD</color>
+
+    <color name="BlueNormal">#576B95</color>
+    <color name="BluePress">#D6DAE2</color>
+    <color name="BlueDisable">#E5E7EC</color>
+
+    <color name="RedNormal">#E64340</color>
+    <!--color name="RedPress">#F3D2D1</color-->
+    <color name="RedPress">#CCFF4500</color>
+    <color name="RedDisable">#F4E3E3</color>
+
+
+
+    <color name="transparent">#00000000</color>
+    <color name="trantracent">#22000000</color>
+    <color name="trantracent_wode">#55000000</color>
 </resources>

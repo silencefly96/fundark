@@ -11,14 +11,45 @@
         android:label="@string/main_fragment"
         tools:layout="@layout/fragment_main">
 
+        <action android:id="@+id/action_main_to_bluetooth"
+            app:destination="@id/bluetoothFragment">
+        </action>
+
         <action android:id="@+id/action_main_to_take_photo"
-            app:destination="@id/slideDeleteRecyclerViewDemo">
+            app:destination="@id/takePhotoFragment">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/bluetoothFragment"
+        android:name="com.silencefly96.module_hardware.bluetooth.BluetoothFragment"
+        android:label="@string/bluetooth_fragment"
+        tools:layout="@layout/fragment_bluetooth" >
+
+        <action android:id="@+id/action_bluetooth_to_client"
+            app:destination="@id/bluetoothClientFragment">
+        </action>
+
+        <action android:id="@+id/action_bluetooth_to_server"
+            app:destination="@id/bluetoothServerFragment">
         </action>
 
     </fragment>
 
     <fragment
-        android:id="@+id/slideDeleteRecyclerViewDemo"
+        android:id="@+id/bluetoothClientFragment"
+        android:name="com.silencefly96.module_hardware.bluetooth.BluetoothClientFragment"
+        android:label="@string/bluetooth_client_fragment"
+        tools:layout="@layout/fragment_bluetooth_client" />
+
+    <fragment
+        android:id="@+id/bluetoothServerFragment"
+        android:name="com.silencefly96.module_hardware.bluetooth.BluetoothServerFragment"
+        android:label="@string/bluetooth_server_fragment"
+        tools:layout="@layout/fragment_bluetooth_server" />
+
+    <fragment
+        android:id="@+id/takePhotoFragment"
         android:name="com.silencefly96.module_hardware.camera.TakePhotoFragment"
         android:label="@string/take_photo_fragment"
         tools:layout="@layout/fragment_take_photo" />

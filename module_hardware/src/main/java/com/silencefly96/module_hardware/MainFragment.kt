@@ -19,7 +19,11 @@ class MainFragment: BaseFragment() {
 
     // 数据
     private val mData = arrayListOf<Item>().apply {
-        add(Item(1, "Camera: TakePhotoFragment",
+
+        add(Item(1, "Bluetooth: BluetoothFragment",
+            "蓝牙模块"))
+
+        add(Item(2, "Camera: TakePhotoFragment",
             "相机拍照"))
 
 
@@ -48,7 +52,8 @@ class MainFragment: BaseFragment() {
             override fun onItemClick(view: View?, itemObj: Item, position: Int) {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
-                    1 -> R.id.action_main_to_take_photo
+                    1 -> R.id.action_main_to_bluetooth
+                    2 -> R.id.action_main_to_take_photo
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

@@ -19,6 +19,10 @@
             app:destination="@id/gameMainFragment">
         </action>
 
+        <action android:id="@+id/action_main_to_widget"
+            app:destination="@id/widgetMainFragment">
+        </action>
+
     </fragment>
 
     <fragment
@@ -194,4 +198,32 @@
         android:name="com.silencefly96.module_views.game.demo.TetrisGameDemo"
         android:label="@string/tetris_game_fragment"
         tools:layout="@layout/fragment_tetris_game" />
+
+    <fragment
+        android:id="@+id/widgetMainFragment"
+        android:name="com.silencefly96.module_views.widget.domo.WidgetMainFragment"
+        android:label="@string/widget_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_drawable_view"
+            app:destination="@id/drawableViewDemo">
+        </action>
+
+        <action android:id="@+id/action_main_to_lazy_image_view"
+            app:destination="@id/lazyImageViewDemo">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/drawableViewDemo"
+        android:name="com.silencefly96.module_views.widget.domo.DrawableViewDemo"
+        android:label="@string/drawable_view_fragment"
+        tools:layout="@layout/fragment_drawable_view" />
+
+    <fragment
+        android:id="@+id/lazyImageViewDemo"
+        android:name="com.silencefly96.module_views.widget.domo.LazyImageViewDemo"
+        android:label="@string/lazy_image_view_fragment"
+        tools:layout="@layout/fragment_lazy_image_view" />
+
 </navigation>

@@ -1,4 +1,4 @@
-package com.silencefly96.module_views
+package com.silencefly96.module_views.widget.domo
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,22 +11,20 @@ import com.silencefly96.module_views.databinding.FragmentMainBinding
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.BaseRecyclerAdapter
 import com.silencefly96.module_base.base.ViewHolder
+import com.silencefly96.module_views.R
 
-class MainFragment: BaseFragment() {
+class WidgetMainFragment: BaseFragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
     // 数据
     private val mData = arrayListOf<Item>().apply {
-        add(Item(1, "custom view",
-            "自定义view练习"))
+        add(Item(1, "手写签名：DrawableViewDemo",
+            "可记录操作笔画的手写签名"))
 
-        add(Item(2, "custom game",
-            "自定义view做的小游戏"))
-
-        add(Item(3, "custom widget",
-            "自定义widget实用工具"))
+        add(Item(2, "懒加载图片控件: LazyImageViewDemo",
+            "简单模仿Glide的图片懒加载控件"))
     }
 
     // 适配器
@@ -52,9 +50,8 @@ class MainFragment: BaseFragment() {
             override fun onItemClick(view: View?, itemObj: Item, position: Int) {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
-                    1 -> R.id.action_main_to_view
-                    2 -> R.id.action_main_to_game
-                    3 -> R.id.action_main_to_widget
+                    1 -> R.id.action_main_to_drawable_view
+                    2 -> R.id.action_main_to_lazy_image_view
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

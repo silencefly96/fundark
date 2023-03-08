@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <com.silencefly96.module_views.widget.DrawableView
+        android:id="@+id/drawView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/width"
+        android:text="10"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/set_width"
+        android:autofillHints=""
+        android:inputType="number"
+        tools:ignore="HardcodedText,LabelFor"
+        />
+
+    <Button
+        android:id="@+id/set_width"
+        android:text="@string/draw_width"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/width"
+        app:layout_constraintEnd_toEndOf="@id/stroke_color"
+        android:layout_marginBottom="14dp"
+        />
+
+    <EditText
+        android:id="@+id/stroke_color"
+        android:text="#333333"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/set_width"
+        app:layout_constraintEnd_toStartOf="@id/set_stroke"
+        android:autofillHints=""
+        android:inputType="text"
+        tools:ignore="HardcodedText,LabelFor"
+        />
+
+    <Button
+        android:id="@+id/set_stroke"
+        android:text="@string/draw_stroke_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/stroke_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="14dp"
+        />
+
+    <EditText
+        android:id="@+id/canvas_color"
+        android:text="#03A9F4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/width"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/set_width"
+        android:autofillHints=""
+        android:inputType="text"
+        tools:ignore="HardcodedText,LabelFor"
+        />
+
+    <Button
+        android:id="@+id/set_canvas_color"
+        android:text="@string/draw_canvas_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/width"
+        app:layout_constraintStart_toEndOf="@id/canvas_color"
+        app:layout_constraintEnd_toStartOf="@id/path"
+        android:layout_marginBottom="14dp"
+        />
+
+    <EditText
+        android:id="@+id/path"
+        android:text="123.png"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/width"
+        app:layout_constraintStart_toEndOf="@id/set_canvas_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:autofillHints=""
+        android:inputType="text"
+        tools:ignore="HardcodedText,LabelFor"
+        />
+
+    <Button
+        android:id="@+id/clear"
+        android:text="@string/draw_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/output"
+        android:layout_marginBottom="14dp"
+        />
+
+    <Button
+        android:id="@+id/output"
+        android:text="@string/draw_output"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/clear"
+        app:layout_constraintEnd_toStartOf="@id/forward"
+        android:layout_marginBottom="14dp"
+        />
+
+    <Button
+        android:id="@+id/forward"
+        android:text="@string/draw_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/output"
+        app:layout_constraintEnd_toStartOf="@id/back"
+        android:layout_marginBottom="14dp"
+        />
+
+    <Button
+        android:id="@+id/back"
+        android:text="@string/draw_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/forward"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="14dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

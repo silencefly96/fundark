@@ -7,11 +7,10 @@ import android.content.IntentFilter
 import android.os.Build
 import android.telephony.SmsMessage
 import android.util.Log
-import androidx.core.util.Consumer
 
-class SmsReceiver : BroadcastReceiver() {
-
-    var smsConsumer: Consumer<String>? = null
+class SmsReceiver @JvmOverloads constructor(
+    val mHandler: SmsHandler = SmsHandler()
+) : BroadcastReceiver() {
 
     companion object {
         // 使用广播进行监听
@@ -47,7 +46,8 @@ class SmsReceiver : BroadcastReceiver() {
                     // 获取短信发送方地址
                     // String from = msg.getOriginatingAddress();
                     // 将数据传递出去
-                    smsConsumer?.accept(content)
+                    // 传递出去
+                    mHandler.obtainMessage(0, content).sendToTarget()
                 }
             }
         }

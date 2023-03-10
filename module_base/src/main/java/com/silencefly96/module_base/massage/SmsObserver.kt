@@ -4,21 +4,23 @@ import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.provider.Telephony
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.util.Consumer
 import java.lang.ref.WeakReference
 
 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 class SmsObserver @JvmOverloads constructor(
-    val mHandler: SmsHandler = SmsHandler(),
+    val mHandler: SmsHandler = SmsHandler()
 ) : ContentObserver(mHandler) {
 
     var weakReference: WeakReference<Context>? = null
+
+    // 注册时时间
+    var startDate: Long = 0L
+
+    // 有效时间间隔
+    var valueTimeMillis: Long = 0L
 
     companion object {
         //API level>=23，可直接使用Telephony.Sms.Inbox.CONTENT_URI，用于获取 cursor
@@ -65,23 +67,19 @@ class SmsObserver @JvmOverloads constructor(
                 // String address = cursor.getString(cursor.getColumnIndex(Telephony.Sms.ADDRESS));
                 // 读取短息内容
                 val smsBody = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                // 传递出去
-                mHandler.obtainMessage(0, smsBody).sendToTarget()
+                // 读取日期
+                val smsDate = cursor.getLong(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+
+                // 只取两分钟内的短信
+                if (startDate == 0L || (smsDate - startDate) < valueTimeMillis) {
+                    // 传递出去
+                    mHandler.obtainMessage(1, smsBody).sendToTarget()
+                } else {
+                    mHandler.obtainMessage(1, "未获取到短信！").sendToTarget()
+                }
             }
             // 关闭cursor的方法
             cursor.close()
-        }
-    }
-
-    // 主线程中处理
-    class SmsHandler : Handler(Looper.getMainLooper()) {
-        var smsConsumer: Consumer<String>? = null
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            if (msg.what == 0) {
-                val content = msg.obj as String
-                smsConsumer?.accept(content)
-            }
         }
     }
 }

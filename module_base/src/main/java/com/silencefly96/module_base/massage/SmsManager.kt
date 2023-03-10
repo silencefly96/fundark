@@ -12,6 +12,7 @@ import java.util.ArrayList
 @Suppress("unused")
 object SmsManager {
 
+    private var smsHandler: SmsHandler? = null
     private var smsReceiver: SmsReceiver? = null
     private var smsObserver: SmsObserver? = null
 
@@ -33,6 +34,7 @@ object SmsManager {
     )
 
     fun readSms(context: Context, uri: Uri, projection: Array<String>): List<Pair<String, String>> {
+        // TIPS: 考虑使用线程池处理query
         val data = ArrayList<Pair<String, String>>()
         val cr: ContentResolver = context.contentResolver
         val cur: Cursor? = cr.query(uri, projection,
@@ -49,20 +51,27 @@ object SmsManager {
         return data
     }
 
-    fun startListen(context: Context, consumer: Consumer<String>) {
-        // 使用receiver监听
-        if (smsReceiver == null) {
-            smsReceiver = SmsReceiver()
+    fun startListen(context: Context, consumer: Consumer<String>, valueTimeMillis: Long = 2 * 60 * 1000) {
+        // 在smsHandler内统一处理
+        if (smsHandler == null) {
+            smsHandler = SmsHandler()
         }
-        smsReceiver!!.smsConsumer = consumer
+        smsHandler!!.smsConsumer = consumer
+
+        // 使用receiver监听，可以保证准确性，但不一定触发
+        if (smsReceiver == null) {
+            smsReceiver = SmsReceiver(smsHandler!!)
+        }
         SmsReceiver.register(smsReceiver!!, context)
 
-        // 使用media监听
+        // 使用media监听，可以保证触发，但是可能拿不到验证码或者最新短信
         if (smsObserver == null) {
-            smsObserver = SmsObserver()
+            smsObserver = SmsObserver(smsHandler!!)
         }
         smsObserver!!.weakReference = WeakReference(context)
-        smsObserver!!.mHandler.smsConsumer = consumer
+        // 为了防止拿到过期短信，增加对时间间隔的验证，默认监听内两分钟的短信有效
+        smsObserver!!.startDate = System.currentTimeMillis()
+        smsObserver!!.valueTimeMillis = valueTimeMillis
         SmsObserver.register(smsObserver!!, context)
     }
 
@@ -71,12 +80,18 @@ object SmsManager {
         smsReceiver?.let {
             SmsReceiver.unregister(it, context)
         }
-        smsReceiver = null
+        //smsReceiver = null
 
         // 注销media监听
         smsObserver?.let {
             SmsObserver.unregister(it, context)
         }
-        smsObserver = null
+        //smsObserver = null
+
+        // 清空消息
+        smsHandler?.let {
+            it.removeMessages(0)
+            it.removeMessages(1)
+        }
     }
 }

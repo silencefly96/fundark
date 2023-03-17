@@ -2,6 +2,7 @@ package com.silencefly96.module_hardware.camera
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,14 +16,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.util.Consumer
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.IPermissionHelper
 import com.silencefly96.module_hardware.databinding.FragmentTakePhotoBinding
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
+import java.io.*
 
 
 class TakePhotoFragment : BaseFragment() {
@@ -60,17 +59,29 @@ class TakePhotoFragment : BaseFragment() {
         }
 
         binding.pickPhoto.setOnClickListener {
-            requestPermission { openAlbum() }
+            openAlbum()
+        }
+
+        binding.insertPictures.setOnClickListener {
+            insert2Pictures()
+        }
+
+        binding.clearCache.setOnClickListener {
+            clearCachePictures()
+        }
+
+        binding.clearPictures.setOnClickListener {
+            clearAppPictures()
         }
 
         binding.cropSwitch.setOnCheckedChangeListener { _, isChecked -> enableCrop = isChecked}
     }
 
     private fun requestPermission(consumer: Consumer<Boolean>) {
-        // 动态申请权限
+        // 动态申请权限，使用的外部私有目录无需申请权限
         requestRunTimePermission(requireActivity(), arrayOf(
             Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE
         ),
             object : IPermissionHelper.PermissionListener {
                 override fun onGranted() {
@@ -103,11 +114,8 @@ class TakePhotoFragment : BaseFragment() {
 
     private fun createFile(type: String): File {
         // 在相册创建一个临时文件
-        val picFile =
-            File(
-                requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                "${type}_${System.currentTimeMillis()}.jpg"
-            )
+        val picFile = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                "${type}_${System.currentTimeMillis()}.jpg")
         try {
             if (picFile.exists()) {
                 picFile.delete()
@@ -116,6 +124,13 @@ class TakePhotoFragment : BaseFragment() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
+        // 临时文件，后面会加long型随机数
+//        return File.createTempFile(
+//            type,
+//            ".jpg",
+//            requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+//        )
 
         return picFile
     }
@@ -274,6 +289,106 @@ class TakePhotoFragment : BaseFragment() {
         intent.putExtra("return-data", false)
 
         startActivityForResult(intent, REQUEST_CROP_CODE)
+    }
+
+    // 保存到外部储存-公有目录-Picture内，并且无需储存权限
+    private fun insert2Pictures() {
+        binding.image.drawable?.let {
+            val bitmap = it.toBitmap()
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val bais = ByteArrayInputStream(baos.toByteArray())
+            insert2Album(bais, "Media")
+        }
+    }
+
+    // 使用MediaStore方式将流写入相册
+    @Suppress("SameParameterValue")
+    private fun insert2Album(inputStream: InputStream, type: String) {
+        val fileName = "${type}_${System.currentTimeMillis()}.jpg"
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, fileName)
+        // Android 10，路径保存在RELATIVE_PATH
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            //RELATIVE_PATH 字段表示相对路径，Fundark为相册下专有目录
+            contentValues.put(
+                MediaStore.Images.ImageColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_PICTURES + File.separator + "Fundark"
+            )
+        } else {
+            val dstPath = StringBuilder().let { sb->
+                sb.append(requireContext()
+                    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
+                sb.append(File.separator)
+                sb.append("Fundark")
+                sb.append(File.separator)
+                sb.append(fileName)
+                sb.toString()
+            }
+
+            //DATA字段在Android 10.0 之后已经废弃（Android 11又启用了，但是只读）
+            contentValues.put(MediaStore.Images.ImageColumns.DATA, dstPath)
+        }
+
+        // 插入相册
+        val uri =  requireContext().contentResolver
+            .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+        // 写入文件
+        uri?.let {
+            write2File(it, inputStream)
+        }
+    }
+
+    private fun write2File(uri: Uri, inputStream: InputStream) {
+        // 从Uri构造输出流
+        requireContext().contentResolver.openOutputStream(uri)?.use { outputStream->
+            val byteArray = ByteArray(1024)
+            var len: Int
+            do {
+                //从输入流里读取数据
+                len = inputStream.read(byteArray)
+                if (len != -1) {
+                    outputStream.write(byteArray, 0, len)
+                    outputStream.flush()
+                }
+            } while (len != -1)
+        }
+    }
+
+    private fun clearCachePictures() {
+        // 外部储存-私有目录-files-Pictures目录
+        requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.let { dir->
+            // 删除其中的图片
+            val pics = dir.listFiles()
+            pics?.forEach { pic ->
+                pic.delete()
+            }
+        }
+    }
+
+    private fun clearAppPictures() {
+        val selection: String
+        val selectionArgs: String
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            selection = "where ${MediaStore.Images.ImageColumns.RELATIVE_PATH} like ?"
+            selectionArgs = "%" + Environment.DIRECTORY_PICTURES + File.separator + "Fundark" + "%"
+        } else {
+            val dstPath = StringBuilder().let { sb->
+                sb.append(requireContext()
+                    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
+                sb.append(File.separator)
+                sb.append("Fundark")
+                sb.toString()
+            }
+            selection = "where ${MediaStore.Images.ImageColumns.DATA} like ?"
+            selectionArgs = "%$dstPath%"
+        }
+        requireContext().contentResolver.delete(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            selection,
+            arrayOf(selectionArgs)
+        )
     }
 
     override fun onDestroyView() {

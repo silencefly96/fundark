@@ -1,5 +1,8 @@
 package com.silencefly96.module_base.net.funnet
 
+import com.silencefly96.module_base.net.funnet.interceptor.Interceptor
+import java.util.ArrayList
+
 
 /**
  * FunNet网络请求框架:
@@ -18,7 +21,19 @@ package com.silencefly96.module_base.net.funnet
  */
 class FunNetClient {
 
+    // 线程调度器
+    val dispatcher = Dispatcher()
+
+    // 拦截器
+    val interceptors: MutableList<Interceptor> = ArrayList()
+
+    val cookieJar: CookieJar = CookieJar()
+    var cache: Cache? = null
+
     fun newCall(request: Request): Call {
         return RealCall.newRealCall(FunNetClient(), Request(""))
     }
 }
+
+class CookieJar()
+class Cache()

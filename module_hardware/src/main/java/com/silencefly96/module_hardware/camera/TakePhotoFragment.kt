@@ -299,6 +299,7 @@ class TakePhotoFragment : BaseFragment() {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val bais = ByteArrayInputStream(baos.toByteArray())
             insert2Album(bais, "Media")
+            showToast("导出到相册成功")
         }
     }
 
@@ -360,9 +361,15 @@ class TakePhotoFragment : BaseFragment() {
         // 外部储存-私有目录-files-Pictures目录
         requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.let { dir->
             // 删除其中的图片
-            val pics = dir.listFiles()
-            pics?.forEach { pic ->
-                pic.delete()
+            try {
+                val pics = dir.listFiles()
+                pics?.forEach { pic ->
+                    pic.delete()
+                }
+                showToast("清除缓存成功")
+            }catch (e: Exception) {
+                e.printStackTrace()
+                showToast("清除缓存失败")
             }
         }
     }
@@ -371,7 +378,7 @@ class TakePhotoFragment : BaseFragment() {
         val selection: String
         val selectionArgs: String
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            selection = "where ${MediaStore.Images.ImageColumns.RELATIVE_PATH} like ?"
+            selection = "${MediaStore.Images.ImageColumns.RELATIVE_PATH} like ?"
             selectionArgs = "%" + Environment.DIRECTORY_PICTURES + File.separator + "Fundark" + "%"
         } else {
             val dstPath = StringBuilder().let { sb->
@@ -381,14 +388,16 @@ class TakePhotoFragment : BaseFragment() {
                 sb.append("Fundark")
                 sb.toString()
             }
-            selection = "where ${MediaStore.Images.ImageColumns.DATA} like ?"
+            selection = "${MediaStore.Images.ImageColumns.DATA} like ?"
             selectionArgs = "%$dstPath%"
         }
-        requireContext().contentResolver.delete(
+        val num = requireContext().contentResolver.delete(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             selection,
             arrayOf(selectionArgs)
         )
+
+        showToast("删除本应用相册图片${num}张")
     }
 
     override fun onDestroyView() {

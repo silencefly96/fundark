@@ -100,7 +100,7 @@ class TakePhotoFragment : BaseFragment() {
 
     private fun openCamera() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        // 相册目录：Pictures，不能使用应用私有目录
+        // 应用外部私有目录：files-Pictures
         val picFile = createFile("Camera")
         val photoUri = getUriForFile(picFile)
         // 保存路径，不要uri，读取bitmap时麻烦

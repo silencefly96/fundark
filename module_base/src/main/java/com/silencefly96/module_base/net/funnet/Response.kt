@@ -1,7 +1,5 @@
 package com.silencefly96.module_base.net.funnet
 
-import okhttp3.Call
-import okhttp3.Response
 import java.io.IOException
 
 /**

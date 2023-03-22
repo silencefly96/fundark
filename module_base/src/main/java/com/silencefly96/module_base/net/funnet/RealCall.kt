@@ -2,9 +2,10 @@ package com.silencefly96.module_base.net.funnet
 
 import com.silencefly96.module_base.net.funnet.interceptor.*
 import java.io.IOException
-import java.util.ArrayList
+import java.io.InterruptedIOException
+import java.util.*
 import java.util.concurrent.ExecutorService
-import kotlin.jvm.Throws
+import java.util.concurrent.RejectedExecutionException
 
 class RealCall(
     val client: FunNetClient,
@@ -14,7 +15,7 @@ class RealCall(
     companion object {
         fun newRealCall(client: FunNetClient, request: Request): Call {
             val realCall = RealCall(client, request)
-            realCall.retryInterceptor = RetryAndFollowUpInterceptor()
+            realCall.retryAndFollowUpInterceptor = RetryAndFollowUpInterceptor()
             return realCall
         }
     }
@@ -23,7 +24,7 @@ class RealCall(
     private var executed = false
 
     // 重试拦截器
-    private lateinit var retryInterceptor: RetryAndFollowUpInterceptor
+    private lateinit var retryAndFollowUpInterceptor: RetryAndFollowUpInterceptor
 
     override fun enqueue(callback: Callback) {
         synchronized(this) {
@@ -44,7 +45,7 @@ class RealCall(
             // 只是向队列添加call
             client.dispatcher.executed(this)
             // 由拦截器责任链获得结果
-            val result = getResponseWithInterceptorChain() ?: throw IOException("Canceled")
+            val result = getResponseWithInterceptorChain()
             client.dispatcher.finished(this)
             return result
         } catch (e: IOException) {
@@ -55,21 +56,52 @@ class RealCall(
     }
 
     override fun cancel() {
-
+        retryAndFollowUpInterceptor.cancel()
     }
 
     /**
-     *
+     * 异步执行的 runnable
      */
     inner class AsyncCall(val responseCallback: Callback): Runnable{
         override fun run() { execute() }
 
         fun executeOn(executorService: ExecutorService) {
-
+            var success = false
+            try {
+                // 使用线程池执行，通过run进入到execute()方法
+                executorService.execute(this)
+                success = true
+            } catch (e: RejectedExecutionException) {
+                val ioException = InterruptedIOException("executor rejected")
+                ioException.initCause(e)
+                responseCallback.onFailure(this@RealCall, ioException)
+            } finally {
+                if (!success) {
+                    client.dispatcher.finished(this) // This call is no longer running!
+                }
+            }
         }
 
         fun execute() {
-
+            // 验证下是否被取消
+            var signalledCallback = false
+            try {
+                val response: Response = getResponseWithInterceptorChain()
+                if (retryAndFollowUpInterceptor.isCanceled) {
+                    signalledCallback = true
+                    responseCallback.onFailure(this@RealCall, IOException("Canceled"))
+                } else {
+                    signalledCallback = true
+                    responseCallback.onResponse(this@RealCall, response)
+                }
+            } catch (e: IOException) {
+                // Do not signal the callback twice!
+                if (!signalledCallback) {
+                    responseCallback.onFailure(this@RealCall, e)
+                }
+            } finally {
+                client.dispatcher.finished(this)
+            }
         }
     }
 
@@ -81,7 +113,7 @@ class RealCall(
         // Build a full stack of interceptors.
         val interceptors: MutableList<Interceptor> = ArrayList()
         interceptors.addAll(client.interceptors)
-        interceptors.add(retryInterceptor)
+        interceptors.add(retryAndFollowUpInterceptor)
         interceptors.add(BridgeInterceptor(client.cookieJar))
         interceptors.add(CacheInterceptor(client.cache))
         interceptors.add(ConnectInterceptor(client))

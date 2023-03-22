@@ -1,14 +1,11 @@
 package com.silencefly96.module_base.net.funnet
 
-import okhttp3.internal.Util
-import java.lang.AssertionError
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class Dispatcher {
+    // 线程池空闲时处理线程
+    private val idleCallback: Runnable? = null
 
     // 线程池，懒汉式创建
     private var executorService: ExecutorService? = null
@@ -26,7 +23,8 @@ class Dispatcher {
      * 同步请求
      */
     fun enqueue(call: RealCall.AsyncCall) {
-
+        synchronized(this) { readyAsyncCalls.add(call) }
+        promoteAndExecute()
     }
 
     /**
@@ -45,20 +43,57 @@ class Dispatcher {
         if (executorService == null) {
             executorService = ThreadPoolExecutor(
                 0, Int.MAX_VALUE, 60, TimeUnit.SECONDS,
-                SynchronousQueue(), Util.threadFactory("OkHttp Dispatcher", false)
+                SynchronousQueue(), threadFactory("OkHttp Dispatcher", false)
             )
         }
         return executorService!!
     }
 
+    // 线程工厂，用于创建线程
+    fun threadFactory(name: String, daemon: Boolean): ThreadFactory {
+        return ThreadFactory { runnable ->
+            val result = Thread(runnable, name)
+            result.isDaemon = daemon
+            result
+        }
+    }
+
     // 执行代码位置
     private fun promoteAndExecute(): Boolean {
+        // 下面代码需要用到锁，确保对象锁不在其他地方使用
+        assert(!Thread.holdsLock(this))
 
-        return false
+        // 从ready列表中拿出call存到执行列表
+        val executableCalls: MutableList<RealCall.AsyncCall> = ArrayList()
+        var isRunning: Boolean
+        synchronized(this) {
+            val iterator = readyAsyncCalls.iterator()
+            while (iterator.hasNext()) {
+                val asyncCall = iterator.next()
+                iterator.remove()
+                executableCalls.add(asyncCall)
+                runningAsyncCalls.add(asyncCall)
+            }
+            isRunning = runningCallsCount() > 0
+        }
+
+        // 调度执行
+        for (asyncCall in executableCalls) {
+            asyncCall.executeOn(executorService())
+        }
+
+        return isRunning
     }
 
     /**
-     * 停止请求
+     * 停止异步请求
+     */
+    fun finished(call: RealCall.AsyncCall) {
+        finished(runningAsyncCalls, call)
+    }
+
+    /**
+     * 停止同步请求
      */
     fun finished(call: RealCall) {
         finished(runningSyncCalls, call)
@@ -66,9 +101,21 @@ class Dispatcher {
 
     // 停止异步队列内的某个call
     private fun <T> finished(calls: Deque<T>, call: T) {
+        var idleCallback: Runnable?
         synchronized(this) {
             if (!calls.remove(call)) throw AssertionError("Call wasn't in-flight!")
+            idleCallback = this.idleCallback
         }
-        promoteAndExecute()
+        val isRunning = promoteAndExecute()
+
+        // 执行空闲时线程
+        if (!isRunning && idleCallback != null) {
+            idleCallback!!.run()
+        }
+    }
+
+    @Synchronized
+    fun runningCallsCount(): Int {
+        return runningAsyncCalls.size + runningSyncCalls.size
     }
 }

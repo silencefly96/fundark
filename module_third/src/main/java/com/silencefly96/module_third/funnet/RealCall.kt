@@ -1,6 +1,6 @@
-package com.silencefly96.module_base.net.funnet
+package com.silencefly96.module_third.funnet
 
-import com.silencefly96.module_base.net.funnet.interceptor.*
+import com.silencefly96.module_third.funnet.interceptor.*
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.util.*
@@ -15,7 +15,7 @@ class RealCall(
     companion object {
         fun newRealCall(client: FunNetClient, request: Request): Call {
             val realCall = RealCall(client, request)
-            realCall.retryAndFollowUpInterceptor = RetryAndFollowUpInterceptor()
+            realCall.retryAndFollowUpInterceptor = RetryAndFollowUpInterceptor(client)
             return realCall
         }
     }
@@ -112,14 +112,17 @@ class RealCall(
     fun getResponseWithInterceptorChain(): Response{
         // Build a full stack of interceptors.
         val interceptors: MutableList<Interceptor> = ArrayList()
+        // 自定义的拦截器
         interceptors.addAll(client.interceptors)
+        // 重试拦截器
         interceptors.add(retryAndFollowUpInterceptor)
         interceptors.add(BridgeInterceptor(client.cookieJar))
         interceptors.add(CacheInterceptor(client.cache))
         interceptors.add(ConnectInterceptor(client))
 
-        val chain: Interceptor.Chain = RealInterceptorChain()
-
+        // 实际上是通过RealInterceptorChain处理各个拦截器的，index为interceptors内的位置
+        val chain = RealInterceptorChain(interceptors, null, null,
+            null,0, originalRequest, this)
         return chain.proceed(originalRequest)
     }
 }

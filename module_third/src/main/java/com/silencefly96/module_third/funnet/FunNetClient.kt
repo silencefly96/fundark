@@ -1,6 +1,6 @@
-package com.silencefly96.module_base.net.funnet
+package com.silencefly96.module_third.funnet
 
-import com.silencefly96.module_base.net.funnet.interceptor.Interceptor
+import com.silencefly96.module_third.funnet.interceptor.Interceptor
 import java.util.ArrayList
 
 

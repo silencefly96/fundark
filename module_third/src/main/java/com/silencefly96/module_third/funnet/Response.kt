@@ -1,4 +1,4 @@
-package com.silencefly96.module_base.net.funnet
+package com.silencefly96.module_third.funnet
 
 import java.io.IOException
 
@@ -11,11 +11,13 @@ import java.io.IOException
  * @param body 返回数据
  */
 data class Response(
-    var code: Int,
-    var message: String,
-    var header: List<String>,
-    var body: String
-)
+    var code: Int = -1,
+    var message: String = "",
+    var header: List<String> = ArrayList(),
+    var body: String = ""
+){
+    var priorResponse: Response? = null
+}
 
 interface Callback {
     fun onFailure(call: Call, e: IOException)

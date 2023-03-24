@@ -1,4 +1,4 @@
-package com.silencefly96.module_base.net.funnet
+package com.silencefly96.module_third.funnet
 
 import java.util.*
 import java.util.concurrent.*

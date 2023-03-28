@@ -24,14 +24,16 @@ class FunNetClient {
     // 线程调度器
     val dispatcher = Dispatcher()
 
-    // 拦截器
+    // 自定义拦截器，最先执行
     val interceptors: MutableList<Interceptor> = ArrayList()
+    // 自定义网络拦截器，连接前执行
+    val networkInterceptors: MutableList<Interceptor> = ArrayList()
 
     val cookieJar: CookieJar = CookieJar()
     var cache: Cache? = null
 
     fun newCall(request: Request): Call {
-        return RealCall.newRealCall(FunNetClient(), Request(""))
+        return RealCall.newRealCall(FunNetClient(),request)
     }
 }
 

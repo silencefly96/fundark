@@ -1,6 +1,7 @@
 package com.silencefly96.module_third.funnet
 
 import com.silencefly96.module_third.funnet.interceptor.*
+import okhttp3.internal.http.CallServerInterceptor
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.util.*
@@ -119,6 +120,10 @@ class RealCall(
         interceptors.add(BridgeInterceptor(client.cookieJar))
         interceptors.add(CacheInterceptor(client.cache))
         interceptors.add(ConnectInterceptor(client))
+        // 自定义网络拦截器
+        interceptors.addAll(client.networkInterceptors)
+        // 实际发起请求的拦截器
+        interceptors.add(CallServerInterceptor())
 
         // 实际上是通过RealInterceptorChain处理各个拦截器的，index为interceptors内的位置
         val chain = RealInterceptorChain(interceptors, null, null,

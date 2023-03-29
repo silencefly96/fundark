@@ -18,6 +18,10 @@
         <action android:id="@+id/action_main_to_take_photo"
             app:destination="@id/takePhotoFragment">
         </action>
+
+        <action android:id="@+id/action_main_to_usb"
+            app:destination="@id/usbFragment">
+        </action>
     </fragment>
 
     <fragment
@@ -53,4 +57,10 @@
         android:name="com.silencefly96.module_hardware.camera.TakePhotoFragment"
         android:label="@string/take_photo_fragment"
         tools:layout="@layout/fragment_take_photo" />
+
+    <fragment
+        android:id="@+id/usbFragment"
+        android:name="com.silencefly96.module_hardware.usb.UsbFragment"
+        android:label="@string/usb_fragment"
+        tools:layout="@layout/fragment_usb" />
 </navigation>

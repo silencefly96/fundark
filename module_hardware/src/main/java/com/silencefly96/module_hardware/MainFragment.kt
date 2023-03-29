@@ -26,6 +26,9 @@ class MainFragment: BaseFragment() {
         add(Item(2, "Camera: TakePhotoFragment",
             "相机拍照"))
 
+        add(Item(3, "Usb: UsbFragment",
+            "U盘读取"))
+
 
     }
 
@@ -54,6 +57,7 @@ class MainFragment: BaseFragment() {
                 view?.findNavController()?.navigate(when(itemObj.index) {
                     1 -> R.id.action_main_to_bluetooth
                     2 -> R.id.action_main_to_take_photo
+                    3 -> R.id.action_main_to_usb
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

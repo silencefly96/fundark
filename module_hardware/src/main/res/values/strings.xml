@@ -25,4 +25,7 @@
     <string name="clear_this_pictures">清除应用图片</string>
     <string name="main_fragment">首页</string>
     <string name="take_photo_fragment">拍照</string>
+
+    <!--  USB模块  -->
+    <string name="usb_fragment">USB</string>
 </resources>

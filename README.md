@@ -14,15 +14,21 @@
 │   │   ├── custom                  #自定义view
 │   │   ├── game                    #自定义view做的游戏
 │   ├── module_hardware         #硬件功能
-│   │   ├── bluetooth               #TODO 蓝牙
+│   │   ├── bluetooth               #蓝牙
 │   │   ├── socket                  #TODO socket本地网络
-│   │   ├── camera                  #TODO 相机
+│   │   ├── camera                  #相机
 │   │   ├── nfc                     #TODO NFC
 │   │   ├── sensor                  #TODO 传感器
 │   │   ├── usb                     #TODO U盘
 │   │   ├── power                   #TODO 电源管理
 │   │   ├── face                    #TODO 人脸识别
 │   ├── module_media            #TODO 多媒体
-│   ├── module_map              #TODO 地图功能
-│   ├── module_aidl             #TODO 多进程
+│   ├── module_third            #第三方库源码解析
+│   │   ├── arouter                 #TODO 人脸识别
+│   │   ├── funnet                  #okhttp3解析
+│   │   ├── face                    #TODO 人脸识别
+│   │   ├── face                    #TODO 人脸识别
+│   │   ├── face                    #TODO 人脸识别
+│   ├── module_tech             #TODO 前言技术
+│   │   ├── asm                     #TODO ASM插桩
 ```

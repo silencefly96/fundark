@@ -44,7 +44,7 @@ class CallServerInterceptor: Interceptor {
 //                responseBuilder = httpCodec.readResponseHeaders(true)
 //            }
 
-              // 100-continue时，向服务器发送 requestBody
+              // 一般情况、100-continue时，向服务器发送 requestBody
 //            if (responseBuilder == null) {
 //                // Write the request body if the "Expect: 100-continue" expectation was met.
 //                realChain.eventListener().requestBodyStart(realChain.call())
@@ -56,6 +56,8 @@ class CallServerInterceptor: Interceptor {
 //                    )
 //                )
 //                val bufferedRequestBody = Okio.buffer(requestBodyOut)
+
+//                //
 //                request.body()!!.writeTo(bufferedRequestBody)
 //                bufferedRequestBody.close()
 //                realChain.eventListener()
@@ -68,12 +70,15 @@ class CallServerInterceptor: Interceptor {
 //            }
 //        }
 //
+
+        // 第二步，发起实际请求，将请求全部写入到httpCodec输出流(内部封装socket)
 //        httpCodec.finishRequest()
 
 
-        // 第二步，发起实际请求，通过streamAllocation实现
+        // 第三步，对response进行处理，从httpCodec输入流读取
 //        if (responseBuilder == null) {
 //            realChain.eventListener().responseHeadersStart(realChain.call())
+              // 读取回复得状态信息创建responseBuilder
 //            responseBuilder = httpCodec.readResponseHeaders(false)
 //        }
 //
@@ -84,12 +89,13 @@ class CallServerInterceptor: Interceptor {
 //            .receivedResponseAtMillis(System.currentTimeMillis())
 //            .build()
 
-        // 第三步，对response进行处理
         // 对http 100-continue结果处理，再读取一次
 //        var code = response.code()
 //        if (code == 100) {
 //            // server sent a 100-continue even though we did not request one.
 //            // try again to read the actual response
+
+//            // 紧接着再读取一次回复的header
 //            responseBuilder = httpCodec.readResponseHeaders(false)
 //            response = responseBuilder
 //                .request(request)
@@ -104,13 +110,15 @@ class CallServerInterceptor: Interceptor {
 //            .responseHeadersEnd(realChain.call(), response)
 //
 
-        // 通过httpCodec处理response的body
+        // 通过httpCodec处理response的body: openResponseBody(response)
 //        response = if (forWebSocket && code == 101) {
 //            // Connection is upgrading, but we need to ensure interceptors see a non-null response body.
 //            response.newBuilder()
 //                .body(Util.EMPTY_RESPONSE)
 //                .build()
 //        } else {
+
+//            // httpCodec.openResponseBody(response)是获取一个响应体，前面header是响应头
 //            response.newBuilder()
 //                .body(httpCodec.openResponseBody(response))
 //                .build()
@@ -129,7 +137,8 @@ class CallServerInterceptor: Interceptor {
 //            )
 //        }
 
-
+        // 实际得到的Response，读取了headers并处理且存储了，而ResponseBody封装了source，
+        // 需要在OkHttpCall中parseResponse，将rawBody处理
         return Response()
     }
 }

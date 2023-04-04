@@ -3,18 +3,16 @@ package com.silencefly96.module_third.funnet.interceptor
 import com.silencefly96.module_third.funnet.Call
 import com.silencefly96.module_third.funnet.Request
 import com.silencefly96.module_third.funnet.Response
-import com.silencefly96.module_third.funnet.connection.HttpCodec
-import com.silencefly96.module_third.funnet.connection.RealConnection
-import com.silencefly96.module_third.funnet.connection.StreamAllocation
+import com.silencefly96.module_third.funnet.connection.Http1Codec1
+import com.silencefly96.module_third.funnet.connection.RealConnection1
+import com.silencefly96.module_third.funnet.connection.StreamAllocation1
 import java.io.IOException
-import java.lang.AssertionError
-import kotlin.jvm.Throws
 
 class RealInterceptorChain(
     val interceptors: List<Interceptor>,
-    val streamAllocation: StreamAllocation?,
-    val httpCodec: HttpCodec?,
-    val connection: RealConnection?,
+    val streamAllocation1: StreamAllocation1?,
+    val httpCodec: Http1Codec1?,
+    val connection1: RealConnection1?,
     val index: Int,
     val request: Request,
     val call: Call
@@ -26,8 +24,8 @@ class RealInterceptorChain(
     }
 
     @Throws(IOException::class)
-    fun proceed(request: Request, streamAllocation: StreamAllocation?, httpCodec: HttpCodec?,
-                connection: RealConnection?): Response {
+    fun proceed(request: Request, streamAllocation1: StreamAllocation1?, httpCodec: Http1Codec1?,
+                connection1: RealConnection1?): Response {
         // AssertionError放这里好吗？为什么不用assert
         if (index >= interceptors.size) throw AssertionError()
 

@@ -28,7 +28,7 @@ class CacheInterceptor(val cache: Cache?): Interceptor {
 //            Util.closeQuietly(cacheCandidate.body()) // The cache candidate wasn't applicable. Close it.
 //        }
 
-        // 没有网络请求，同时没有缓存，无法访问504
+        // 不需要网络请求，同时没有缓存，无法访问504
         // If we're forbidden from using the network and the cache is insufficient, fail.
 //        if (networkRequest == null && cacheResponse == null) {
 //            return Response.Builder()
@@ -62,7 +62,7 @@ class CacheInterceptor(val cache: Cache?): Interceptor {
 //            }
 //        }
 
-        // 获取网络回复后，还有本地缓存的回复，根据条件处理(未修改: 更新header、缓存)
+        // 获取网络回复后，还有本地缓存的response，根据条件处理(未修改: 更新header、缓存)
         // If we have a cache response too, then we're doing a conditional get.
 //        if (cacheResponse != null) {
 //            if (networkResponse.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {

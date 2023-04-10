@@ -246,8 +246,13 @@ class DrawableView : View, IDrawableView {
             false -> mBitmap
         }
 
+        // 获取图片格式
+        val type = when {
+                path.endsWith("png") -> Bitmap.CompressFormat.PNG
+                path.endsWith("jpg") -> Bitmap.CompressFormat.JPEG
+                else -> Bitmap.CompressFormat.PNG }
         val bos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos)
+        bitmap.compress(type, 100, bos)
         val buffer: ByteArray = bos.toByteArray()
         val file = File(path)
         if (file.exists()) {

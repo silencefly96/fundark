@@ -128,29 +128,37 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
                         EventListener eventListener) {
         if (protocol != null) throw new IllegalStateException("already connected");
 
+        // 第一步，验证route参数
         RouteException routeException = null;
         List<ConnectionSpec> connectionSpecs = route.address().connectionSpecs();
         ConnectionSpecSelector connectionSpecSelector = new ConnectionSpecSelector(connectionSpecs);
 
+        // sslSocketFactory: null 的时候不是 HTTPS address
         if (route.address().sslSocketFactory() == null) {
+            // CLEARTEXT: 不加密、不认证的http url
             if (!connectionSpecs.contains(ConnectionSpec.CLEARTEXT)) {
                 throw new RouteException(new UnknownServiceException(
                         "CLEARTEXT communication not enabled for client"));
             }
             String host = route.address().url().host();
+            // 是否允许CLEARTEXT
             if (!Platform.get().isCleartextTrafficPermitted(host)) {
                 throw new RouteException(new UnknownServiceException(
                         "CLEARTEXT communication to " + host + " not permitted by network security policy"));
             }
         } else {
+            // HTTPS链接：CLEARTEXT需要H2_PRIOR_KNOWLEDGE，但HTTPS不需要这个
             if (route.address().protocols().contains(Protocol.H2_PRIOR_KNOWLEDGE)) {
                 throw new RouteException(new UnknownServiceException(
                         "H2_PRIOR_KNOWLEDGE cannot be used with HTTPS"));
             }
         }
 
+        // 第二步，在循环中进行连接
         while (true) {
             try {
+                // 是否需要隧道: Returns true if this route tunnels HTTPS through an HTTP proxy
+                // 如果此路由通过 HTTP 代理隧道传输 HTTPS，则返回 true
                 if (route.requiresTunnel()) {
                     connectTunnel(connectTimeout, readTimeout, writeTimeout, call, eventListener);
                     if (rawSocket == null) {
@@ -158,8 +166,10 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
                         break;
                     }
                 } else {
+                    // 根据route信息创建socket连接，获得输入输出流
                     connectSocket(connectTimeout, readTimeout, call, eventListener);
                 }
+                // 根据协议进行连接，HTTP直接返回，HTTPS使用http2Connection去处理，完全HTTPS还有Tls
                 establishProtocol(connectionSpecSelector, pingIntervalMillis, call, eventListener);
                 eventListener.connectEnd(call, route.socketAddress(), route.proxy(), protocol);
                 break;
@@ -207,12 +217,17 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
      */
     private void connectTunnel(int connectTimeout, int readTimeout, int writeTimeout, Call call,
                                EventListener eventListener) throws IOException {
+        // 创建一个request
         Request tunnelRequest = createTunnelRequest();
         HttpUrl url = tunnelRequest.url();
+        // 是做MAX_TUNNEL_ATTEMPTS次尝试创建Tunnel吗？
         for (int i = 0; i < MAX_TUNNEL_ATTEMPTS; i++) {
+            // 根据route信息创建socket连接，获得输入输出流
             connectSocket(connectTimeout, readTimeout, call, eventListener);
+            // 通过HTTP代理创建HTTPS连接，发送一次请求，正常情况返回null
             tunnelRequest = createTunnel(readTimeout, writeTimeout, tunnelRequest, url);
 
+            // 正常情况(HTTP_OK)返回null
             if (tunnelRequest == null) break; // Tunnel successfully created.
 
             // The proxy decided to close the connection after an auth challenge. We need to create a new
@@ -238,6 +253,7 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
         eventListener.connectStart(call, route.socketAddress(), proxy);
         rawSocket.setSoTimeout(readTimeout);
         try {
+            // 调用socket的connect
             Platform.get().connectSocket(rawSocket, route.socketAddress(), connectTimeout);
         } catch (ConnectException e) {
             ConnectException ce = new ConnectException("Failed to connect to " + route.socketAddress());
@@ -250,6 +266,7 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
         // https://github.com/square/okhttp/issues/3245
         // https://android-review.googlesource.com/#/c/271775/
         try {
+            // 获得原始socket的输入输出流
             source = Okio.buffer(Okio.source(rawSocket));
             sink = Okio.buffer(Okio.sink(rawSocket));
         } catch (NullPointerException npe) {
@@ -261,32 +278,41 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
 
     private void establishProtocol(ConnectionSpecSelector connectionSpecSelector,
                                    int pingIntervalMillis, Call call, EventListener eventListener) throws IOException {
+        // 为null的时候为HTTP连接
         if (route.address().sslSocketFactory() == null) {
+            // 通过HTTP运行的HTTPS
             if (route.address().protocols().contains(Protocol.H2_PRIOR_KNOWLEDGE)) {
                 socket = rawSocket;
                 protocol = Protocol.H2_PRIOR_KNOWLEDGE;
+                // 上面设置好socket、协议，用http2Connection去处理
                 startHttp2(pingIntervalMillis);
                 return;
             }
 
+            // HTTP协议使用rawSocket就可以了，并且到这就连接结束了
             socket = rawSocket;
             protocol = Protocol.HTTP_1_1;
             return;
         }
 
         eventListener.secureConnectStart(call);
+        // 进行TLS连接，sslSocket会代替原始socket，输入输出流会更新
+        // HTTPS是运行在SSL\TLS协议之上的，HTTP2使用了SSL\TLS协议，实际就是HTTPS
         connectTls(connectionSpecSelector);
         eventListener.secureConnectEnd(call, handshake);
 
         if (protocol == Protocol.HTTP_2) {
+            // 使用Http2Connection进行处理
             startHttp2(pingIntervalMillis);
         }
     }
 
     private void startHttp2(int pingIntervalMillis) throws IOException {
+        // HTTP/2 连接超时是按流设置的，指后面再设置吗？
         socket.setSoTimeout(0); // HTTP/2 connection timeouts are set per-stream.
         http2Connection = new Http2Connection.Builder(true)
                 .socket(socket, route.address().url().host(), source, sink)
+                // onStream和onSetting两个方法
                 .listener(this)
                 .pingIntervalMillis(pingIntervalMillis)
                 .build();
@@ -294,15 +320,19 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
     }
 
     private void connectTls(ConnectionSpecSelector connectionSpecSelector) throws IOException {
+        // Address在RetryAndFollowUpInterceptor中创建
+        // 创建Address的时候如果是HTTPS，传入了okhttpClient的sslSocketFactory、hostnameVerifier、certificatePinner
         Address address = route.address();
         SSLSocketFactory sslSocketFactory = address.sslSocketFactory();
         boolean success = false;
         SSLSocket sslSocket = null;
         try {
+            // 封装原始socket，TLS是ssl的升级版，端口号443，运行在TCP/IP协议之上
             // Create the wrapper over the connected socket.
             sslSocket = (SSLSocket) sslSocketFactory.createSocket(
                     rawSocket, address.url().host(), address.url().port(), true /* autoClose */);
 
+            // 设置TLS的密码、版本、扩展等，并会返回参数信息
             // Configure the socket's ciphers, TLS versions, and extensions.
             ConnectionSpec connectionSpec = connectionSpecSelector.configureSecureSocket(sslSocket);
             if (connectionSpec.supportsTlsExtensions()) {
@@ -314,8 +344,10 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
             sslSocket.startHandshake();
             // block for session establishment
             SSLSession sslSocketSession = sslSocket.getSession();
+            // 保存了local和server的证书，tls版本，加密套件(密钥交换算法、身份验证算法 、对称加密算法和信息摘要算法)
             Handshake unverifiedHandshake = Handshake.get(sslSocketSession);
 
+            // 对获取到的TLS证书进行验证：IP或域名
             // Verify that the socket's certificates are acceptable for the target host.
             if (!address.hostnameVerifier().verify(address.url().host(), sslSocketSession)) {
                 X509Certificate cert = (X509Certificate) unverifiedHandshake.peerCertificates().get(0);
@@ -325,17 +357,23 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
                         + "\n    subjectAltNames: " + OkHostnameVerifier.allSubjectAltNames(cert));
             }
 
+            // 通过CertificatePinner约束哪些证书是可信的(没看懂。。)，应该是在okhttpClient创建时传入的
             // Check that the certificate pinner is satisfied by the certificates presented.
             address.certificatePinner().check(address.url().host(),
                     unverifiedHandshake.peerCertificates());
 
+            // 支持TLS扩展，所以协议不一样？
             // Success! Save the handshake and the ALPN protocol.
             String maybeProtocol = connectionSpec.supportsTlsExtensions()
                     ? Platform.get().getSelectedProtocol(sslSocket)
                     : null;
+
+            // 更新socket以及输入输出流
             socket = sslSocket;
             source = Okio.buffer(Okio.source(socket));
             sink = Okio.buffer(Okio.sink(socket));
+
+            // 保存相关信息
             handshake = unverifiedHandshake;
             protocol = maybeProtocol != null
                     ? Protocol.get(maybeProtocol)
@@ -346,6 +384,7 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
             throw e;
         } finally {
             if (sslSocket != null) {
+                // 关闭因为设置 configureTlsExtensions 时申请的资源
                 Platform.get().afterHandshake(sslSocket);
             }
             if (!success) {
@@ -363,20 +402,28 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
         // Make an SSL Tunnel on the first message pair of each SSL + proxy connection.
         String requestLine = "CONNECT " + Util.hostHeader(url, true) + " HTTP/1.1";
         while (true) {
+            // Http1Codec用来操作socket输入输出流，createTunnel前面已经connectSocket了
+            // 关键是Http1Codec吗？所以用的是Http，SSL放在Header内吗？
             Http1Codec tunnelConnection = new Http1Codec(null, null, source, sink);
             source.timeout().timeout(readTimeout, MILLISECONDS);
             sink.timeout().timeout(writeTimeout, MILLISECONDS);
+
+            // 向输出流写入header，finishRequest发送
             tunnelConnection.writeRequest(tunnelRequest.headers(), requestLine);
             tunnelConnection.finishRequest();
+
+            // 读取返回流的header
             Response response = tunnelConnection.readResponseHeaders(false)
                     .request(tunnelRequest)
                     .build();
+
             // The response body from a CONNECT should be empty, but if it is not then we should consume
             // it before proceeding.
             long contentLength = HttpHeaders.contentLength(response);
             if (contentLength == -1L) {
                 contentLength = 0L;
             }
+            // 这里要求response body为empty，如果不是就跳过内容(到达exhausted)，或者deadline到达
             Source body = tunnelConnection.newFixedLengthSource(contentLength);
             Util.skipAll(body, Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
             body.close();
@@ -393,9 +440,11 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
                     return null;
 
                 case HTTP_PROXY_AUTH:
+                    // 代理需要认证认证，修改tunnelRequest进入下一个循环
                     tunnelRequest = route.address().proxyAuthenticator().authenticate(route, response);
                     if (tunnelRequest == null) throw new IOException("Failed to authenticate with proxy");
 
+                    // response告知连接结束，直接返回tunnelRequest,上一步中会做关闭流等操作
                     if ("close".equalsIgnoreCase(response.header("Connection"))) {
                         return tunnelRequest;
                     }
@@ -418,6 +467,7 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
      * decline to do so by returning null, in which case OkHttp will use it as-is
      */
     private Request createTunnelRequest() throws IOException {
+        // 对代理服务器的request(TLS tunnel)，request是未加密的，不要发敏感数据(cookies)
         Request proxyConnectRequest = new Request.Builder()
                 .url(route.address().url())
                 .method("CONNECT", null)
@@ -426,6 +476,7 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
                 .header("User-Agent", Version.userAgent())
                 .build();
 
+        // 为了支持先发的认证(preemptive authentication)，创建一个假的“Auth Failed” response给authenticator
         Response fakeAuthChallengeResponse = new Response.Builder()
                 .request(proxyConnectRequest)
                 .protocol(Protocol.HTTP_1_1)
@@ -437,6 +488,7 @@ public final class RealConnection1 extends Http2Connection.Listener implements C
                 .header("Proxy-Authenticate", "OkHttp-Preemptive")
                 .build();
 
+        // authenticatedRequest=null 则不需要先发的认证
         Request authenticatedRequest = route.address().proxyAuthenticator()
                 .authenticate(route, fakeAuthChallengeResponse);
 

@@ -1,5 +1,6 @@
 package com.silencefly96.fundark
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.silencefly96.fundark.databinding.ActivityMainBinding
@@ -16,7 +17,8 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //startActivity(PlanActivity::class.java)
+        startActivity(Intent(this, TestActivityA::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
     }
 }

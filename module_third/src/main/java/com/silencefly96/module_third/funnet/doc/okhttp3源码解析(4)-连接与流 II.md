@@ -650,6 +650,46 @@ writer = new Http2Writer(builder.sink, client);
     return stream.getSink();
   }
 ```
+写到这还有一个疑问，如何以帧发送出去的呢？我们看下Sink的write方法：
+```
+    @Override public void write(Buffer source, long byteCount) throws IOException {
+      assert (!Thread.holdsLock(Http2Stream.this));
+      sendBuffer.write(source, byteCount);
+      while (sendBuffer.size() >= EMIT_BUFFER_SIZE) {
+        emitFrame(false);
+      }
+    }
+    
+    /**
+     * Emit a single data frame to the connection. The frame's size be limited by this stream's
+     * write window. This method will block until the write window is nonempty.
+     */
+    private void emitFrame(boolean outFinished) throws IOException {
+      long toWrite;
+      synchronized (Http2Stream.this) {
+        writeTimeout.enter();
+        try {
+          while (bytesLeftInWriteWindow <= 0 && !finished && !closed && errorCode == null) {
+            waitForIo(); // Wait until we receive a WINDOW_UPDATE for this stream.
+          }
+        } finally {
+          writeTimeout.exitAndThrowIfTimedOut();
+        }
+
+        checkOutNotClosed(); // Kick out if the stream was reset or closed while waiting.
+        toWrite = Math.min(bytesLeftInWriteWindow, sendBuffer.size());
+        bytesLeftInWriteWindow -= toWrite;
+      }
+
+      writeTimeout.enter();
+      try {
+        connection.writeData(id, outFinished && toWrite == sendBuffer.size(), sendBuffer, toWrite);
+      } finally {
+        writeTimeout.exitAndThrowIfTimedOut();
+      }
+    }
+```
+这里就是写入帧的地方了，传统功夫，点到为止吧，看得头大了。
 
 ## 小结
 关于RealConnection的内容差不多就是这样了，整篇文章还是以我自己的理解为主吧，可能有不对的地方，可以评论区指出，一起进步！

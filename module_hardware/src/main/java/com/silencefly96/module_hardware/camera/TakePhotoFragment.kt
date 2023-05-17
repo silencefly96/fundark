@@ -317,14 +317,16 @@ class TakePhotoFragment : BaseFragment() {
                 Environment.DIRECTORY_PICTURES + File.separator + "Fundark"
             )
         } else {
-            val dstPath = StringBuilder().let { sb->
-                sb.append(requireContext()
-                    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
+            // 安卓10(api 29)以下需要申请储存权限
+            val dstDir = StringBuilder().let { sb->
+                sb.append(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
                 sb.append(File.separator)
                 sb.append("Fundark")
-                sb.append(File.separator)
-                sb.append(fileName)
                 sb.toString()
+            }
+            val dstPath = dstDir + (File.separator) + fileName
+            File(dstDir).also {
+                if (!it.exists()) it.mkdirs()
             }
 
             //DATA字段在Android 10.0 之后已经废弃（Android 11又启用了，但是只读）

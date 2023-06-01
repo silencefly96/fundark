@@ -1,7 +1,7 @@
-package com.silencefly96.module_third.funnet.interceptor
+package com.silencefly96.module_third.okhttp3.interceptor
 
-import com.silencefly96.module_third.funnet.Request
-import com.silencefly96.module_third.funnet.Response
+import com.silencefly96.module_third.okhttp3.Request
+import com.silencefly96.module_third.okhttp3.Response
 import java.io.IOException
 
 interface Interceptor {

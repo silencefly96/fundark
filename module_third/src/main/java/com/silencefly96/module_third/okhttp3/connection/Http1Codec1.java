@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.silencefly96.module_third.funnet.connection;
+package com.silencefly96.module_third.okhttp3.connection;
 
 import java.io.EOFException;
 import java.io.IOException;

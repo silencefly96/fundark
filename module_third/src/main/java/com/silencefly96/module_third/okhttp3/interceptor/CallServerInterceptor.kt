@@ -1,6 +1,6 @@
-package com.silencefly96.module_third.funnet.interceptor
+package com.silencefly96.module_third.okhttp3.interceptor
 
-import com.silencefly96.module_third.funnet.Response
+import com.silencefly96.module_third.okhttp3.Response
 
 /**
  * 服务器请求拦截器

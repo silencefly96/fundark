@@ -1,11 +1,11 @@
-package com.silencefly96.module_third.funnet.interceptor
+package com.silencefly96.module_third.okhttp3.interceptor
 
-import com.silencefly96.module_third.funnet.Call
-import com.silencefly96.module_third.funnet.Request
-import com.silencefly96.module_third.funnet.Response
-import com.silencefly96.module_third.funnet.connection.Http1Codec1
-import com.silencefly96.module_third.funnet.connection.RealConnection1
-import com.silencefly96.module_third.funnet.connection.StreamAllocation1
+import com.silencefly96.module_third.okhttp3.Call
+import com.silencefly96.module_third.okhttp3.Request
+import com.silencefly96.module_third.okhttp3.Response
+import com.silencefly96.module_third.okhttp3.connection.Http1Codec1
+import com.silencefly96.module_third.okhttp3.connection.RealConnection1
+import com.silencefly96.module_third.okhttp3.connection.StreamAllocation1
 import java.io.IOException
 
 class RealInterceptorChain(

@@ -1,6 +1,6 @@
-package com.silencefly96.module_third.funnet
+package com.silencefly96.module_third.okhttp3
 
-import com.silencefly96.module_third.funnet.interceptor.Interceptor
+import com.silencefly96.module_third.okhttp3.interceptor.Interceptor
 import java.util.ArrayList
 
 

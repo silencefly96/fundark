@@ -1,7 +1,6 @@
-package com.silencefly96.module_third.funnet
+package com.silencefly96.module_third.okhttp3
 
-import com.silencefly96.module_third.funnet.interceptor.*
-import okhttp3.internal.http.CallServerInterceptor
+import com.silencefly96.module_third.okhttp3.interceptor.*
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.util.*

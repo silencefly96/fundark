@@ -1,9 +1,9 @@
-package com.silencefly96.module_third.funnet.interceptor
+package com.silencefly96.module_third.okhttp3.interceptor
 
-import com.silencefly96.module_third.funnet.FunNetClient
-import com.silencefly96.module_third.funnet.Response
-import com.silencefly96.module_third.funnet.connection.Http1Codec1
-import com.silencefly96.module_third.funnet.connection.RealConnection1
+import com.silencefly96.module_third.okhttp3.FunNetClient
+import com.silencefly96.module_third.okhttp3.Response
+import com.silencefly96.module_third.okhttp3.connection.Http1Codec1
+import com.silencefly96.module_third.okhttp3.connection.RealConnection1
 
 class ConnectInterceptor(val client: FunNetClient): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

@@ -1,7 +1,7 @@
-package com.silencefly96.module_third.funnet.interceptor
+package com.silencefly96.module_third.okhttp3.interceptor
 
-import com.silencefly96.module_third.funnet.Cache
-import com.silencefly96.module_third.funnet.Response
+import com.silencefly96.module_third.okhttp3.Cache
+import com.silencefly96.module_third.okhttp3.Response
 
 /**
  * 缓存拦截器

@@ -27,9 +27,10 @@ class SlideDeleteRecyclerViewDemo: BaseFragment() {
             viewHolder?.setText(R.id.order, position.toString())
             // viewHolder?.setText(R.id.title, item.toString())
             viewHolder?.setOnClickListener(R.id.delete) {
+                val index = mData.indexOf(item)
                 // 删除数据并更新
                 mData.remove(item)
-                notifyItemChanged(position)
+                notifyItemRemoved(index)
             }
         }
     }

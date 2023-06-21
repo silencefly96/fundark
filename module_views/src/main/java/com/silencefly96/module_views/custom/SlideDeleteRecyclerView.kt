@@ -96,7 +96,8 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
             MotionEvent.ACTION_MOVE -> {
                 //判断是否拦截
                 //如果拦截了ACTION_MOVE，后续事件就不触发onInterceptTouchEvent了
-                return moveItem(e)
+                // 不能拦截事件，会造成列表项中onclick事件失效
+//                return moveItem(e)
             }
             //拦截了ACTION_MOVE，ACTION_UP也不会触发
 //                MotionEvent.ACTION_UP -> {
@@ -113,8 +114,9 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(e: MotionEvent): Boolean {
         when (e.action) {
-            //没有拦截，也不能拦截，所以不需要处理
-            MotionEvent.ACTION_DOWN -> {}
+            MotionEvent.ACTION_DOWN -> {
+                return true
+            }
             //拦截了ACTION_MOVE后，后面一系列event都会交到本view处理
             MotionEvent.ACTION_MOVE -> {
                 // Log.e("TAG", "onTouchEvent: ACTION_MOVE")
@@ -122,6 +124,7 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
                 moveItem(e)
                 //更新点击的横坐标
                 mLastX = e.x
+                return true
             }
             MotionEvent.ACTION_UP -> {
                 //判断结果

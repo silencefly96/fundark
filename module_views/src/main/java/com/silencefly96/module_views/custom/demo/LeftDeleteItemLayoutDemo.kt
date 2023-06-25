@@ -29,8 +29,10 @@ class LeftDeleteItemLayoutDemo: BaseFragment() {
                 setText(R.id.order, position.toString())
                 // setText(R.id.title, item.toString())
                 (itemView as LeftDeleteItemLayout).mDeleteClickListener = View.OnClickListener {
+                    val index = mData.indexOf(item)
+                    // 删除数据并更新
                     mData.remove(item)
-                    notifyItemChanged(position)
+                    notifyItemRemoved(index)
                 }
             }
         }

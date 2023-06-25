@@ -34,6 +34,10 @@ class LeftDeleteItemLayout : ConstraintLayout {
     private val mDeleteView: View?
 
     var mDeleteClickListener: OnClickListener? = null
+    set(value) {
+        field = value
+        mDeleteView?.setOnClickListener(value)
+    }
 
     //流畅滑动
     private var mScroller = Scroller(context)
@@ -42,7 +46,7 @@ class LeftDeleteItemLayout : ConstraintLayout {
     private var mLastX = -1f
 
     //控制控件结束的runnable
-    private val stopMoveRunnable: Runnable = Runnable { stopMove() }
+//    private val stopMoveRunnable: Runnable = Runnable { stopMove() }
 
     constructor(context: Context) : this(context, null, 0)
 
@@ -97,7 +101,8 @@ class LeftDeleteItemLayout : ConstraintLayout {
             //down事件记录x，不拦截，当move的时候才会用到
             MotionEvent.ACTION_DOWN -> mLastX = event.x
             //拦截本控件内的移动事件
-            MotionEvent.ACTION_MOVE -> return true
+            // 不能拦截，拦截会导致子控件onClick无法生效，onClick需要在ACTION_UP时触发
+//            MotionEvent.ACTION_MOVE -> return true
         }
         return super.onInterceptTouchEvent(event)
     }
@@ -106,8 +111,15 @@ class LeftDeleteItemLayout : ConstraintLayout {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when(event.action) {
-            MotionEvent.ACTION_DOWN -> return true
-            MotionEvent.ACTION_MOVE -> moveItem(event)
+            MotionEvent.ACTION_DOWN -> {
+                // 防止滑出view范围收不到ACTION_MOVE事件
+                parent.requestDisallowInterceptTouchEvent(true)
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                moveItem(event)
+                return true
+            }
             MotionEvent.ACTION_UP -> stopMove()
         }
         return super.onTouchEvent(event)
@@ -128,10 +140,11 @@ class LeftDeleteItemLayout : ConstraintLayout {
             scrollBy(dx.toInt(), 0)
         }
 
+        // 菜的扣脚，ACTION_DOWN会接管整个事件序列，需要配合requestDisallowInterceptTouchEvent
         //如果一段时间没有移动时间，mLastX还没被stopMove重置为-1，那就是移动到其他地方了
         //设置200毫秒没有新事件就触发stopMove
-        removeCallbacks(stopMoveRunnable)
-        postDelayed(stopMoveRunnable, 200)
+//        removeCallbacks(stopMoveRunnable)
+//        postDelayed(stopMoveRunnable, 200)
     }
 
     private fun stopMove() {

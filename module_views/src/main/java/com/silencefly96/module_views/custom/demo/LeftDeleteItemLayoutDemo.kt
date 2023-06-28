@@ -20,7 +20,7 @@ class LeftDeleteItemLayoutDemo: BaseFragment() {
     private var _binding: FragmentLeftDeleteBinding? = null
     private val binding get() = _binding!!
 
-    private val mData = arrayListOf(0, 1, 2, 3, 4, 5 ,6, 7, 8, 9)
+    private val mData = arrayListOf(0, 1, 2, 3, 4, 5 ,6, 7, 8, 9, 1, 2, 3, 4, 5 ,6, 7, 8, 9)
 
     // 适配器
     private val mAdapter = object: BaseRecyclerAdapter<Int>(R.layout.item_left_delete, mData) {

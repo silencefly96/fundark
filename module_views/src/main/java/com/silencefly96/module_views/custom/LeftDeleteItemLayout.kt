@@ -44,6 +44,9 @@ class LeftDeleteItemLayout : ConstraintLayout {
 
     //上次事件的横坐标
     private var mLastX = -1f
+    private var mLastY = 0f
+    // 滑动模式，左滑模式(-1)，初始化(0)，上下模式(1)
+    private var mScrollMode = 0
 
     //控制控件结束的runnable
 //    private val stopMoveRunnable: Runnable = Runnable { stopMove() }
@@ -99,7 +102,12 @@ class LeftDeleteItemLayout : ConstraintLayout {
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
         when(event.action) {
             //down事件记录x，不拦截，当move的时候才会用到
-            MotionEvent.ACTION_DOWN -> mLastX = event.x
+            MotionEvent.ACTION_DOWN -> {
+                mLastX = event.x
+                // 对滑动冲突处理
+                mLastY = event.y
+                mScrollMode = 0
+            }
             //拦截本控件内的移动事件
             // 不能拦截，拦截会导致子控件onClick无法生效，onClick需要在ACTION_UP时触发
 //            MotionEvent.ACTION_MOVE -> return true
@@ -117,8 +125,24 @@ class LeftDeleteItemLayout : ConstraintLayout {
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                moveItem(event)
-                return true
+                if (mScrollMode == 0) {
+                    val deltaX = abs(event.x - mLastX)
+                    val deltaY = abs(event.y - mLastY)
+                    // 异常情况忽略了
+                    if (deltaX == deltaY && deltaX == 0f) return super.onTouchEvent(event)
+                    // 判断模式，进入左滑状态(-1)，上下滑动(1)
+                    mScrollMode = if (deltaX > deltaY) -1 else 1
+                }
+
+                // 左滑模式下交给当前控件处理
+                if (mScrollMode < 0) {
+                    moveItem(event)
+                    return true
+                }else {
+                    // 这里不处理滑动事件，交个父控件(即RecyclerView)去处理
+                    parent.requestDisallowInterceptTouchEvent(false)
+                    return false
+                }
             }
             MotionEvent.ACTION_UP -> stopMove()
         }

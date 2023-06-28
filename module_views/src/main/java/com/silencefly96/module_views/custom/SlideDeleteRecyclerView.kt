@@ -70,6 +70,9 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
 
     //上次事件的横坐标
     private var mLastX = 0f
+    private var mLastY = 0f
+    // 滑动模式，左滑模式(-1)，初始化(0)，上下模式(1)
+    private var mScrollMode = 0
 
     //当前RecyclerView被上层viewGroup分发到事件，所有事件都会通过dispatchTouchEvent给到
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -92,6 +95,9 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
                 getSelectItem(e)
                 //设置点击的横坐标
                 mLastX = e.x
+                // 对滑动冲突处理
+                mLastY = e.y
+                mScrollMode = 0
             }
             MotionEvent.ACTION_MOVE -> {
                 //判断是否拦截
@@ -120,11 +126,23 @@ class SlideDeleteRecyclerView @JvmOverloads constructor(
             //拦截了ACTION_MOVE后，后面一系列event都会交到本view处理
             MotionEvent.ACTION_MOVE -> {
                 // Log.e("TAG", "onTouchEvent: ACTION_MOVE")
-                //移动控件
-                moveItem(e)
-                //更新点击的横坐标
-                mLastX = e.x
-                return true
+                if (mScrollMode == 0) {
+                    val deltaX = abs(e.x - mLastX)
+                    val deltaY = abs(e.y - mLastY)
+                    // 异常情况忽略了
+                    if (deltaX == deltaY && deltaX == 0f) return super.onTouchEvent(e)
+                    // 判断模式，进入左滑状态(-1)，上下滑动(1)
+                    mScrollMode = if (deltaX > deltaY) -1 else 1
+                }
+
+                // 左滑模式下交给当前控件处理，其他情况由RecyclerView去滑动
+                if (mScrollMode < 0) {
+                    //移动控件
+                    moveItem(e)
+                    //更新点击的横坐标
+                    mLastX = e.x
+                    return true
+                }
             }
             MotionEvent.ACTION_UP -> {
                 //判断结果

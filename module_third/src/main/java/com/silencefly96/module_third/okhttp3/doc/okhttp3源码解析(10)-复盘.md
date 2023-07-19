@@ -1,0 +1,107 @@
+# okhttp3源码解析(10)-复盘
+## 前言
+不容易，okhttp3系列文章写到了第十篇，不说讲的多全面多透彻，但是对原理还是有点了解了吧。这篇就作为结尾篇，来复盘下，回忆巩固，查缺补漏。
+
+## 复盘
+### 请求流程
+首先还是先来回顾下okhttp3的流程，有兴趣可以再看下这个系列第一篇文章:
+[《okhttp3源码解析-整体流程》](https://juejin.cn/post/7221565450249699385)。
+
+流程大致如下:
+
+1. 创建okhttpClient，创建request，通过okhttpClient的newCall方法创建call(RealCall)，再通过call进行同步或异步请求
+2. 对于同步请求，在RealCall中有两步，先加入Dispatcher的runningSyncCalls，再调用getResponseWithInterceptorChain()获得response
+3. 对于异步请求，在RealCall中将回调封装到AsyncCall后，就交给Dispatcher处理了。Dispatcher会将AsyncCall加入到readyAsyncCalls，再推动readyAsyncCalls去运行。Dispatcher会为AsyncCall指定一个线程池，并让它在异步线程中执行其execute()方法，最终也是通过getResponseWithInterceptorChain()获得response。
+4. 在getResponseWithInterceptorChain()方法中，将所有拦截器放到了interceptors，创建了一个RealInterceptorChain，让它通过责任链形式按顺序去执行拦截器，最终得到response。
+5. 在RealInterceptorChain中，调用proceed(request)会创建一个新的chain(RealInterceptorChain)，然后会调用Interceptor的intercept(chain)方法，得到response并返回，而Interceptor的intercept(chain)方法内又会调用proceed(request)，一个串一个把request传进去，把response拿回来。
+6. 对于拦截器，顺序如下: 自定义的interceptors，retryAndFollowUpInterceptor，BridgeInterceptor，CacheInterceptor，ConnectInterceptor，自定义的networkInterceptors，CallServerInterceptor
+
+### 拦截器
+说完了流程，下面也对几个核心的拦截器做个小结吧:
+[《okhttp3源码解析(2)-拦截器 I》](https://juejin.cn/post/7221576464408526903)
+[《okhttp3源码解析(3)-拦截器 II》](https://juejin.cn/post/7221694062682816571)
+
+1. RetryAndFollowUpInterceptor，和名字一样，就是用来重试和继续发送的拦截器。对于一些发送异常会重试，还会对response分析，根据responseCode判断是否需要继续发送request(重定向、超时、不可达之类)。
+2. BridgeInterceptor，用来处理request和response中header的拦截器。对于request，它会加上body对于header、host、connection、是否压缩、User-Agent以及cookies，对于response它会保存header到cookies、解压body。
+3. CacheInterceptor，用来存取response缓存的拦截器。它会从cache里面取出对于request的缓存，并创建一个CacheStrategy来判断到底是用缓存还是发送网络请求，拿到网络请求的response，会对cache更移除等。
+4. ConnectInterceptor，用来控制连接和流的拦截器。它会通过streamAllocation从连接池中拿出connection，或者直接创建新的connection(涉及socket、router等)，并根据connection创建HttpCodec，用于对socket输入输出流的读写。
+5. CallServerInterceptor，实际网络通信(socket流读写)的拦截器。它通过httpCodec可以写入request的header和body，调用flushRequest()的时候完成一次请求，完成请求后即可通过httpCodec读取response的header，response的body在这里并没有读取出来，而是封装了一下socket的source，在使用的时候才会去读取。
+
+> ps. 复盘了一遍，终于理解了response的body问题。
+
+### 连接与流
+连接与流主要是ConnectInterceptor里面的功能，是通过streamAllocation去实现的。
+[《okhttp3源码解析(4)-StreamAllocation、HttpCodec》](https://juejin.cn/post/7223641230551416893)
+[《okhttp3源码解析(5)-RealConnection、Http2Connection》](https://juejin.cn/post/7224060318653005881)
+[《okhttp3源码解析(6)-ConnectionPool、StreamAllocation补充》](https://juejin.cn/post/7225881191152877626)
+
+获取connection的流程如下:
+
+1. 先取StreamAllocation中的connection。streamAllocation在RetryAndFollowUpInterceptor中创建和release，标识一次完整请求的流分配，它持有Connection和HttpCodec。
+2. 再从ConnectionPool中获取connection。ConnectionPool中会根据传入address以及route(此时为null)取出合适的connection，connection还会持有streamAllocation的弱引用作为标记。
+3. 如果需要创建新的routeSelection，创建新的后遍历其routes，再从ConnectionPool中获取connection。routeSelector调用next能产生新的routeSelection，routeSelection中保存有一系列Route，connectionPool中获取connection和Route有关。
+4. 否则根据selectedRoute创建一个RealConnection。RealConnection创建和connectionPool与Route有关，selectedRoute为null时，需要从从routeSelection取第一个Route赋值。
+
+说实话okhttp中的routeSelector、routeSelection、Route、Proxy我也不是很理解，又回去看了下源码，有了一些理解，大致如下:
+
+1. client中有proxySelector属性，默认来自build中的ProxySelector.getDefault()，最终来自Class.forName("sun.net.spi.DefaultProxySelector")，也就是系统默认的。
+2. 在RetryAndFollowUpInterceptor中创建Address传入了client.proxySelector，proxySelector可以通过select(url.uri())拿到多个Proxy(List<Proxy>)
+3. 在RouteSelector中，传入的Address中有proxy就用它(放在容量为1的List)，否则就用默认的List<Proxy>(多个)
+4. 在RouteSelector中，遍历List<Proxy>，对于每个Proxy，由它的域名根据DNS服务器得到一系列的IP(InetSocketAddress)，然后根据这些IP创建一系列的Route，并构成一个routeSelection
+5. 回到StreamAllocation中，routeSelection中取出Route，根据它拿到或者创建connection
+6. RealConnection实际最终就和Route有关，在connect方法中进行socket连接
+
+线程池没什么好说的，连接部分倒是很有意思，是我的弱项，关于HTTP的内容还是值得再理解下的:
+
+1. 不管流程如何，首先都得connectSocket，这里会进行socket连接，并拿到输入输出流source和sink。
+2. 对于要通过 HTTP 代理建立 HTTPS 隧道的，先要发送request来创建tunnel，这个过程连接可能被close，需要多次connectSocket进行验证，直至成功。
+3. 上面两种情况结束后，接下来是创建协议。对于HTTP1_1和H2_PRIOR_KNOWLEDGE协议，直接使用原始socket就行，对于HTTP2，需要进行TLS连接.
+4. TlS连接时，会先根据sslSocketFactory创建sslSocket。sslSocketFactory如果没有设置会在okhttpClient构造中使用系统默认的。sslSocket通过startHandshake开始连接，通过getSession阻塞拿到session，可以根据sslSocket拿到unverifiedHandshake，它保存了certificate，经过验证后，将realConnection中的socket替换为sslSocket，并从sslSocket中拿到sink和source流。
+5. 对于HTTP2协议，还要创建http2Connection进行连接。Http2Connection是复用的，里面直接使用Http2Writer和Http2Reader来对socket的sink和source进行操作，而且读取操作是通过ReaderRunnable在线程中while循环处理的。
+6. 完成连接后，StreamAllocation中会创建HttpCodec。对于http2Connection连接创建Http2Codec，其他创建Http1Codec，Http1Codec直接使用输入输出流来完成网络请求的读写，Http2Codec复杂些，需要根据流和帧处理。
+7. 在Http2Codec中，对request和response操作都是交给Http2Stream操作。Http2Stream是在writeRequestHeaders时由Http2Connection创建的，Http2Connection内有streams(key为streamId的Map)用来保存多个Http2Stream。Http2Codec的写入时需要注意header是一个帧，body也是一个帧，header帧用来打开一个流，body帧以streamId在Http2Stream发送出去，这里需要同步操作。接受时，Http2Connection中的ReaderRunnable会不停读取输入流，并将数据封装成帧，然后额、根据streamId找到要接收的Http2Stream，并将帧的数据传递到它的readBuffer，外部读取时会从中读取。
+8. HttpCodec接口隐藏了Http1Codec和Http2Codec的具体操作，使得网络请求在CallServerInterceptor中表现一致。需要注意的是Http1Codec独占socket流，而Http2Codec是复用socket流的，对于HTTP2需要理解其中连接、数据流、消息、帧之间的关系。
+
+再次梳理下，感觉对HTTP2理解深刻了些，毕竟没有专门去学HTTP协议的内容，还是挺菜的，找了篇别人的文章感觉写得挺好的，虽然也很简单，但挺有帮助:
+
+[《深入 HTTP2（帧，消息，流）》](https://www.jianshu.com/p/51b2a9c98fca)
+
+看完上面这篇文章，感觉很多源码里面不理解的地方都恍然大悟了，比如: 流可以穿插传递、流内的帧必须有序、客户端发起流的StreamID为奇数、 StreamID为0的帧是控制帧(特殊处理)。
+
+这里其实还有很多内容没有去研究，比如connectTls内的源码、OkHttpClient中的各种配置以及WebSocket相关，我觉得还是适当去学吧，深入源码不能陷入源码。
+
+### 缓存
+一个和网络相关的库，并且被大量开发者使用，其缓存绝对是有一手的，我也花了两篇文章来解析: 
+
+[okhttp3源码解析(7)-CacheStrategy、Cache部分解析](https://juejin.cn/post/7239589685974483004)
+[okhttp3源码解析(8)-DiskLruCache、Cache](https://juejin.cn/post/7241782876604891195)
+
+下面也来整理下读写缓存的流程:
+
+1. CacheInterceptor中会创建一个CacheStrategy，由它来决定是否使用缓存，还是发起网络请求。这里CacheStrategy会得到networkRequest和cacheResponse，用这两个对象为空与否来判断使用缓存还是使用网络请求，这里还有个原始response缓存cacheCandidate，对比它和cacheResponse来判断缓存是否失效。
+2. 原始response缓存cacheCandidate是从cache里面取出的，这个cache来自OkHttpClient。OkHttpClient中的cache默认不提供，需要自己设置，它提供了一个InternalCache接口规范了缓存的方法，同时也提供了一个Cache类实现了缓存功能，所以如果不想自定义一个缓存功能，直接使用它提供的Cache类即可。
+3. Cache类里面通过internalCache对象向外提供缓存功能，实现增删查改，实际功能在Cache类中的DiskLruCache。DiskLruCache在Cache类中，不能直接操作(除了remove)，主要通过DiskLruCache.Snapshot和DiskLruCache.Editor去处理。DiskLruCache.Snapshot是DiskLruCache内数据的一个快照，包含有response的header及body的文件流，可以借此创建缓存对象(即get)。DiskLruCache.Editor是对DiskLruCache内部数据的管理工具，主要是新建和更新，一条数据可能对应多个Editor，所以它有并发控制。缓存的remove直接通过DiskLruCache并发移除内部数据就行了。
+4. DiskLruCache通过lruEntries(LinkedHashMap)来保存缓存数据，数据的单元是DiskLruCache.Entry。DiskLruCache.Entry把缓存保存在文件里面，它维持了两种文件，cleanFiles和dirtyFiles，读写分离，解决多线程修改问题。每种文件里面又有两个(ENTRY_COUNT=2)文件，分别保存header信息和body数据，还有个lengths数组用于记录它们的长度(只记录cleanFiles)。DiskLruCache.Entry中记录了currentEditor，它会用来验证多线程时是否按正确处理。
+5. DiskLruCache中还维持了一个日志系统，这个日志更多的应该算缓存信息的记录表，它会参与lruEntries的管理。日志会保存在文件里，共有三种日志文件，初始化的时候会按一定逻辑读取日志文件，日志有其格式，包含缓存数据的信息，从文件读取的日志可以重新构建出lruEntries，这时候就能对所有文件缓存做处理了。DiskLruCache还有个cleanupRunnable，在总文件大小太大或者缓存数量太多等情况执行，会移除lruEntries中最旧的数据，如果日志中无意义的数据太多(例如REMOVE操作和恢复lruEntries无关)，还会重建日志。
+6. CacheInterceptor如果进行了网络请求，并且可以缓存时，会把response通过cache保存下来。这里Cache的Entry通过writeTo会保存response的header信息，body这时候并没有被缓存，在使用put进行缓存时，Cache会返回一个CacheRequestImpl对象，它并不是网络的Request，而是一个缓存的请求，它会传递到CacheInterceptor中，并参与cacheWritingResponse方法，里面会对response的Source进行封装，在真正读取response中body的时候，会复制一份到CacheRequestImpl，当response中body读取完的时候，会触发CacheRequestImpl的close方法，其close方法会通过DiskLruCache.Editor将缓存commit，最终将body数据保存到文件里面去。
+
+> 又重新看了一遍，感觉整个缓存流程终于通畅了，补漏了好多。。。
+
+### Okio
+Okio部分是因为看DiskLruCache中用了很多才去看源码的，虽然我用一篇文章写了下来，但是东西太多了。
+
+[okhttp3源码解析(9)-Okio](https://juejin.cn/post/7252839465906831416)
+
+这里也稍微调点重点，总结下吧！
+
+1. Segment是Okio里面储存数据的单元，它是一个双向链表，里面用data数组数组保存数据，数据可以共享出去。SegmentPool可以用来收集和复用无效Segment。
+2. Buffer是一个可变长的Segment序列，ByteString是不可变的字节序列，Buffer实现了BufferedSource和BufferedSink接口，里面实现了大量对流读写的操作，而且这些操作都是和segment相关的。里面最核心的功能就是对segment引用的复制，而非对字节流的复制，大大提高了效率。
+3. RealBufferedSource和RealBufferedSink是Okio里面Sink和Source的实现类，Okio调用buffer会封装成它们，它们持有实际的sink和source流，它们内部都有一个buffer对象，对流的读写都是先保存到buffer对象，再从buffer对象读出或写入到实际的sink和source流中，起一个缓冲的效果。
+4. Okio类提供了对外暴漏接口的功能，它能将file、socket、path、stream转换成source和sink，并能将source和sink封装成buffer，okio中的操作大都是通过buffer实现的。
+
+写得比较简单了，但是感觉串起来了，和我上篇博客写得一样，由小及大，豁然开朗。
+
+## 小结
+这篇文章写得不多，但是却花费了我很长的时间去重新看源码，虽然不如刚学习时的那么细致入微，但是真的前面九篇博客的疑问大部分都解决了，有些地方我很想贴代码出来，但是最后想了想还是算了，因为贴出来就和前面博客一样又臭又长了，重要的时连贯的思路与理解，深入源码，而又不陷于源码。
+
+okhttp3的源码解析也就此告一段落了，虽然也只是看了个大概，但是真的收获很大！

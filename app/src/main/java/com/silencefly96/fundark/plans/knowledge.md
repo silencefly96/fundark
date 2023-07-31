@@ -37,7 +37,8 @@ JNI及NDK编程
 --------深入部分--------
 Framework层: AMS、PMS、IMS
 动态加载、热更新、热修复、多Dex处理
-模块化、组件化、插件化、Hook技术
+模块化(buildsrc、VersionCatalog、ComposingBuild、NowInAndroid)
+组件化、插件化、Hook技术
 AOSP系统源码
 Android系统启动过程
 Dalvik和ART虚拟机

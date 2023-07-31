@@ -41,4 +41,5 @@ dependencies {
 
     // 从基础库继承各个依赖
     implementation project(':module_base')
+    implementation 'com.android.volley:volley:1.2.1'
 }

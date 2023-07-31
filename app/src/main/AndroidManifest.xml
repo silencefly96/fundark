@@ -21,11 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TestActivityA" android:taskAffinity="com.test.TestA"/>
-        <activity android:name=".TestActivityB" android:launchMode="singleTop" android:taskAffinity="com.test.TestA"/>
-        <activity android:name=".TestActivityC" android:taskAffinity="com.test.TestA"/>
-        <activity android:name=".TestActivityD" android:taskAffinity="com.test.TestB"/>
-        <activity android:name=".TestActivityE" android:taskAffinity="com.test.TestB"/>
     </application>
 
 </manifest>

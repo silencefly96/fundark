@@ -1141,6 +1141,35 @@ NativeToJsMessageQueue内部实际储存的是JsMessage，有两种形式，一�
 
 popAndEncode方法在CordovaBridge两个地方使用，一个是插件执行的jsExec方法，用来取result，第二个是在promptOnJsPrompt方法的"gap_poll:"情况下，所以如果数据没取完，还会通过promptOnJsPrompt方法继续取吗？
 
+ps. 后续更新，查看JS源码发现，确实会这样，在最后一个“*”这个消息这里，会触发pollOnce，通过prompt形式继续拉取消息:
+```
+function processMessages() {
+    // Check for the reentrant case.
+    if (isProcessing) {
+        return;
+    }
+    if (messagesFromNative.length === 0) {
+        return;
+    }
+    isProcessing = true;
+    try {
+        var msg = popMessageFromQueue();
+        // The Java side can send a * message to indicate that it
+        // still has messages waiting to be retrieved.
+        if (msg == '*' && messagesFromNative.length === 0) {
+            nextTick(pollOnce);
+            return;
+        }
+        processMessage(msg);
+    } finally {
+        isProcessing = false;
+        if (messagesFromNative.length > 0) {
+            nextTick(processMessages);
+        }
+    }
+}
+```
+
 还是会通过popAndEncodeAsJs方法继续取呢？popAndEncodeAsJs方法类似popAndEncode，但是格式不一样:
 ```
     public String popAndEncodeAsJs() {

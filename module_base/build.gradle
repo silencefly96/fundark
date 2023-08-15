@@ -60,4 +60,7 @@ dependencies {
     // Retrofit网络通信框架
     api rootProject.ext.dependencies.retrofit
     api rootProject.ext.dependencies.converter_gson
+
+    // Glide
+    api rootProject.ext.dependencies.glide
 }

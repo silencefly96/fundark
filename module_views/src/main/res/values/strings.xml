@@ -58,4 +58,7 @@
         一般情况下，getMeasuredWidth()和getWidth()获得的结果是一样的，但是如果在父布局的onLayout()方法或者此View的onDraw()方法里调用measure(0,0);(measure中的参数的值你自己可以定义)的话，两者的结果可能会不同。\n
         一般情况下，getMeasuredWidth()和getWidth()获得的结果是一样的，但是如果在父布局的onLayout()方法或者此View的onDraw()方法里调用measure(0,0);(measure中的参数的值你自己可以定义)的话，两者的结果可能会不同。\n
     </string>
+
+    <string name="tool_main_fragment">自定义工具</string>
+    <string name="custom_glide_fragment">Glide扩展图片类型</string>
 </resources>

@@ -23,6 +23,10 @@
             app:destination="@id/widgetMainFragment">
         </action>
 
+        <action android:id="@+id/action_main_to_tool"
+            app:destination="@id/toolMainFragment">
+        </action>
+
     </fragment>
 
     <fragment
@@ -225,5 +229,23 @@
         android:name="com.silencefly96.module_views.widget.domo.LazyImageViewDemo"
         android:label="@string/lazy_image_view_fragment"
         tools:layout="@layout/fragment_lazy_image_view" />
+
+    <fragment
+        android:id="@+id/toolMainFragment"
+        android:name="com.silencefly96.module_views.tool.demo.ToolsMainFragment"
+        android:label="@string/tool_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_custom_glide"
+            app:destination="@id/customGlideDemo">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/customGlideDemo"
+        android:name="com.silencefly96.module_views.tool.demo.CustomGlideDemo"
+        android:label="@string/custom_glide_fragment"
+        tools:layout="@layout/fragment_custom_glide" />
 
 </navigation>

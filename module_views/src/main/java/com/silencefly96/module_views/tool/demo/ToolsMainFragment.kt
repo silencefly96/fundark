@@ -1,4 +1,4 @@
-package com.silencefly96.module_views
+package com.silencefly96.module_views.tool.demo
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,25 +11,17 @@ import com.silencefly96.module_views.databinding.FragmentMainBinding
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.BaseRecyclerAdapter
 import com.silencefly96.module_base.base.ViewHolder
+import com.silencefly96.module_views.R
 
-class MainFragment: BaseFragment() {
+class ToolsMainFragment: BaseFragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
     // 数据
     private val mData = arrayListOf<Item>().apply {
-        add(Item(1, "custom view",
-            "自定义view练习"))
-
-        add(Item(2, "custom game",
-            "自定义view做的小游戏"))
-
-        add(Item(3, "custom widget",
-            "自定义widget实用工具"))
-
-        add(Item(4, "custom tool",
-            "自定义tool实用工具"))
+        add(Item(1, "Glide扩展: MyAppGlideExtension",
+            "使用Glide加载自定义的图片类型"))
     }
 
     // 适配器
@@ -55,10 +47,7 @@ class MainFragment: BaseFragment() {
             override fun onItemClick(view: View?, itemObj: Item, position: Int) {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
-                    1 -> R.id.action_main_to_view
-                    2 -> R.id.action_main_to_game
-                    3 -> R.id.action_main_to_widget
-                    4 -> R.id.action_main_to_tool
+                    1 -> R.id.action_main_to_custom_glide
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

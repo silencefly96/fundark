@@ -1,63 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/WorkSpace/cordova-test/fundark/app/src/main/res/layout/activity_test1.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/drawable/ff.xml" value="0.2" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/drawable/ic_launcher_background.xml" value="0.2" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/activity_main.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/activity_take_photo.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/fragment_bluetooth.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/fragment_bluetooth_client.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/fragment_bluetooth_server.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/fragment_take_photo.xml" value="0.3333333333333333" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/layout/item_main.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_hardware/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_media/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_media/src/main/res/drawable/bg_radius_5.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_media/src/main/res/layout/activity_main.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_mvvm/src/main/res/layout/activity_main.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_mvvm/src/main/res/layout/item_plan.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/activity_main.xml" value="0.12454710144927536" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/activity_plan.xml" value="0.16621376811594202" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_plan/src/main/res/layout/item_plan.xml" value="0.14447463768115942" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable-v24/bg_radius_5.xml" value="0.19895833333333332" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/bg_radius_5.xml" value="0.19895833333333332" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_airplane.xml" value="0.2" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_bullet.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_circle.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_enemy.xml" value="0.2" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_node.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/drawable/ic_tetris.xml" value="0.2" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/activity_main.xml" value="0.12454710144927536" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/activity_view_demo.xml" value="0.15942028985507245" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_airplane_game.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_bomb_ball_game.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_desktop_layer.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_drawable_view.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_header_footer.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_hexagon_rank.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_layer_slide.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_lazy_image_view.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_left_delete.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_main.xml" value="0.12454710144927536" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_particle_lines.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_pattern_lock.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_pie_chart.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_red_dom.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_scroll_select.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_scrolling_collapse.xml" value="0.1" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_slide_delete.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_slide_delete_recyclerview.xml" value="0.15942028985507245" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_snark_game.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/fragment_tetris_game.xml" value="0.18385416666666668" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/item_left_delete.xml" value="0.1598731884057971" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/item_main.xml" value="0.3333333333333333" />
-        <entry key="..\:/WorkSpace/cordova-test/fundark/module_views/src/main/res/layout/item_slide_delete.xml" value="0.15942028985507245" />
+        <entry key="..\:/WorkSpace/silence/fundark/module_views/src/main/res/layout/fragment_bomb_ball_game.xml" value="0.18385416666666668" />
+        <entry key="..\:/WorkSpace/silence/fundark/module_views/src/main/res/layout/fragment_custom_glide.xml" value="0.3333333333333333" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

@@ -8,14 +8,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    compileSdkVersion BuildVersion.compileSdkVersion
 
     defaultConfig {
         applicationId "com.silencefly96.module_views"
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
+        minSdkVersion BuildVersion.minSdkVersion
+        targetSdkVersion BuildVersion.targetSdkVersion
+        versionCode BuildVersion.versionCode
+        versionName BuildVersion.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,16 +41,17 @@ android {
 
 dependencies {
     // 测试相关
-    testImplementation rootProject.ext.dependencies.junit
-    androidTestImplementation rootProject.ext.dependencies.ext_junit
-    androidTestImplementation rootProject.ext.dependencies.espresso_core
+    testImplementation Libs.junit
+    androidTestImplementation Libs.ext_junit
+    androidTestImplementation Libs.espresso_core
 
     // 从基础库继承各个依赖
     implementation project(':module_base')
 
     // navigation
-    def nav_version = "2.5.3"
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-    kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation Libs.navigation_fragment
+    implementation Libs.navigation_ui
+
+    // Glide注解编译器
+    kapt Libs.glide_compiler
 }

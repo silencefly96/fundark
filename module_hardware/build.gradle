@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    compileSdkVersion BuildVersion.compileSdkVersion
 
     defaultConfig {
         applicationId "com.silencefly96.module_hardware"
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
+        minSdkVersion BuildVersion.minSdkVersion
+        targetSdkVersion BuildVersion.targetSdkVersion
+        versionCode BuildVersion.versionCode
+        versionName BuildVersion.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -40,16 +40,14 @@ android {
 
 dependencies {
     // 测试相关
-    testImplementation rootProject.ext.dependencies.junit
-    androidTestImplementation rootProject.ext.dependencies.ext_junit
-    androidTestImplementation rootProject.ext.dependencies.espresso_core
+    testImplementation Libs.junit
+    androidTestImplementation Libs.ext_junit
+    androidTestImplementation Libs.espresso_core
 
     // 从基础库继承各个依赖
     implementation project(':module_base')
 
     // navigation
-    def nav_version = "2.5.3"
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-
+    implementation Libs.navigation_fragment
+    implementation Libs.navigation_ui
 }

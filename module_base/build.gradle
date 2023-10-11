@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    compileSdkVersion BuildVersion.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
+        minSdkVersion BuildVersion.minSdkVersion
+        targetSdkVersion BuildVersion.targetSdkVersion
+        versionCode BuildVersion.versionCode
+        versionName BuildVersion.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -35,32 +35,32 @@ android {
 
 dependencies {
     // kotlin
-    api rootProject.ext.dependencies.kotlin
-    api rootProject.ext.dependencies.core_ktx
+    api Libs.kotlin
+    api Libs.core_ktx
     // base相关基类需要使用
-    api rootProject.ext.dependencies.appcompat
+    api Libs.appcompat
     // RecyclerView适配器等
-    api rootProject.ext.dependencies.material
+    api Libs.material
     // Constraintlayout
-    api rootProject.ext.dependencies.constraintlayout
+    api Libs.constraintlayout
 
     // 协程
-    api rootProject.ext.dependencies.kotlinx_coroutines_core
-    api rootProject.ext.dependencies.kotlinx_coroutines_android
+    api Libs.kotlinx_coroutines_core
+    api Libs.kotlinx_coroutines_android
 
     //Jetpack lifecycle
-    api rootProject.ext.dependencies.lifecycle_extensions
-    api rootProject.ext.dependencies.lifecycle_viewmodel_ktx
-    api rootProject.ext.dependencies.lifecycle_livedata_ktx
+    api Libs.lifecycle_extensions
+    api Libs.lifecycle_viewmodel_ktx
+    api Libs.lifecycle_livedata_ktx
 
     // Jetpack Room数据库框架, kapt不能传递，需要在使用的地方引入
-//    api rootProject.ext.dependencies.room_runtime
-//    kapt rootProject.ext.dependencies.room_compiler
+//    api Libs.room_runtime
+//    kapt Libs.room_compiler
 
     // Retrofit网络通信框架
-    api rootProject.ext.dependencies.retrofit
-    api rootProject.ext.dependencies.converter_gson
+    api Libs.retrofit
+    api Libs.converter_gson
 
     // Glide
-    api rootProject.ext.dependencies.glide
+    api Libs.glide
 }

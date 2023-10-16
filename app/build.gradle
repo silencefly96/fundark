@@ -3,7 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-    id 'version-plugin'
+    id 'version-test-plugin'
+    // id 'version-third-plugin'
 }
 
 android {
@@ -39,12 +40,6 @@ android {
 }
 
 dependencies {
-
-    //测试相关
-    testImplementation Libs.junit
-    androidTestImplementation Libs.ext_junit
-    androidTestImplementation Libs.espresso_core
-
     //从基础库继承各个依赖
     implementation project(':module_base')
 }

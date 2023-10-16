@@ -37,6 +37,9 @@ object Versions {
     const val kotlinx_coroutines_core = "1.3.9"
     const val kotlinx_coroutines_android = "1.3.7"
 
+    // multidex
+    const val multidex = "2.0.1"
+
     // Glide
     const val glide = "4.11.0"
     const val glide_compiler = "4.11.0"
@@ -44,6 +47,9 @@ object Versions {
     // navigation
     const val navigation_fragment = "2.5.3"
     const val navigation_ui = "2.5.3"
+
+    // volley
+    const val volley = "1.2.1"
 }
 
 object Libs {
@@ -83,6 +89,9 @@ object Libs {
     const val kotlinx_coroutines_android
         = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinx_coroutines_android}"
 
+    // multidex
+    const val multidex = "androidx.multidex:multidex:${Versions.multidex}"
+
     // Glide
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
     const val glide_compiler = "com.github.bumptech.glide:compiler:${Versions.glide_compiler}"
@@ -91,4 +100,7 @@ object Libs {
     const val navigation_fragment
         = "androidx.navigation:navigation-fragment-ktx:${Versions.navigation_fragment}"
     const val navigation_ui = "androidx.navigation:navigation-ui-ktx:${Versions.navigation_ui}"
+
+    // volley
+    const val volley = "com.android.volley:volley:${Versions.volley}"
 }

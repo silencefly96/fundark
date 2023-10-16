@@ -4,8 +4,8 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
 
-    id 'androidx.navigation.safeargs.kotlin'
-    id 'version-plugin'
+    id 'version-test-plugin'
+    id 'version-third-plugin'
 }
 
 android {
@@ -18,6 +18,7 @@ android {
         versionCode BuildVersion.versionCode
         versionName BuildVersion.versionName
 
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,18 +42,6 @@ android {
 }
 
 dependencies {
-    // 测试相关
-    testImplementation Libs.junit
-    androidTestImplementation Libs.ext_junit
-    androidTestImplementation Libs.espresso_core
-
     // 从基础库继承各个依赖
     implementation project(':module_base')
-
-    // navigation
-    implementation Libs.navigation_fragment
-    implementation Libs.navigation_ui
-
-    // Glide注解编译器
-    kapt Libs.glide_compiler
 }

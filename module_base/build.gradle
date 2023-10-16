@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-    id 'version-plugin'
+    id 'version-base-plugin'
 }
 
 android {
@@ -35,33 +35,5 @@ android {
 }
 
 dependencies {
-    // kotlin
-    api Libs.kotlin
-    api Libs.core_ktx
-    // base相关基类需要使用
-    api Libs.appcompat
-    // RecyclerView适配器等
-    api Libs.material
-    // Constraintlayout
-    api Libs.constraintlayout
 
-    // 协程
-    api Libs.kotlinx_coroutines_core
-    api Libs.kotlinx_coroutines_android
-
-    //Jetpack lifecycle
-    api Libs.lifecycle_extensions
-    api Libs.lifecycle_viewmodel_ktx
-    api Libs.lifecycle_livedata_ktx
-
-    // Jetpack Room数据库框架, kapt不能传递，需要在使用的地方引入
-//    api Libs.room_runtime
-//    kapt Libs.room_compiler
-
-    // Retrofit网络通信框架
-    api Libs.retrofit
-    api Libs.converter_gson
-
-    // Glide
-    api Libs.glide
 }

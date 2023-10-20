@@ -1,0 +1,28 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+dependencies {
+    implementation fileTree(dir: 'libs', includes: ['*.jar'])
+
+    implementation gradleApi()
+    implementation localGroovy()
+
+    implementation 'com.android.tools.build:gradle:4.0.0'
+
+    //ASM依赖
+    implementation 'org.ow2.asm:asm:9.1'
+    implementation 'org.ow2.asm:asm-commons:9.1'
+}
+
+//这两个是配置信息，后续会用到，命名自取
+group='silencefly96.privacy'
+version='1.0.0'
+
+uploadArchives{
+    repositories{
+        mavenDeployer{
+            // 本地的 Maven 地址设置，部署到本地，也就是项目的根目录下
+            repository(url: uri('../privacy_repo'))
+        }
+    }
+}

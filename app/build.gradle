@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'version-test-plugin'
     // id 'version-third-plugin'
+     id 'silencefly96.privacy'
 }
 
 android {

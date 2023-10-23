@@ -9,6 +9,6 @@ public class PrivacyPlugin implements Plugin<Project>{
     @Override
     void apply(Project project) {
         println("PrivacyPlugin")
-        //project.android.registerTransform(new PrivacyTransform())
+        project.android.registerTransform(new PrivacyTransform())
     }
 }

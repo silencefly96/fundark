@@ -164,7 +164,12 @@ class PrivacyTransform extends Transform {
     }
 
     static boolean filterClass(String className) {
-        return (className.endsWith(".class") && (!className.startsWith("android")) && !className.startsWith("R\$")
-                && "R.class" != className && "BuildConfig.class" != className && "AsmMethods.class" != className)
+        return (className.endsWith(".class")
+                && !className.startsWith("R\$")
+                && "R.class" != className
+                && "BuildConfig.class" != className
+                // 这两个我加的
+                && (!className.startsWith("android"))
+                && "AsmMethods.class" != className)
     }
 }

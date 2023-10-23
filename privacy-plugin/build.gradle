@@ -1,28 +1,36 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'groovy-gradle-plugin'
 
 dependencies {
-    implementation fileTree(dir: 'libs', includes: ['*.jar'])
-
     implementation gradleApi()
     implementation localGroovy()
 
     implementation 'com.android.tools.build:gradle:4.0.0'
 
-    //ASM依赖
+    // ASM依赖
     implementation 'org.ow2.asm:asm:9.1'
     implementation 'org.ow2.asm:asm-commons:9.1'
 }
 
-//这两个是配置信息，后续会用到，命名自取
-group='silencefly96.privacy'
-version='1.0.0'
+// 需要打开AndroidStudio的Task显示，关闭下面选项(旧版前面，新版后面)
+// File -> Settings -> Experimental -> “Do not build Gradle task list during Gradle sync”
+// File -> Settings -> Experimental -> “only include test tasks in the gradle task list generated during gradle sync”
 
+// 上传到本地/远程仓库
+// 需要创建(文件名为插件id): resources\META-INF\gradle-plugins\silencefly96.privacy.properties
 uploadArchives{
-    repositories{
-        mavenDeployer{
-            // 本地的 Maven 地址设置，部署到本地，也就是项目的根目录下
-            repository(url: uri('../privacy_repo'))
-        }
+    repositories.mavenDeployer {
+        //提交到远程服务器：
+        // repository(url: "http://www.xxx.com/repos") {
+        //    authentication(userName: "admin", password: "admin")
+        // }
+        // 本地的 Maven 地址设置，部署到本地，也就是项目的根目录下
+        repository(url: uri('../privacy_repo'))
+
+        // 配置信息，使用: classpath 'groupId:artifactId:version'(不能有空格)
+        pom.groupId = 'silencefly96.privacy'
+        pom.artifactId = 'privacy-plugin'
+        pom.version = '1.0.0'
     }
 }

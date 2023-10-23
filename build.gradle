@@ -2,15 +2,17 @@
 buildscript {
     ext.kotlin_version = "1.4.21"
     repositories {
-        maven{url './privacy_repo'}
+        // 依赖本地仓库
+        maven{ url './privacy_repo' }
         maven{ url'https://maven.aliyun.com/repository/google/' }
         maven{ url'https://maven.aliyun.com/repository/public/' }
         google()
         mavenCentral()
     }
     dependencies {
-        // 加载自定义插件 group + module + version，不要多手打空格！
+        // 从本地仓库中加载自定义插件 group + artifactId + version，不要多手打空格！
         classpath 'silencefly96.privacy:privacy-plugin:1.0.0'
+
         classpath "com.android.tools.build:gradle:4.1.3"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
 

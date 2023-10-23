@@ -14,4 +14,8 @@ gradlePlugin {
         id = "version-third-plugin"
         implementationClass = "com.silencefly96.version.VersionThirdPlugin"
     }
+    plugins.register("composingBuildPlugin") {
+        id = "composing-build-plugin"
+        implementationClass = "com.silencefly96.version.ComposingBuildPlugin"
+    }
 }

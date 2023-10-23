@@ -41,7 +41,7 @@ public class PrivacyClassVisitor extends ClassVisitor {
                     // 替换调用 Environment.getExternalStorageDirectory() 的地方为应用程序的本地目录
                     if (opcode == Opcodes.INVOKESTATIC && owner.equals("android/os/Environment") && name.equals("getExternalStorageDirectory") && descriptor.equals("()Ljava/io/File;")) {
                         System.out.println("处理SD卡数据泄漏风险: " + className);
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "getExternalDir", "()Ljava/io/File;", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "getExternalDir", "()Ljava/io/File;", false);
                     }
 
                     // 判断是否调用了 ContextWrapper 类的 registerReceiver 方法
@@ -49,25 +49,25 @@ public class PrivacyClassVisitor extends ClassVisitor {
                         // && owner.equals("android/content/Context")
                         System.out.println("处理动态注册广播: " + className);
                         // 调用你自定义的方法，并传递 Context 和参数
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "registerZxyReceiver", "(Landroid/content/Context;Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;)Landroid/content/Intent;", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "registerZxyReceiver", "(Landroid/content/Context;Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;)Landroid/content/Intent;", false);
                     }
 
                     // SQL数据库注入漏洞: rawQuery
                     else if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("android/database/sqlite/SQLiteDatabase") && name.equals("rawQuery") && descriptor.equals("(Ljava/lang/String;[Ljava/lang/String;)Landroid/database/Cursor;")) {
                         System.out.println("处理SQL数据库注入漏洞 rawQuery: " + className);
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "rawZxyQuery", "(Landroid/database/sqlite/SQLiteDatabase;Ljava/lang/String;[Ljava/lang/String;)Landroid/database/Cursor;", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "rawZxyQuery", "(Landroid/database/sqlite/SQLiteDatabase;Ljava/lang/String;[Ljava/lang/String;)Landroid/database/Cursor;", false);
                     }
 
                     // SQL数据库注入漏洞: execSQL
                     else if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("android/database/sqlite/SQLiteDatabase") && name.equals("execSQL") && descriptor.equals("(Ljava/lang/String;)V")) {
                         System.out.println("处理SQL数据库注入漏洞 execSQL: " + className);
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "execZxySQL", "(Landroid/database/sqlite/SQLiteDatabase;Ljava/lang/String;)V", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "execZxySQL", "(Landroid/database/sqlite/SQLiteDatabase;Ljava/lang/String;)V", false);
                     }
 
                     // ZipperDown漏洞
                     else if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("java/util/zip/ZipEntry") && name.equals("getName") && descriptor.equals("()Ljava/lang/String;")) {
                         System.out.println("处理ZipperDown漏洞: " + className);
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "getZipEntryName", "(Ljava/util/zip/ZipEntry;)Ljava/lang/String;", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "getZipEntryName", "(Ljava/util/zip/ZipEntry;)Ljava/lang/String;", false);
                     }
 
                     // 日志函数泄露风险: 只改方法签名为 (Ljava/lang/String;Ljava/lang/String;)I 的
@@ -75,22 +75,22 @@ public class PrivacyClassVisitor extends ClassVisitor {
                         System.out.println("处理日志函数泄露风险 " + name + ": " + className);
                         if (name.equals("e")) {
                             // 错误日志还是有用的
-                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "optimizeLogE", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "optimizeLogE", "(Ljava/lang/String;Ljava/lang/String;)I", false);
                         }else {
-                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "optimizeLog", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "optimizeLog", "(Ljava/lang/String;Ljava/lang/String;)I", false);
                         }
                     }
 
                     // Webview组件跨域访问风险
                     else if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("android/webkit/WebSettings") && name.equals("setJavaScriptEnabled") && descriptor.equals("(Z)V")) {
                         System.out.println("处理Webview组件跨域访问风险: " + className);
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "setZxyJsEnabled", "(Landroid/webkit/WebSettings;Z)V", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "setZxyJsEnabled", "(Landroid/webkit/WebSettings;Z)V", false);
                     }
 
                     // X5Webview组件跨域访问风险
                     else if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("com/tencent/smtt/sdk/WebSettings") && name.equals("setJavaScriptEnabled") && descriptor.equals("(Z)V")) {
                         System.out.println("处理X5Webview组件跨域访问风险: " + className);
-                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/zxy/studentapp/business/asm/AsmMethods", "setZxyX5JsEnabled", "(Lcom/tencent/smtt/sdk/WebSettings;Z)V", false);
+                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/silencefly96/module_base/utils/AsmMethods", "setZxyX5JsEnabled", "(Lcom/tencent/smtt/sdk/WebSettings;Z)V", false);
                     }
 
                     else {

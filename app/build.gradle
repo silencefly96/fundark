@@ -5,8 +5,19 @@ plugins {
     id 'kotlin-parcelize'
     id 'version-test-plugin'
     // id 'version-third-plugin'
-     id 'silencefly96.privacy'
+    id 'silencefly96.privacy'
+    id 'composing-build-plugin'
 }
+
+class InsideModulePlugin implements Plugin<Project> {
+    void apply(Project project) {
+        println 'InsideModulePlugin'
+    }
+}
+
+apply plugin: InsideModulePlugin
+apply plugin: BuildSrcPlugin
+
 
 android {
     compileSdkVersion BuildVersion.compileSdkVersion

@@ -84,7 +84,7 @@ class PrivacyTransform extends Transform {
         }
     }
 
-    void handleDirectoryInput(DirectoryInput directoryInput, TransformOutputProvider outputProvider) {
+    static void handleDirectoryInput(DirectoryInput directoryInput, TransformOutputProvider outputProvider) {
         if (directoryInput.file.isDirectory()) {
             directoryInput.file.eachFileRecurse { File file ->
                 String name = file.name
@@ -113,7 +113,7 @@ class PrivacyTransform extends Transform {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
-    void handleJarInput(JarInput jarInput, TransformOutputProvider outputProvider) {
+    static void handleJarInput(JarInput jarInput, TransformOutputProvider outputProvider) {
         if (jarInput.file.absolutePath.endsWith(".jar")) {
             // 重名名输出文件,因为可能同名,会覆盖
             def jarName = jarInput.name

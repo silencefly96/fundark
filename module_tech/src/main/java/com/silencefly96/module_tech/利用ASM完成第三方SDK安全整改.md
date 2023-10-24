@@ -527,7 +527,22 @@ fun onTestRegisterZxyReceiver() {
 rebuild一下，看下输出台内容，我这整改了很多，不过终点看下那个“处理动态注册广播”，这个我们添加的测试代码生效了:
 ![f.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/27ac6d999d2440e69aa3758b1a583866~tplv-k3u1fbpfcp-jj-mark:0:0:0:0:q75.image#?w=1846&h=599&s=171937&e=png&b=2c2c2c)
 
-嘿嘿，第三方SDK安全整改搞定！Demo可以看下我练手的仓库: [Fundark]()!
+嘿嘿，第三方SDK安全整改搞定！Demo可以看下我练手的仓库: [Fundark](https://github.com/silencefly96/fundark/tree/main/privacy-plugin)!
+
+## 推荐文章
+找资料的过程中看到了很多写的很好的文章，读者可以看下:
+
+[ASM hook隐私方法调用，防止App被下架](https://juejin.cn/post/7043399520486424612)
+
+[自定义Gradle Plugin+字节码插桩](https://juejin.cn/post/6945380865404829703)
+
+[ASM 修改字节码 引发的R8 编译报错](https://juejin.cn/post/7101866159007334414)
+
+[Android - ASM 插桩你所需要知道的基础](https://juejin.cn/post/7000572440988352549)
+
+[ASM 字节码插桩：实现双击防抖](https://juejin.cn/post/7042328862872567838)
+
+[ASM 字节码插桩：助力隐私合规](https://juejin.cn/post/7046207125785149448)
 
 ## 总结
 上篇文章的插件和这篇文章的整改，两篇文章就说完了，但是我去学习和使用的过程真就挺漫长啊，路漫漫其修远兮，吾将上下而求索！

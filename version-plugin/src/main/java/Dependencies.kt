@@ -21,7 +21,7 @@ object Versions {
 
     //Jetpack lifecycle
     const val lifecycle_extensions = "2.2.0"
-    const val lifecycle_viewmodel_ktx = "2.2.0"
+    const val lifecycle_viewmodel_ktx = "2.4.0"
     const val lifecycle_livedata_ktx = "2.3.0-beta01"
     const val databinding = "4.1.3"
 

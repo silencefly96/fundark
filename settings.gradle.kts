@@ -1,5 +1,10 @@
 @file:Suppress("UnstableApiUsage")
-//enableFeaturePreview("VERSION_CATALOGS")
+
+// 开启version catalogs(gradle-7.4.1-src起为稳定特性，不需要开启)
+// enableFeaturePreview("VERSION_CATALOGS")
+
+// 开了会报错: 已在类 org.gradle.accessors.dm.RootProjectAccessor中定义了方法 getVersionPlugin()
+// 引用本地模块(新版写法，比如“test-library”): implementation(projects.testLibrary)
 //enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -10,8 +15,8 @@ pluginManagement {
         maven{ url = uri("./privacy_repo") }
         maven{ url = uri("https://maven.aliyun.com/repository/google/") }
         maven{ url = uri("https://maven.aliyun.com/repository/public/") }
+        google()
         mavenCentral()
-        maven { setUrl("https://jitpack.io") }
     }
 
 }
@@ -23,8 +28,14 @@ dependencyResolutionManagement {
         maven{ url = uri("https://maven.aliyun.com/repository/public/") }
         google()
         mavenCentral()
-        maven { setUrl("https://jitpack.io") }
     }
+
+    // Android推荐放到根目录的gradle文件夹中，不需要再引用
+//    versionCatalogs {
+//        create("libs") {
+//            from(file("$rootDir/libs.versions.toml"))
+//        }
+//    }
 }
 
 rootProject.name = "fundark"

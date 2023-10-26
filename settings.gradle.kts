@@ -24,18 +24,27 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven{ url = uri("./catalog_repo") }
         maven{ url = uri("https://maven.aliyun.com/repository/google/") }
         maven{ url = uri("https://maven.aliyun.com/repository/public/") }
         google()
         mavenCentral()
     }
 
-    // Android推荐放到根目录的gradle文件夹中，不需要再引用
+    // Android推荐放到根目录的gradle文件夹中，不需要再引用(注意是files，出bug卡了我好久)
 //    versionCatalogs {
 //        create("libs") {
-//            from(file("$rootDir/libs.versions.toml"))
+//            from(files("$rootDir/libs.versions.toml"))
 //        }
 //    }
+    // 版本目录配置
+    versionCatalogs {
+        // 创建一个名称为 libs 的版本目录
+        create("libs") {
+            // 从 maven 仓库获取依赖
+            from("silencefly96.catalog:catalog-plugin:1.0.0")
+        }
+    }
 }
 
 rootProject.name = "fundark"
@@ -48,4 +57,4 @@ include(":module_media")
 include(":module_third")
 include(":module_tech")
 include(":privacy-plugin")
-includeBuild("version-plugin")
+includeBuild("build-plugins")

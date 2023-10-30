@@ -18,18 +18,21 @@ plugins {
     id("maven-publish")
 }
 
+// 插件的依赖关系
+dependencies {
+    implementation(gradleApi())
+    implementation("com.android.tools.build:gradle:7.4.2")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
+}
+
 gradlePlugin {
-    plugins.register("versionBasePlugin") {
-        id = "version-base-plugin"
-        implementationClass = "com.silencefly96.version.VersionBasePlugin"
+    plugins.register("applicationOptimizePlugin") {
+        id = "application-optimize-plugin"
+        implementationClass = "com.silencefly96.plugins.ApplicationOptimizePlugin"
     }
-    plugins.register("versionTestPlugin") {
-        id = "version-test-plugin"
-        implementationClass = "com.silencefly96.version.VersionTestPlugin"
-    }
-    plugins.register("versionThirdPlugin") {
-        id = "version-third-plugin"
-        implementationClass = "com.silencefly96.version.VersionThirdPlugin"
+    plugins.register("libraryOptimizePlugin") {
+        id = "library-optimize-plugin"
+        implementationClass = "com.silencefly96.plugins.LibraryOptimizePlugin"
     }
 }
 

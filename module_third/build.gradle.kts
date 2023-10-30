@@ -1,41 +1,25 @@
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
-    id("version-test-plugin")
-    id("version-third-plugin")
+    id("library-optimize-plugin")
 }
 
+@Suppress("UnstableApiUsage")
 android {
-
-    compileSdk  = BuildVersion.compileSdkVersion
-
+    compileSdk = libs.versions.compileSdkVersion.get().toInt()
     defaultConfig {
-        minSdk  = (BuildVersion.minSdkVersion)
-        targetSdk  = (BuildVersion.targetSdkVersion)
-//        versionCode = (BuildVersion.versionCode)
-//        versionName = (BuildVersion.versionName)
-
-        testInstrumentationRunner = ("androidx.test.runner.AndroidJUnitRunner")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = (JavaVersion.VERSION_1_8)
-        targetCompatibility = (JavaVersion.VERSION_1_8)
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        minSdk  = libs.versions.minSdkVersion.get().toInt()
+        targetSdk  = libs.versions.targetSdkVersion.get().toInt()
     }
 }
 
 dependencies {
+    //测试相关
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
     // 从基础库继承各个依赖
     implementation(project(":module_base"))
+
+    // volley
+    implementation(libs.volley)
 }

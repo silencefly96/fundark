@@ -1,39 +1,23 @@
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
-    id("version-base-plugin")
+    id("library-optimize-plugin")
 }
 
+@Suppress("UnstableApiUsage")
 android {
-
-    compileSdk  = BuildVersion.compileSdkVersion
-
+    compileSdk = libs.versions.compileSdkVersion.get().toInt()
     defaultConfig {
-        minSdk  = (BuildVersion.minSdkVersion)
-        targetSdk  = (BuildVersion.targetSdkVersion)
-//        versionCode = (BuildVersion.versionCode)
-//        versionName = (BuildVersion.versionName)
-
-        testInstrumentationRunner = ("androidx.test.runner.AndroidJUnitRunner")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = (JavaVersion.VERSION_1_8)
-        targetCompatibility = (JavaVersion.VERSION_1_8)
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        minSdk  = libs.versions.minSdkVersion.get().toInt()
+        targetSdk  = libs.versions.targetSdkVersion.get().toInt()
     }
 }
 
 dependencies {
+    api(libs.bundles.versionBase)
 
+    // Retrofit网络通信框架
+    api(libs.retrofit)
+    api(libs.converter.gson)
+
+    // Glide
+    api(libs.glide)
 }

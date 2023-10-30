@@ -11,8 +11,6 @@ pluginManagement {
     repositories {
         // 是用于从 Gradle 插件门户下载插件的默认仓库。
         gradlePluginPortal()
-        // 依赖本地仓库
-        maven{ url = uri("./privacy_repo") }
         maven{ url = uri("https://maven.aliyun.com/repository/google/") }
         maven{ url = uri("https://maven.aliyun.com/repository/public/") }
         google()

@@ -34,6 +34,10 @@ gradlePlugin {
         id = "library-optimize-plugin"
         implementationClass = "com.silencefly96.plugins.LibraryOptimizePlugin"
     }
+    plugins.register("privacyPlugin") {
+        id = "privacy-plugin"
+        implementationClass = "com.silencefly96.plugins.privacy.PrivacyPlugin"
+    }
 }
 
 catalog {

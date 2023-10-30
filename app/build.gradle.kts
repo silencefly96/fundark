@@ -1,6 +1,6 @@
 plugins {
     id("application-optimize-plugin")
-    id("silencefly96.privacy")
+    id("privacy-plugin")
 }
 
 android {

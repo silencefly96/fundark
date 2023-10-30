@@ -154,6 +154,20 @@ versionBase = [
 
 [plugins]
 ```
+编译版本使用要稍微注意下，需要做个转换，我试了直接poml里面设置int型好像不太行:
+```
+android {
+    compileSdk = libs.versions.compileSdkVersion.get().toInt()
+    defaultConfig {
+        applicationId = "com.silencefly96.fundark"
+        minSdk  = libs.versions.minSdkVersion.get().toInt()
+        targetSdk  = libs.versions.targetSdkVersion.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
+    }
+}
+```
+
 在文件里面可以通过“#”进行注释，整个文件通过节点分成几部分，可以有空行，但是“=”号不可以换行，数组里面带逗号倒是可以换行。
 
 我也是通过我Dependencies.kt改过来的，可以配合ctrl + r来处理这些繁琐的语法替换。
@@ -271,12 +285,171 @@ class VersionTestPlugin : Plugin<Project> {
 
 反正ext、buildSrc、Composing build以及Version Catalog看需要使用吧。
 
+## 插件优化
+之前看别人写的插件，可以简化module中build.gradle的编写，我这也正好实践了下，配合Version Catalog一起使用。
+
+### 添加依赖
+编写优化gradle的插件，首先要引入gradle相关的api，在module的build.gradle中添加:
+```
+// 插件的依赖关系
+dependencies {
+    implementation(gradleApi())
+    implementation("com.android.tools.build:gradle:7.4.2")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
+}
+```
+注意这里引入的gradle以及kotlin插件是给我们代码用的，所以并不是classpath引入给buildscript用的，要区分开来。
+
+### 编写插件
+接下来就是编写插件了，这里我用的和Composing build一样的方式，可以先看下我之前的文章:
+
+[Android依赖管理实践与总结](https://juejin.cn/post/7290746997061074959#heading-6)
+
+或者直接参考别人的源文章:
+
+[是时候弃用 buildSrc ,使用 Composing builds 加快编译速度了](https://juejin.cn/post/7208015274079387707)
+
+下面就是我写的插件代码了:
+```
+package com.silencefly96.plugins
+
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
+import org.gradle.api.JavaVersion
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+
+class ApplicationOptimizePlugin : Plugin<Project> {
+
+    @Suppress("UnstableApiUsage")
+    override fun apply(target: Project) {
+        // 配置几个个基础插件
+        with(target.plugins) {
+            apply("com.android.application")
+            apply("kotlin-android")
+            apply("kotlin-kapt")
+            apply("kotlin-parcelize")
+        }
+
+        // 配置android闭包
+        target.extensions.configure<ApplicationExtension> {
+
+            // compileSdk需要自己设置
+            // compileSdk = libs.versions.compileSdkVersion.get().toInt()
+
+            defaultConfig {
+                // 这些也都要自己设置
+//                    applicationId = "com.silencefly96.fundark"
+//                    minSdk  = libs.versions.minSdkVersion.get().toInt()
+//                    targetSdk  = libs.versions.targetSdkVersion.get().toInt()
+//                    versionCode = libs.versions.versionCode.get().toInt()
+//                    versionName = libs.versions.versionName.get()
+
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            }
+
+            buildTypes {
+                release {
+                    isMinifyEnabled = false
+                    proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+                }
+            }
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_1_8
+                targetCompatibility = JavaVersion.VERSION_1_8
+            }
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+            buildFeatures {
+                viewBinding = true
+                dataBinding = true
+            }
+        }
+
+        // 配置dependencies闭包
+        with(target.dependencies) {}
+    }
+
+}
+
+// 扩展函数，ApplicationExtension里面没有kotlinOptions，要自己写一个
+fun CommonExtension<*, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+    (this as ExtensionAware).extensions.configure("kotlinOptions", block)
+}
+```
+差不多就是别人的基础上改了点，这里要注意下，application和library模块不能通用，library的要做点修改:
+```
+class LibraryOptimizePlugin : Plugin<Project> {
+    override fun apply(target: Project) {
+        with(target.plugins) {
+            apply("com.android.library")
+            ...
+        }
+
+        // 配置android闭包
+        target.extensions.configure<LibraryExtension> {
+            // ...
+        }
+    }
+}
+```
+这里代码基本一样，就是换了"com.android.library"插件和LibraryExtension，本来我想试试LibraryExtension和ApplicationExtension基类的CommonExtension，但是好像不行。
+
+### 注册插件及使用
+上面插件写好后，就要去build.gralle里面注册插件了:
+```
+gradlePlugin {
+    plugins.register("applicationOptimizePlugin") {
+        id = "application-optimize-plugin"
+        implementationClass = "com.silencefly96.plugins.ApplicationOptimizePlugin"
+    }
+    plugins.register("libraryOptimizePlugin") {
+        id = "library-optimize-plugin"
+        implementationClass = "com.silencefly96.plugins.LibraryOptimizePlugin"
+    }
+}
+```
+根据设置好的id，我们就能在要使用的module里面引入，并删除被优化的内容，比如app里面:
+```
+plugins {
+    id("application-optimize-plugin")
+}
+
+android {
+    compileSdk = libs.versions.compileSdkVersion.get().toInt()
+    defaultConfig {
+        applicationId = "com.silencefly96.fundark"
+        minSdk  = libs.versions.minSdkVersion.get().toInt()
+        targetSdk  = libs.versions.targetSdkVersion.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
+    }
+}
+
+dependencies {
+    //测试相关
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
+    //从基础库继承各个依赖
+    implementation(project(":module_base"))
+}
+```
+因为引入了Version Catalog，所以部分内容不能都优化掉，看需要吧，如果不用Version Catalog直接全优化掉也可以。
+
 ## 参考文章
 在学习的过程中参考了一些文章，还是得感谢各位大佬们的贡献:
 
 [【Gradle7.0】依赖统一管理的全新方式，了解一下~](https://juejin.cn/post/6997396071055900680)
 
 [迁移到 Gradle 7.x 使用 Version Catalogs 管理依赖](https://www.cnblogs.com/joy99/p/17397989.html)
+
+[是时候弃用 buildSrc ,使用 Composing builds 加快编译速度了](https://juejin.cn/post/7208015274079387707)
 
 [Android Gradle 三方依赖管理](https://juejin.cn/post/7130530401763737607)
 

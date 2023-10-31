@@ -14,10 +14,10 @@ class PrivacyPlugin : Plugin<Project> {
             project.extensions.getByType(AndroidComponentsExtension::class.java)
 
         androidComponents.onVariants { variant ->
-            // 控制是否需要扫描依赖库代码
+            // 控制是否需要扫描依赖库代码， ALL / PROJECT
             variant.instrumentation.transformClassesWith(
                 PrivacyTransform::class.java,
-                InstrumentationScope.PROJECT
+                InstrumentationScope.ALL
             ) {}
 
             // 可设置不同的栈帧计算模式

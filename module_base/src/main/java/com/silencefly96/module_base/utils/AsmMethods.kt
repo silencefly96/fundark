@@ -21,6 +21,7 @@ object AsmMethods {
     private val sMethodMap: MutableMap<String, Method?> = ConcurrentHashMap(16)
 
     // ASM替换代码勿动: 替换获取外部文件
+    @JvmStatic
     fun getExternalDir(): File {
         var result = File("")
         // 通过反射执行
@@ -41,6 +42,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: 替换直接动态注册广播
+    @JvmStatic
     fun registerMyReceiver(
         context: Context,
         receiver: BroadcastReceiver?,
@@ -67,6 +69,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: 处理SQL数据库注入漏洞: rawQuery
+    @JvmStatic
     fun rawMyQuery(
         database: SQLiteDatabase,
         sql: String?,
@@ -93,6 +96,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: 处理SQL数据库注入漏洞: rawQuery
+    @JvmStatic
     fun execMySQL(database: SQLiteDatabase, sql: String?) {
         // 通过反射执行
         try {
@@ -109,6 +113,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: ZipperDown漏洞
+    @JvmStatic
     fun getZipEntryName(entry: ZipEntry): String {
         var result = ""
         // 通过反射执行
@@ -132,6 +137,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: 日志函数泄露风险
+    @JvmStatic
     fun optimizeLog(tag: String?, msg: String?): Int {
         var result = 0
         if (BuildConfig.DEBUG) {
@@ -142,6 +148,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: 日志函数泄露风险
+    @JvmStatic
     fun optimizeLogE(tag: String?, msg: String?): Int {
         var result = 0
         if (BuildConfig.DEBUG) {
@@ -152,6 +159,7 @@ object AsmMethods {
     }
 
     // ASM替换代码勿动: WebView组件跨域访问风险
+    @JvmStatic
     fun setMyJsEnabled(settings: WebSettings, flag: Boolean) {
         // 通过反射执行
         try {

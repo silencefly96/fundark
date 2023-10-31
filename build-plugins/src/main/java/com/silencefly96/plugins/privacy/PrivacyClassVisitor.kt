@@ -5,7 +5,7 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
 class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: String)
-    : ClassVisitor(Opcodes.ASM6, nextVisitor) {
+    : ClassVisitor(Opcodes.ASM7, nextVisitor) {
 
     override fun visitMethod(
         access: Int,
@@ -17,7 +17,7 @@ class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: Stri
 
         val methodVisitor = super.visitMethod(access, name, descriptor, signature, exceptions)
 
-        val newMethodVisitor = object: MethodVisitor(Opcodes.ASM6, methodVisitor) {
+        val newMethodVisitor = object: MethodVisitor(Opcodes.ASM7, methodVisitor) {
 
             override fun visitMethodInsn(
                 opcode: Int,

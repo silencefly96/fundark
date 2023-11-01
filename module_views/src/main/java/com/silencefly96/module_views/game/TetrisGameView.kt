@@ -12,8 +12,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.util.Consumer
 import com.silencefly96.module_views.R
 import java.lang.ref.WeakReference
 import kotlin.math.abs
@@ -258,17 +260,28 @@ class TetrisGameView @JvmOverloads constructor(
                 // 新一轮砖块
                 startNewTurn(gameView)
 
-                // 移动前先校验旋转和左右移动
-                val movable = preMoveCheck(gameView)
+                // 判断并旋转砖块
+                if (checkDirection(gameView)) {
+                    updateTetris(gameView)
+                }
 
-                if (movable) {
-                    // 移动砖块
-                    moveTetris(gameView)
-                }else {
-                    // 固定砖块
-                    settleTetris(gameView)
-                    // 检查消除底层
-                    checkRemove(gameView)
+                // 判断并左右移动砖块
+                if (checkHorizontalMove(gameView)) {
+                    updateTetris(gameView)
+                }
+
+                // 向下移动比旋转和左右移动慢一步
+                delayMove {
+                    // 判断并向下移动砖块
+                    if (checkDownMove(gameView)) {
+                        gameView.mTetris.posRow += 1
+                        updateTetris(gameView)
+                    } else {
+                        // 固定砖块，只有向下移动时才判断
+                        settleTetris(gameView)
+                        // 检查消除底层
+                        checkRemove(gameView)
+                    }
                 }
 
                 // 循环发送消息，刷新页面
@@ -294,7 +307,7 @@ class TetrisGameView @JvmOverloads constructor(
                 val type = sTypeArray[(Math.random() * 4).toInt()]
                 gameView.mTetris.dir = (Math.random() * 4).toInt()
                 // 因为旋转所以要保证在界面内
-                gameView.mTetris.posRow = 0 + when(gameView.mTetris.dir) {
+                gameView.mTetris.posRow = -2 + when(gameView.mTetris.dir) {
                     DIR_LEFT -> 1
                     DIR_UP -> 2
                     else -> 0
@@ -307,32 +320,56 @@ class TetrisGameView @JvmOverloads constructor(
             }
         }
 
-        private fun preMoveCheck(gameView: TetrisGameView): Boolean {
-            // 一个一个校验，罗嗦了但是结构清晰
-            val tetris = gameView.mTetris
+        private fun checkDirection(gameView: TetrisGameView): Boolean {
+            var shouldUpdate = false
 
             // 方向预测
             if (newDirection != DIR_NULL) {
+                val tetris = gameView.mTetris
                 getPositions(mTempPositions, tetris, tetris.posRow, tetris.posCol, newDirection)
-                val flag = checkOutAndOverlap(mTempPositions, gameView.mRowNumb, gameView.mColNumb,
+                shouldUpdate = checkOutAndOverlap(mTempPositions, gameView.mRowNumb, gameView.mColNumb,
                     gameView.mGameMap)
-                if (flag) {
+
+                // 修改值，等下一步更新
+                if (shouldUpdate) {
                     tetris.dir = newDirection
                 }
                 newDirection = DIR_NULL
             }
 
+            return shouldUpdate
+        }
+
+        private fun checkHorizontalMove(gameView: TetrisGameView): Boolean {
+            var shouldUpdate = false
+
             // 左右预测
             if (colDelta != 0) {
+                val tetris = gameView.mTetris
                 getPositions(mTempPositions, tetris, tetris.posRow, tetris.posCol + colDelta, tetris.dir)
-                val flag = checkOutAndOverlap(mTempPositions, gameView.mRowNumb, gameView.mColNumb,
+                shouldUpdate = checkOutAndOverlap(mTempPositions, gameView.mRowNumb, gameView.mColNumb,
                     gameView.mGameMap)
-                if (flag) {
+
+                // 修改值，等下一步更新
+                if (shouldUpdate) {
                     tetris.posCol += colDelta
                 }
                 colDelta = 0
             }
 
+            return shouldUpdate
+        }
+        private fun delayMove(func: Consumer<Boolean>) {
+            // 对向下移动控制，左右移动、旋转不限制
+            mMoveCounter++
+            if (mMoveCounter == (TETRIS_MOVE_TIME / GAME_FLUSH_TIME).toInt()) {
+                func.accept(true)
+                mMoveCounter = 0
+            }
+        }
+
+        private fun checkDownMove(gameView: TetrisGameView): Boolean {
+            val tetris = gameView.mTetris
             // 向下移动预测
             getPositions(mTempPositions, tetris, tetris.posRow + 1, tetris.posCol, tetris.dir)
             return checkOutAndOverlap(mTempPositions, gameView.mRowNumb, gameView.mColNumb,
@@ -342,6 +379,14 @@ class TetrisGameView @JvmOverloads constructor(
         // 根据条件获得positions，直接定义不同方向的dir_type会更好吗？其实也要确定锚点，一样的
         private fun getPositions(positions: ArrayList<MutableTriple<Int, Int, Boolean>>,
             tetris: Tetris, posRow: Int, posCol: Int, dir: Int) {
+
+            // 优化旋转方向
+            var optimizedDir = dir
+            // 对方块和条形类型特别优化，O型不需要变换，I型只要两种状态
+            if (tetris.config == CONFIG_TYPE_O) optimizedDir = tetris.dir
+            if (tetris.config == CONFIG_TYPE_I) optimizedDir = dir.mod(2)
+
+            // 位置映射
             for (i in 0..1) for (j in 0..3) {
                 val index = i * 4 + j
                 // 按位取得配置
@@ -350,12 +395,6 @@ class TetrisGameView @JvmOverloads constructor(
                 val triple = positions[index]
                 // 将不同方向对应的位置转换到config的顺序，并保存该位置是否绘制的flag
                 triple.third = flag
-                var optimizedDir = dir
-                // 对方块和条形类型特别优化
-                if (tetris.config == CONFIG_TYPE_O) optimizedDir = DIR_RIGHT
-                if (tetris.config == CONFIG_TYPE_I && dir >= DIR_DOWN) {
-                    optimizedDir = dir - 2
-                }
                 when(optimizedDir) {
                     // 以o为锚点旋转，再优化，左边为旋转后，右边为优化后，目的：减小影响范围，限制在矩形内
                     // 一开始以右向左上角旋转，范围是7*7，可通过取值的变换，变换为5*5或者4*4的矩阵
@@ -424,7 +463,7 @@ class TetrisGameView @JvmOverloads constructor(
 
                 // 旋转后有冲突，暂且忽略上边之外的情况
                 if (pos.first < 0) continue
-                if (pos.third && gameMap[pos.first][pos.second] > 0) {
+                if (gameMap[pos.first][pos.second] > 0) {
                     flag = false
                     break
                 }
@@ -433,24 +472,19 @@ class TetrisGameView @JvmOverloads constructor(
             return flag
         }
 
-        private fun moveTetris(gameView: TetrisGameView) {
+        private fun updateTetris(gameView: TetrisGameView) {
             val tetris = gameView.mTetris
-            // 对向下移动控制，左右移动、旋转不限制
-            mMoveCounter++
-            if (mMoveCounter == (TETRIS_MOVE_TIME / GAME_FLUSH_TIME).toInt()) {
-                tetris.posRow += 1
-                mMoveCounter = 0
-            }
             getPositions(gameView.mPositions, tetris, tetris.posRow, tetris.posCol, tetris.dir)
         }
 
         private fun settleTetris(gameView: TetrisGameView) {
             // 固定砖块的位置，moveTetris已经将位置放到了gameView.mPositions中
+            Log.d("TAG", "type: ${gameView.mTetris.config}，settleTetris: ${gameView.mPositions}")
             for (pos in gameView.mPositions) {
                 if (pos.third) {
                     // 注意这里位置超出屏幕上方就是游戏结束
                     if (pos.first < 0) {
-                        isGameOver
+                        isGameOver = true
                     }else {
                         gameView.mGameMap[pos.first][pos.second] = 1
                     }

@@ -383,3 +383,454 @@ RequestTracker是在RequestManager构造方法new出来的，我们就不用找�
     pendingRequests.clear();
   }
 ```
+就是对request的控制功能了，没什么好说的，这里RequestManager里面还对RequestTracker做了一层封装，向外提供对request的控制:
+```
+public synchronized boolean isPaused()
+public synchronized void pauseRequests()
+public synchronized void pauseAllRequests() 
+public synchronized void resumeRequests()
+```
+
+#### RequestBuilder相关
+下面我们会新开一节来讲RequestBuilder，所以这里就看下RequestManager有哪些通过RequestBuilder去操作的功能:
+- as系列方法
+- load系列方法
+- download方法
+
+download方法有点陌生，不过比较简单，就是标记只下载，可以看下:
+```
+@NonNull
+@CheckResult
+public RequestBuilder<File> download(@Nullable Object model) {
+    return downloadOnly().load(model);
+}
+
+@NonNull
+@CheckResult
+public RequestBuilder<File> downloadOnly() {
+    return as(File.class).apply(DOWNLOAD_ONLY_OPTIONS);
+}
+```
+比较有意思的是RequestBuilder继承了BaseRequestOptions。
+
+> ps. 2023-11-13 隔了一个月，继续写Glide，可能和上面没那么连贯
+## RequestBuilder
+上面讲了RequestManager，由它通过load方法可以生成RequestBuilder对象，核心还是在其as方法:
+```
+@NonNull
+@CheckResult
+public <ResourceType> RequestBuilder<ResourceType> as(
+  @NonNull Class<ResourceType> resourceClass) {
+    return new RequestBuilder<>(glide, this, resourceClass, context);
+}
+```
+as方法会给RequestBuilder赋值泛型的类型，并创建这个RequestBuilder，再传递load方法给RequestBuilder去操作。
+
+---
+上面说到了RequestBuilder继承了BaseRequestOptions，在RequestBuilder的构造方法里，会应用RequestManager内的RequestOptions:
+```
+protected RequestBuilder(
+      @NonNull Glide glide,
+      RequestManager requestManager,
+      Class<TranscodeType> transcodeClass,
+      Context context) {
+    this.glide = glide;
+    this.requestManager = requestManager;
+    this.transcodeClass = transcodeClass;
+    this.context = context;
+    this.transitionOptions = requestManager.getDefaultTransitionOptions(transcodeClass);
+    this.glideContext = glide.getGlideContext();
+
+    initRequestListeners(requestManager.getDefaultRequestListeners());
+    apply(requestManager.getDefaultRequestOptions());
+}
+
+@CheckResult
+@Override
+public RequestBuilder<TranscodeType> apply(@NonNull BaseRequestOptions<?> requestOptions) {
+    Preconditions.checkNotNull(requestOptions);
+    return super.apply(requestOptions);
+}
+```
+也就是Glide中设置的requestOptions，会设置到RequestBuilder里面。
+
+下面再来具体看看RequestBuilder的功能。
+
+### 设置相关属性
+首先我们看下用来设置属性的一些链式方法，他们会设置属性并返回RequestBuilder自身:
+```
+// 加载结束后的transitionOptions
+public RequestBuilder<TranscodeType> transition(
+    @NonNull TransitionOptions<?, ? super TranscodeType> transitionOptions)
+
+// 设置加载成功或失败的监听
+public RequestBuilder<TranscodeType> listener(
+    @Nullable RequestListener<TranscodeType> requestListener)
+public RequestBuilder<TranscodeType> addListener(
+    @Nullable RequestListener<TranscodeType> requestListener)
+
+// 失败图
+public RequestBuilder<TranscodeType> error(@Nullable RequestBuilder<TranscodeType> errorBuilder) 
+
+// 设置略缩图(比原图更快，占位)
+public RequestBuilder<TranscodeType> thumbnail(
+      @Nullable RequestBuilder<TranscodeType> thumbnailRequest)
+public RequestBuilder<TranscodeType> thumbnail(
+      @Nullable RequestBuilder<TranscodeType>... thumbnails)
+public RequestBuilder<TranscodeType> thumbnail(float sizeMultiplier) {
+    if (sizeMultiplier < 0f || sizeMultiplier > 1f) {
+      throw new IllegalArgumentException("sizeMultiplier must be between 0 and 1");
+    }
+    this.thumbSizeMultiplier = sizeMultiplier;
+    return this;
+}
+```
+没什么好说的，就是设置属性。
+
+### load方法
+接下来就是一系列的load方法，也是从RequestManager来的:
+```
+public RequestBuilder<TranscodeType> load(@Nullable Object model)
+public RequestBuilder<TranscodeType> load(@Nullable Bitmap bitmap)
+public RequestBuilder<TranscodeType> load(@Nullable Drawable drawable)
+public RequestBuilder<TranscodeType> load(@Nullable String string)
+public RequestBuilder<TranscodeType> load(@Nullable Uri uri)
+public RequestBuilder<TranscodeType> load(@Nullable File file)
+public RequestBuilder<TranscodeType> load(@RawRes @DrawableRes @Nullable Integer resourceId)
+public RequestBuilder<TranscodeType> load(@Nullable URL url) 
+public RequestBuilder<TranscodeType> load(@Nullable byte[] model)
+```
+最后都是走的loadGeneric方法:
+```
+@NonNull
+private RequestBuilder<TranscodeType> loadGeneric(@Nullable Object model) {
+    this.model = model;
+    isModelSet = true;
+    return this;
+}
+```
+还只是设置了属性，返回了自身，再就到into方法里面去加载。
+
+### into方法
+上面都是一些设置参数的方法，最后到into方法才是真正去加载的，这里into方法有三个public方法:
+```
+public <Y extends Target<TranscodeType>> Y into(@NonNull Y target)
+public ViewTarget<ImageView, TranscodeType> into(@NonNull ImageView view)
+public FutureTarget<TranscodeType> into(int width, int height)
+```
+这三个原理还不太一样，下面分别分析下。
+
+#### into(@NonNull Y target)
+这个方法比较简单，直接就调用了另外的非公开方法，最终到达私有的into方法，这个私有方法我们第一篇有讲到，request就是在这最终创建:
+```
+@NonNull
+public <Y extends Target<TranscodeType>> Y into(@NonNull Y target) {
+    return into(target, /*targetListener=*/ null, Executors.mainThreadExecutor());
+}
+  
+@Synthetic
+<Y extends Target<TranscodeType>> Y into(
+    @NonNull Y target,
+    @Nullable RequestListener<TranscodeType> targetListener,
+    Executor callbackExecutor) {
+        return into(target, targetListener, /*options=*/ this, callbackExecutor);
+}
+
+// 最终执行方法
+private <Y extends Target<TranscodeType>> Y into(
+    @NonNull Y target,
+    @Nullable RequestListener<TranscodeType> targetListener,
+    BaseRequestOptions<?> options,
+    Executor callbackExecutor)
+```
+先看下这个过程中创建、传递了什么参数:
+- target，加载目标
+- targetListener，加载完的回调
+- options，配置参数，即RequestBuilder自身
+- callbackExecutor，执行的线程池
+
+看完传递的参数，就很明了了，就是用线程池根据配置参数去加载，加载完会回调，把数据放到加载目标去，这里再抄一遍第一篇的代码，再详细解析下里面的细节:
+```
+  private <Y extends Target<TranscodeType>> Y into(
+      @NonNull Y target,
+      @Nullable RequestListener<TranscodeType> targetListener,
+      BaseRequestOptions<?> options,
+      Executor callbackExecutor) {
+    Preconditions.checkNotNull(target);
+    if (!isModelSet) {
+      throw new IllegalArgumentException("You must call #load() before calling #into()");
+    }
+
+    // 这里终于创建了request
+    Request request = buildRequest(target, targetListener, options, callbackExecutor);
+
+    // 判断了下要加载的目标imageView旧的请求是否和新的一致，做出处理
+    Request previous = target.getRequest();
+    if (request.isEquivalentTo(previous)
+        && !isSkipMemoryCacheWithCompletePreviousRequest(options, previous)) {
+      if (!Preconditions.checkNotNull(previous).isRunning()) {
+        previous.begin();
+      }
+      return target;
+    }
+
+    // 重新加载
+    requestManager.clear(target);
+    target.setRequest(request);
+    requestManager.track(target, request);
+
+    return target;
+  }
+  
+  // 是否跳过内存缓存，使用前一个request的结果
+  private boolean isSkipMemoryCacheWithCompletePreviousRequest(
+      BaseRequestOptions<?> options, Request previous) {
+    return !options.isMemoryCacheable() && previous.isComplete();
+  }
+```
+可以看到最后是通过requestManager去请求的:
+```
+  synchronized void track(@NonNull Target<?> target, @NonNull Request request) {
+    // targetTracker会处理生命周期
+    targetTracker.track(target);
+    // 交给requestTracker处理请求
+    requestTracker.runRequest(request);
+  }
+```
+将请求的生命周期管理和请求事务的处理分给targetTracker和requestTracker去处理，最后通过request的begin方法启动请求。
+```
+  public void runRequest(@NonNull Request request) {
+    requests.add(request);
+    if (!isPaused) {
+      request.begin();
+    } else {
+      request.clear();
+      if (Log.isLoggable(TAG, Log.VERBOSE)) {
+        Log.v(TAG, "Paused, delaying request");
+      }
+      pendingRequests.add(request);
+    }
+  }
+```
+关于request相关的细节，后面新开文章去解析了，这里讲的是第一个public的into方法，到此就差不多了。
+
+#### into(@NonNull ImageView view)
+其实这个方法才是我们经常使用到的into方法，第一篇文章解析的也是这个方法，继续看下它的代码:
+```
+  @NonNull
+  public ViewTarget<ImageView, TranscodeType> into(@NonNull ImageView view) {
+    Util.assertMainThread();
+    Preconditions.checkNotNull(view);
+
+    // 就是没设置ransformation的时候，根据ScaleType设置一个options
+    BaseRequestOptions<?> requestOptions = this;
+    if (!requestOptions.isTransformationSet()
+        && requestOptions.isTransformationAllowed()
+        && view.getScaleType() != null) {
+        
+      // 根据view的缩放模式设置option
+      switch (view.getScaleType()) {
+        case CENTER_CROP:
+          requestOptions = requestOptions.clone().optionalCenterCrop();
+          break;
+        case CENTER_INSIDE:
+          requestOptions = requestOptions.clone().optionalCenterInside();
+          break;
+        case FIT_CENTER:
+        case FIT_START:
+        case FIT_END:
+          requestOptions = requestOptions.clone().optionalFitCenter();
+          break;
+        case FIT_XY:
+          requestOptions = requestOptions.clone().optionalCenterInside();
+          break;
+        case CENTER:
+        case MATRIX:
+        default:
+          // Do nothing.
+      }
+    }
+
+    return into(
+        glideContext.buildImageViewTarget(view, transcodeClass),
+        /*targetListener=*/ null,
+        requestOptions,
+        Executors.mainThreadExecutor());
+  }
+```
+这里分了两步，第一步是根据view的ScaleType生成了一个requestOptions，第二步是将ImageView转换成ViewTarget并调用上一步的实际into方法去加载。
+
+先看下buildImageViewTarget，好像前面文章也有说到过:
+```
+@NonNull
+public <X> ViewTarget<ImageView, X> buildImageViewTarget(
+  @NonNull ImageView imageView, @NonNull Class<X> transcodeClass) {
+    return imageViewTargetFactory.buildTarget(imageView, transcodeClass);
+}
+
+public class ImageViewTargetFactory {
+  @NonNull
+  @SuppressWarnings("unchecked")
+  public <Z> ViewTarget<ImageView, Z> buildTarget(
+      @NonNull ImageView view, @NonNull Class<Z> clazz) {
+    if (Bitmap.class.equals(clazz)) {
+      return (ViewTarget<ImageView, Z>) new BitmapImageViewTarget(view);
+    } else if (Drawable.class.isAssignableFrom(clazz)) {
+      return (ViewTarget<ImageView, Z>) new DrawableImageViewTarget(view);
+    } else {
+      throw new IllegalArgumentException(
+          "Unhandled class: " + clazz + ", try .as*(Class).transcode(ResourceTranscoder)");
+    }
+  }
+}
+```
+默认只支持Bitmap和Drawable加载到ImageView里面去，再回忆下，这个transcodeClass是as方法来的，默认是asDrawable。
+
+---
+这里看到了isTransformationSet，我觉得还能再研究下:
+```
+  // BaseRequestOptions中
+  public final boolean isTransformationSet() {
+    return isSet(TRANSFORMATION);
+  }
+  
+  public final boolean isTransformationAllowed() {
+    return isTransformationAllowed;
+  }
+```
+两个方法都在BaseRequestOptions中，就是对TRANSFORMATION的判断，看了下BaseRequestOptions里面的代码，非常多的transform，找了下资料，发现这些就是对加载图片的一个处理。
+
+比如我们上面的操作:
+```
+  switch (view.getScaleType()) {
+    case CENTER_CROP:
+      requestOptions = requestOptions.clone().optionalCenterCrop();
+      break;
+```
+走optionalCenterCrop方法:
+```
+  @NonNull
+  @CheckResult
+  public T optionalCenterCrop() {
+    return optionalTransform(DownsampleStrategy.CENTER_OUTSIDE, new CenterCrop());
+  }
+  
+  @NonNull
+  final T optionalTransform(
+      @NonNull DownsampleStrategy downsampleStrategy,
+      @NonNull Transformation<Bitmap> transformation) {
+    if (isAutoCloneEnabled) {
+      return clone().optionalTransform(downsampleStrategy, transformation);
+    }
+
+    downsample(downsampleStrategy);
+    return transform(transformation, /*isRequired=*/ false);
+  }
+```
+其中CenterCrop就是一个BitmapTransformation子类:
+```
+public class CenterCrop extends BitmapTransformation
+```
+说的有点乱了，我就是想想提下有这东西，后面实际用到转换的时候再说！
+
+#### into(int width, int height)
+实际上这个方法被标记废弃了，实际上它做了一些封装，最后还是走到前面的into里面去:
+```
+  @Deprecated
+  public FutureTarget<TranscodeType> into(int width, int height) {
+    return submit(width, height);
+  }
+  
+  @NonNull
+  public FutureTarget<TranscodeType> submit(int width, int height) {
+    final RequestFutureTarget<TranscodeType> target = new RequestFutureTarget<>(width, height);
+    return into(target, target, Executors.directExecutor());
+  }
+```
+RequestFutureTarget既是加载的目标，又是回调的监听者，它不是一个ImageView，更多的像是FutureTask一样在未来能拿到数据:
+```
+  @Override
+  public R get(long time, @NonNull TimeUnit timeUnit)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    return doGet(timeUnit.toMillis(time));
+  }
+```
+有点像把所有功能都放在里面执行，最终得到结果，类似一个上帝类，这就不多研究了，毕竟废弃了。
+
+### 其他方法
+还剩下几个方法，submit和上面最后一个into一起的就不说了，就还有preload和downloadOnly，下面分别看下。
+
+#### preload方法
+先看下代码:
+```
+  @NonNull
+  public Target<TranscodeType> preload(int width, int height) {
+    final PreloadTarget<TranscodeType> target = PreloadTarget.obtain(requestManager, width, height);
+    return into(target);
+  }
+  
+  @NonNull
+  public Target<TranscodeType> preload() {
+    return preload(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+  }
+  
+  @NonNull
+  public <Y extends Target<TranscodeType>> Y into(@NonNull Y target) {
+    return into(target, /*targetListener=*/ null, Executors.mainThreadExecutor());
+  }
+```
+貌似和上面submit类似，但是只是一个Target，没有设置targetListener，PreloadTarget还是挺简单的，看下里面的关键代码:
+```
+  private static final int MESSAGE_CLEAR = 1;
+  private static final Handler HANDLER =
+      new Handler(
+          Looper.getMainLooper(),
+          new Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+              // 收到消息后好像就是做了清除操作
+              if (message.what == MESSAGE_CLEAR) {
+                ((PreloadTarget<?>) message.obj).clear();
+                return true;
+              }
+              return false;
+            }
+          });
+          
+  @Override
+  public void onResourceReady(@NonNull Z resource, @Nullable Transition<? super Z> transition) {
+    HANDLER.obtainMessage(MESSAGE_CLEAR, this).sendToTarget();
+  }
+  
+  @Synthetic
+  void clear() {
+    requestManager.clear(this);
+  }
+```
+就是下载完了清除任务了。
+
+#### downloadOnly方法
+downloadOnly方法也被标记废弃了，这里推荐用RequestManager的downloadOnly，我们看下代码:
+```
+  @Deprecated
+  @CheckResult
+  public <Y extends Target<File>> Y downloadOnly(@NonNull Y target) {
+    return getDownloadOnlyRequest().into(target);
+  }
+  
+  @Deprecated
+  @CheckResult
+  public FutureTarget<File> downloadOnly(int width, int height) {
+    return getDownloadOnlyRequest().submit(width, height);
+  }
+  
+  @NonNull
+  @CheckResult
+  protected RequestBuilder<File> getDownloadOnlyRequest() {
+    return new RequestBuilder<>(File.class, this).apply(DOWNLOAD_ONLY_OPTIONS);
+  }
+```
+呃，好像就是新建了一个RequestBuilder用上了DOWNLOAD_ONLY_OPTIONS属性，果然还是用RequestManager的downloadOnly好一些。
+
+## 小结
+这里就是讲了下RequestManager和RequestBuilder的内容，RequestManager章节包含了RequestOptions属性的设置、RequestManagerTreeNode在fragment中的查找、RequestTracker请求管理等，RequestBuilder讲解了和请求相关的一些操作。

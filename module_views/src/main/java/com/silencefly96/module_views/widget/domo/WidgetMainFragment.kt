@@ -25,6 +25,9 @@ class WidgetMainFragment: BaseFragment() {
 
         add(Item(2, "懒加载图片控件: LazyImageViewDemo",
             "简单模仿Glide的图片懒加载控件"))
+
+        add(Item(3, "Markdown控件: MarkdownView",
+            "解析markdown语法的自定义view"))
     }
 
     // 适配器
@@ -52,6 +55,7 @@ class WidgetMainFragment: BaseFragment() {
                 view?.findNavController()?.navigate(when(itemObj.index) {
                     1 -> R.id.action_main_to_drawable_view
                     2 -> R.id.action_main_to_lazy_image_view
+                    3 -> R.id.action_main_to_mark_down_view
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

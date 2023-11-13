@@ -41,6 +41,8 @@
     <string name="show_bing_pic">点击获取必应每日一图</string>
     <string name="clear_pic">清除</string>
 
+    <string name="mark_down_view_fragment">Markdown解析</string>
+
     <string name="test_string">一般情况下，getMeasuredWidth()和getWidth()获得的结果是一样的，但是如果在父布局的onLayout()方法或者此View的onDraw()方法里调用measure(0,0);(measure中的参数的值你自己可以定义)的话，两者的结果可能会不同。\n</string>
     <string name="test_long_string">
         一般情况下，getMeasuredWidth()和getWidth()获得的结果是一样的，但是如果在父布局的onLayout()方法或者此View的onDraw()方法里调用measure(0,0);(measure中的参数的值你自己可以定义)的话，两者的结果可能会不同。\n

@@ -216,6 +216,10 @@
         <action android:id="@+id/action_main_to_lazy_image_view"
             app:destination="@id/lazyImageViewDemo">
         </action>
+
+        <action android:id="@+id/action_main_to_mark_down_view"
+            app:destination="@id/markDownViewDemo">
+        </action>
     </fragment>
 
     <fragment
@@ -229,6 +233,12 @@
         android:name="com.silencefly96.module_views.widget.domo.LazyImageViewDemo"
         android:label="@string/lazy_image_view_fragment"
         tools:layout="@layout/fragment_lazy_image_view" />
+
+    <fragment
+        android:id="@+id/markDownViewDemo"
+        android:name="com.silencefly96.module_views.widget.domo.MarkdownViewDemo"
+        android:label="@string/mark_down_view_fragment"
+        tools:layout="@layout/fragment_mark_down" />
 
     <fragment
         android:id="@+id/toolMainFragment"

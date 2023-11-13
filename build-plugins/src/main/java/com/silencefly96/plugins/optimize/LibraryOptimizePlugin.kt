@@ -1,4 +1,4 @@
-package com.silencefly96.plugins
+package com.silencefly96.plugins.optimize
 
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion

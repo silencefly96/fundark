@@ -160,15 +160,15 @@ object AsmMethods {
 
     // ASM替换代码勿动: WebView组件跨域访问风险
     @JvmStatic
-    fun setMyJsEnabled(settings: WebSettings, flag: Boolean) {
+    fun setZxyJsEnabled(settings: WebSettings, flag: Boolean) {
         // 通过反射执行
         try {
             val methodStr =
                 StringBuilder().append("set").append("JavaScript").append("Enabled").toString()
-            var method = sMethodMap["setMyJsEnabled"]
+            var method = sMethodMap["setZxyJsEnabled"]
             if (null == method) {
                 method = settings.javaClass.getMethod(methodStr, Boolean::class.javaPrimitiveType)
-                sMethodMap["setMyJsEnabled"] = method
+                sMethodMap["setZxyJsEnabled"] = method
             }
             method!!.invoke(settings, flag)
         } catch (e: Exception) {

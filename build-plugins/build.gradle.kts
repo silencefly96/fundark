@@ -28,11 +28,11 @@ dependencies {
 gradlePlugin {
     plugins.register("applicationOptimizePlugin") {
         id = "application-optimize-plugin"
-        implementationClass = "com.silencefly96.plugins.ApplicationOptimizePlugin"
+        implementationClass = "com.silencefly96.plugins.optimize.ApplicationOptimizePlugin"
     }
     plugins.register("libraryOptimizePlugin") {
         id = "library-optimize-plugin"
-        implementationClass = "com.silencefly96.plugins.LibraryOptimizePlugin"
+        implementationClass = "com.silencefly96.plugins.optimize.LibraryOptimizePlugin"
     }
     plugins.register("privacyPlugin") {
         id = "privacy-plugin"

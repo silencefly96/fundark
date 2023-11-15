@@ -22,4 +22,7 @@ dependencies {
 
     //从基础库继承各个依赖
     implementation(project(":module_base"))
+
+    // 阿里云的HTTPDNS
+    implementation(libs.httpdns)
 }

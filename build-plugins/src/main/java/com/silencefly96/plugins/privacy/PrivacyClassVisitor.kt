@@ -52,7 +52,7 @@ class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: Stri
                     mv.visitMethodInsn(
                         Opcodes.INVOKESTATIC,
                         "com/silencefly96/module_base/utils/AsmMethods",
-                        "registerZxyReceiver",
+                        "registerMyReceiver",
                         "(Landroid/content/Context;Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;)Landroid/content/Intent;",
                         false
                     )
@@ -61,7 +61,7 @@ class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: Stri
                     mv.visitMethodInsn(
                         Opcodes.INVOKESTATIC,
                         "com/silencefly96/module_base/utils/AsmMethods",
-                        "rawZxyQuery",
+                        "rawMyQuery",
                         "(Landroid/database/sqlite/SQLiteDatabase;Ljava/lang/String;[Ljava/lang/String;)Landroid/database/Cursor;",
                         false
                     )
@@ -70,7 +70,7 @@ class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: Stri
                     mv.visitMethodInsn(
                         Opcodes.INVOKESTATIC,
                         "com/silencefly96/module_base/utils/AsmMethods",
-                        "execZxySQL",
+                        "execMySQL",
                         "(Landroid/database/sqlite/SQLiteDatabase;Ljava/lang/String;)V",
                         false
                     )
@@ -108,7 +108,7 @@ class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: Stri
                     mv.visitMethodInsn(
                         Opcodes.INVOKESTATIC,
                         "com/silencefly96/module_base/utils/AsmMethods",
-                        "setZxyJsEnabled",
+                        "setMyJsEnabled",
                         "(Landroid/webkit/WebSettings;Z)V",
                         false
                     )
@@ -117,7 +117,7 @@ class PrivacyClassVisitor(nextVisitor: ClassVisitor, private val className: Stri
                     mv.visitMethodInsn(
                         Opcodes.INVOKESTATIC,
                         "com/silencefly96/module_base/utils/AsmMethods",
-                        "setZxyX5JsEnabled",
+                        "setMyX5JsEnabled",
                         "(Lcom/tencent/smtt/sdk/WebSettings;Z)V",
                         false
                     )

@@ -3,20 +3,8 @@
 package com.silencefly96.module_views.widget.markdown.client.adapter
 
 import android.view.View
-import com.silencefly96.module_views.widget.markdown.adapter.adapters.*
-import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.CodeAdapter
-import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.HeaderAdapter
-import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.OlAdapter
-import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.ParagraphAdapter
-import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.ReferenceAdapter
-import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.UlAdapter
-import com.silencefly96.module_views.widget.markdown.client.parser.section.CodeSection
-import com.silencefly96.module_views.widget.markdown.client.parser.section.HeaderSection
-import com.silencefly96.module_views.widget.markdown.client.parser.section.OlSection
-import com.silencefly96.module_views.widget.markdown.client.parser.section.ParagraphSection
-import com.silencefly96.module_views.widget.markdown.client.parser.section.ReferenceSection
-import com.silencefly96.module_views.widget.markdown.client.parser.section.UlSection
-import com.silencefly96.module_views.widget.markdown.parser.section.*
+import com.silencefly96.module_views.widget.markdown.client.adapter.adapters.*
+import com.silencefly96.module_views.widget.markdown.client.parser.section.*
 
 /**
  * 外观模式提供section适配

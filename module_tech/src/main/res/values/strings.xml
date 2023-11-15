@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">module_tech</string>
+
+    <string name="main_fragment">首页</string>
+
+    <string name="view_main_fragment">自定义view</string>
+    <string name="slide_delete_fragment">左滑删除列表</string>
+
+    <string name="tool_main_fragment">自定义工具</string>
+    <string name="custom_glide_fragment">Glide扩展图片类型</string>
+
+    <string name="tech_main_fragment">实践性技术</string>
+    <string name="dns_test_fragment">Glide扩展图片类型</string>
 </resources>

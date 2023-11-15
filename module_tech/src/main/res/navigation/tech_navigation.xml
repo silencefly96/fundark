@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tech_navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.silencefly96.module_tech.MainFragment"
+        android:label="@string/main_fragment"
+        tools:layout="@layout/fragment_main">
+
+        <action android:id="@+id/action_main_to_tool"
+            app:destination="@id/toolMainFragment">
+        </action>
+
+        <action android:id="@+id/action_main_to_tech"
+            app:destination="@id/techMainFragment">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/toolMainFragment"
+        android:name="com.silencefly96.module_tech.tool.demo.ToolsMainFragment"
+        android:label="@string/tool_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_custom_glide"
+            app:destination="@id/customGlideDemo">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/customGlideDemo"
+        android:name="com.silencefly96.module_tech.tool.demo.CustomGlideDemo"
+        android:label="@string/custom_glide_fragment"
+        tools:layout="@layout/fragment_custom_glide" />
+
+    <fragment
+        android:id="@+id/techMainFragment"
+        android:name="com.silencefly96.module_tech.tech.demo.TechMainFragment"
+        android:label="@string/tech_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_dns_test"
+            app:destination="@id/dnsTestDemo">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/dnsTestDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.DnsTestDemo"
+        android:label="@string/dns_test_fragment"
+        tools:layout="@layout/fragment_custom_glide" />
+
+</navigation>

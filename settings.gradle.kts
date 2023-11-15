@@ -23,6 +23,12 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven{ url = uri("./catalog_repo") }
+        maven {
+            url = uri("http://maven.aliyun.com/nexus/content/repositories/releases/")
+            name = "aliyun"
+            //一定要添加这个配置
+            isAllowInsecureProtocol = true
+        }
         maven{ url = uri("https://maven.aliyun.com/repository/google/") }
         maven{ url = uri("https://maven.aliyun.com/repository/public/") }
         google()
@@ -35,14 +41,15 @@ dependencyResolutionManagement {
 //            from(files("$rootDir/libs.versions.toml"))
 //        }
 //    }
+
     // 版本目录配置
-    versionCatalogs {
-        // 创建一个名称为 libs 的版本目录
-        create("libs") {
-            // 从 maven 仓库获取依赖
-            from("silencefly96.catalog:catalog-plugin:1.0.0")
-        }
-    }
+//    versionCatalogs {
+//        // 创建一个名称为 libs 的版本目录
+//        create("libs") {
+//            // 从 maven 仓库获取依赖
+//            from("silencefly96.catalog:catalog-plugin:1.0.0")
+//        }
+//    }
 }
 
 rootProject.name = "fundark"

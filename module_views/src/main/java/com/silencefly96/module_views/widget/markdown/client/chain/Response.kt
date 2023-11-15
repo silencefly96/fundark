@@ -4,9 +4,9 @@ import android.view.View
 
 class Response {
 
-    val views: MutableList<View> = ArrayList()
+    val mViews: MutableList<View> = ArrayList()
 
     fun getViews(): List<View> {
-        return views
+        return mViews
     }
 }

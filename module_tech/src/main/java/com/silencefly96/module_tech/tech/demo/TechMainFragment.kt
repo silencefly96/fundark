@@ -20,10 +20,11 @@ class TechMainFragment: BaseFragment() {
 
     // 数据
     private val mData = arrayListOf<Item>().apply {
-        add(
-            Item(1, "Dns优化: DnsInterceptor",
-            "对DNS的优化，ipv4优先、httpdns优化")
-        )
+        add(Item(1, "Dns优化: DnsInterceptor",
+            "对DNS的优化，ipv4优先、httpdns优化"))
+
+        add(Item(2, "Activity flag测试: TestActivityA/B/C/D/E",
+            "对Android启动模式、flag、taskAffinity进行测试"))
     }
 
     // 适配器
@@ -50,6 +51,7 @@ class TechMainFragment: BaseFragment() {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
                     1 -> R.id.action_main_to_dns_test
+                    2 -> R.id.action_main_to_activity_flag
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

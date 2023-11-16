@@ -49,6 +49,10 @@
             app:destination="@id/dnsTestDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_activity_flag"
+            app:destination="@id/activityFlagDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -56,5 +60,11 @@
         android:name="com.silencefly96.module_tech.tech.demo.DnsTestDemo"
         android:label="@string/dns_test_fragment"
         tools:layout="@layout/fragment_custom_glide" />
+
+    <fragment
+        android:id="@+id/activityFlagDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.ActivityFlagDemo"
+        android:label="@string/activity_flag_fragment"
+        tools:layout="@layout/activity_test" />
 
 </navigation>

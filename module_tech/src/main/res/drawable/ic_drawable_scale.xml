@@ -1,0 +1,12 @@
+<scale xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_launcher"
+    android:scaleGravity="center"
+    android:scaleWidth="75%"
+    android:scaleHeight="75%"
+    >
+
+    <shape>
+        <solid android:color="@color/gray"/>
+    </shape>
+
+</scale>

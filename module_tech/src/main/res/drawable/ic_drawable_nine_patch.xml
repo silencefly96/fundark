@@ -1,0 +1,12 @@
+<nine-patch xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/ic_nine_patch"
+    android:dither="true"
+     />
+<!--
+    antialias 抗锯齿
+    dither 抖动效果，防止因像素适配问题导致的失真
+    filter 过滤效果，防止拉伸或压缩时影响显示效果
+    gravity 当图片尺寸小于容器尺寸时，对图片的定位效果
+    mipMap 纹理映射，防止远处图片失真
+    tileMode 平铺模式，和gravity冲突，有平铺repeat、镜像mirror、两边扩展
+-->

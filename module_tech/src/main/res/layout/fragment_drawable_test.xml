@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/bitmapDrawable"
+            android:text="BitmapDrawable"
+            android:background="@drawable/ic_drawable_bitmap"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/ninePatchDrawable"
+            android:text="NinePatchDrawable"
+            android:background="@drawable/ic_drawable_nine_patch"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/shapeDrawable"
+            android:text="ShapeDrawable"
+            android:background="@drawable/ic_drawable_shape"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/layerDrawable"
+            android:text="LayerDrawable"
+            android:background="@drawable/ic_drawable_layer"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/stateListDrawable"
+            android:text="StateListDrawable(press)"
+            android:background="@drawable/ic_drawable_state_list"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/levelListDrawable"
+            android:text="LevelListDrawable: current level = 0"
+            android:background="@drawable/ic_drawable_level_list"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/transitionDrawable"
+            android:text="TransitionDrawable(click)"
+            android:background="@drawable/ic_drawable_transition"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/insertDrawable"
+            android:text="InsertDrawable"
+            android:background="@drawable/ic_drawable_insert"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/scaleDrawable"
+            android:text="ScaleDrawable: current level = 0"
+            android:background="@drawable/ic_drawable_scale"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/clipDrawable"
+            android:text="ClipDrawable: current level = 0"
+            android:background="@drawable/ic_drawable_clip"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/customDrawable"
+            android:text="CustomDrawable: current level = 0"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/rippleDrawable"
+            android:text="RippleDrawable(click)"
+            android:background="@drawable/ic_drawable_ripple"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/rotateDrawable"
+            android:text="RotateDrawable: current level = 0"
+            android:background="@drawable/ic_drawable_rotate"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/animateStateListDrawable"
+            android:text="AnimateStateListDrawable(press)"
+            android:background="@drawable/ic_drawable_animate_state_list"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText"
+            />
+
+    </LinearLayout>
+
+
+</ScrollView>

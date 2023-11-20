@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 开启状态 -->
+    <item
+        android:id="@+id/state_on"
+        android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/blue"/>
+        </shape>
+    </item>
+
+    <!-- 关闭状态 -->
+    <item
+        android:id="@+id/state_off"
+        android:state_pressed="false">
+        <shape>
+            <stroke android:width="3dp" android:color="@color/gray"/>
+        </shape>
+    </item>
+
+    <!-- 关闭切换到开启的帧动画 -->
+    <transition
+        android:fromId="@id/state_off"
+        android:toId="@id/state_on">
+        <animation-list>
+            <item android:duration="200">
+                <shape><solid android:color="#000000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#220000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#440000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#660000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#880000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#AA0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#CC0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#EE0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#FF0000FF"/> </shape>
+            </item>
+        </animation-list>
+    </transition>
+
+    <!-- 开启切换到关闭的动画 -->
+    <transition
+        android:fromId="@id/state_on"
+        android:toId="@id/state_off">
+        <animation-list>
+            <item android:duration="200">
+                <shape><solid android:color="#FF0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#EE0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#CC0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#AA0000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#880000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#660000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#440000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#220000FF"/> </shape>
+            </item>
+            <item android:duration="200">
+                <shape><solid android:color="#000000FF"/> </shape>
+            </item>
+        </animation-list>
+    </transition>
+</animated-selector>

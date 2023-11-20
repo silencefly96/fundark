@@ -2,18 +2,9 @@ package com.silencefly96.fundark
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import com.alibaba.sdk.android.httpdns.HttpDns
 import com.silencefly96.fundark.databinding.ActivityMainBinding
 import com.silencefly96.module_base.base.BaseActivity
-import okhttp3.OkHttpClient
-import java.net.URL
-import java.util.Arrays
 
 
 class MainActivity : BaseActivity() {

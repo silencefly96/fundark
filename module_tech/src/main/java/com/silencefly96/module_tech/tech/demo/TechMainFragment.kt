@@ -25,6 +25,9 @@ class TechMainFragment: BaseFragment() {
 
         add(Item(2, "Activity flag测试: TestActivityA/B/C/D/E",
             "对Android启动模式、flag、taskAffinity进行测试"))
+
+        add(Item(3, "drawable测试: DrawableTest",
+            "查看各种drawable的展示效果"))
     }
 
     // 适配器
@@ -52,6 +55,7 @@ class TechMainFragment: BaseFragment() {
                 view?.findNavController()?.navigate(when(itemObj.index) {
                     1 -> R.id.action_main_to_dns_test
                     2 -> R.id.action_main_to_activity_flag
+                    3 -> R.id.action_main_to_drawable_test
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

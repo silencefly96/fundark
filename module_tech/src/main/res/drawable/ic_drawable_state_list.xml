@@ -1,0 +1,28 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:constantSize="false"
+    android:dither="true"
+    android:variablePadding="false">
+    <!--  constantSize，状态变化，size保持不变(最大item尺寸)  -->
+    <!--  constantSize，状态变化，padding跟随变化，否则用最大padding  -->
+
+    <!--  各种状态，pressed、checked、focused、selected、enabled  -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/gray"/>
+        </shape>
+    </item>
+
+    <item android:state_focused="true">
+        <shape>
+            <stroke android:width="3dp" android:color="@color/blue"/>
+        </shape>
+    </item>
+
+    <!--  一般状态放最后  -->
+    <item>
+        <shape>
+            <stroke android:width="3dp" android:color="@color/gray"/>
+        </shape>
+    </item>
+
+</selector>

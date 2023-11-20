@@ -1,0 +1,25 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--  模仿输入框  -->
+
+    <!--  全灰  -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/gray"/>
+        </shape>
+    </item>
+
+    <!--  下面留一条灰线，其他全白  -->
+    <item android:bottom="30dp" >
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white"/>
+        </shape>
+    </item>
+
+    <!--  左右留一点，嵌入底部灰线，中间全白  -->
+    <item android:bottom="15dp" android:left="15dp" android:right="15dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white"/>
+        </shape>
+    </item>
+</layer-list>

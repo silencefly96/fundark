@@ -1,0 +1,6 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/blue"
+    android:radius="100dp"
+     />
+<!-- color，必须，涟漪的颜色 -->
+<!-- radius，涟漪最大的半径 -->

@@ -53,6 +53,10 @@
             app:destination="@id/activityFlagDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_drawable_test"
+            app:destination="@id/drawableTestDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -66,5 +70,11 @@
         android:name="com.silencefly96.module_tech.tech.demo.ActivityFlagDemo"
         android:label="@string/activity_flag_fragment"
         tools:layout="@layout/activity_test" />
+
+    <fragment
+        android:id="@+id/drawableTestDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.DrawableTestDemo"
+        android:label="@string/drawable_test_fragment"
+        tools:layout="@layout/fragment_drawable_test" />
 
 </navigation>

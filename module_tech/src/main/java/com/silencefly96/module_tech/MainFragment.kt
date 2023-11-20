@@ -22,8 +22,8 @@ class MainFragment: BaseFragment() {
         add(Item(1, "tool",
             "编写的一些实用工具"))
 
-        add(Item(2, "tecn",
-            "一些实践用的技术"))
+        add(Item(2, "tech",
+            "一些实践、测试用的技术"))
     }
 
     // 适配器

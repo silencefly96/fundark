@@ -12,6 +12,7 @@
     <string name="tech_main_fragment">实践性技术</string>
     <string name="dns_test_fragment">Glide扩展图片类型</string>
     <string name="activity_flag_fragment">测试Activity flag的使用</string>
+    <string name="drawable_test_fragment">测试各种drawable效果</string>
 
     <string name="activity_flag_button">点击跳转</string>
 </resources>

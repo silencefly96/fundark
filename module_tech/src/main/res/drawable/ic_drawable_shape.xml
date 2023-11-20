@@ -22,6 +22,8 @@
     <!--  渐变(和solid冲突)  -->
     <gradient
         android:type="sweep"
+        android:centerY="50%"
+        android:centerX="25%"
         android:startColor="@color/red"
         android:centerColor="@color/yellow"
         android:endColor="@color/purple"

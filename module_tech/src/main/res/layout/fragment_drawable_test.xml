@@ -131,6 +131,8 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
             tools:ignore="HardcodedText"
             />
 

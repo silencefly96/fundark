@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1500"
+    android:fillBefore="true"
+    android:fillAfter="true"
+    android:repeatMode="reverse"
+    android:startOffset="100"
+    android:shareInterpolator="true">
+    <!--  fillBefore，fillAfter，动画结束后保持开始或结束状态  -->
+
+    <scale
+        android:fromXScale="0.25"
+        android:fromYScale="0.25"
+        android:toXScale="1"
+        android:toYScale="1"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        />
+
+    <rotate
+        android:fromDegrees="0"
+        android:toDegrees="360"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        />
+
+    <translate
+        android:fromXDelta="0"
+        android:fromYDelta="0"
+        android:toXDelta="50%p"
+        android:toYDelta="0"
+        />
+
+    <alpha
+        android:fromAlpha="0.25"
+        android:toAlpha="1"
+        />
+
+</set>

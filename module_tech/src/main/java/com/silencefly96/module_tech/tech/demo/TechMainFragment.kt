@@ -28,6 +28,9 @@ class TechMainFragment: BaseFragment() {
 
         add(Item(3, "drawable测试: DrawableTest",
             "查看各种drawable的展示效果"))
+
+        add(Item(4, "animation测试: AnimationTest",
+            "查看各种动画的展示效果"))
     }
 
     // 适配器
@@ -56,6 +59,7 @@ class TechMainFragment: BaseFragment() {
                     1 -> R.id.action_main_to_dns_test
                     2 -> R.id.action_main_to_activity_flag
                     3 -> R.id.action_main_to_drawable_test
+                    4 -> R.id.action_main_to_animation_test
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

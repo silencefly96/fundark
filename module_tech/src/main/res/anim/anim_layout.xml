@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:delay="15%"
+    android:animationOrder="normal"
+    android:animation="@anim/anim_layout_item"
+    />
+<!--  单个元素的延迟时间，delay时间全部是300ms，o.5就是150ms，第一个150ms，第二个300ms  -->

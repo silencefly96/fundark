@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:visible="true"
+    android:oneshot="true"
+    >
+    <item android:duration="200">
+        <shape><solid android:color="#000000FF"/><stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#220000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#440000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#660000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#880000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#AA0000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#CC0000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#EE0000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+    <item android:duration="200">
+        <shape><solid android:color="#FF0000FF"/> <stroke android:color="@color/green"/></shape>
+    </item>
+</animation-list>

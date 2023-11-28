@@ -32,6 +32,8 @@
         <activity android:name=".tech.activity_flag.TestActivityC" android:taskAffinity="com.test.TestA"/>
         <activity android:name=".tech.activity_flag.TestActivityD" android:taskAffinity="com.test.TestB"/>
         <activity android:name=".tech.activity_flag.TestActivityE" android:taskAffinity="com.test.TestB"/>
+        <activity android:name=".tech.animation.AnimationActivity" />
+
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>
 

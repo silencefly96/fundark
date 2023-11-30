@@ -7,4 +7,5 @@
         android:toYDelta="100%p"
         android:interpolator="@android:anim/accelerate_interpolator"
         />
+    <!--  @android:anim中包含很多animation动画，及几个插值器  -->
 </set>

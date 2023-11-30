@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially"
+    >
+
+<!--    <animator-->
+<!--        android:duration="1000"-->
+<!--        android:repeatMode="reverse"-->
+<!--        android:interpolator="@android:interpolator/decelerate_cubic"-->
+<!--        android:startOffset="100"-->
+<!--        android:repeatCount="5"-->
+<!--        android:valueType="colorType"-->
+<!--        android:valueFrom="@color/blue"-->
+<!--        android:valueTo="@color/yellow"-->
+<!--        />-->
+    <!--  valueType有四种: colorType、floatType、intType、pathType  -->
+    <!--  @android:animator中包含很多animator动画，但是插值器保存在@android:interpolator，和animation不能通用  -->
+
+    <set android:ordering="together">
+        <objectAnimator
+            android:propertyName="x"
+            android:valueType="floatType"
+            android:valueTo="100"
+            android:duration="1000"
+            />
+        <!--    这里x需要使用float，注意属性类型要写对，不然没反应    />-->
+
+        <objectAnimator
+            android:propertyName="translationY"
+            android:valueType="floatType"
+            android:valueTo="100"
+            android:duration="1000"
+            />
+        <!--   无法知道起始值     />-->
+
+    </set>
+
+    <objectAnimator
+        android:propertyName="translationY"
+        android:valueType="floatType"
+        android:valueFrom="100"
+        android:valueTo="0"
+        android:duration="1000"
+        />
+    <!--    注意translationY和y属性的区别    />-->
+
+    <objectAnimator
+        android:propertyName="translationX"
+        android:valueType="floatType"
+        android:valueTo="100dp"
+        android:duration="1000"
+        />
+    <!--    android:valueTo="75%p"，这样的写法不对了    />-->
+
+
+</set>

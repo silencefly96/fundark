@@ -30,7 +30,10 @@ class TechMainFragment: BaseFragment() {
             "查看各种drawable的展示效果"))
 
         add(Item(4, "animation测试: AnimationTest",
-            "查看各种动画的展示效果"))
+            "查看View动画(帧动画)的展示效果"))
+
+        add(Item(5, "animator测试: AnimatorTest",
+            "查看属性动画的展示效果"))
     }
 
     // 适配器
@@ -60,6 +63,7 @@ class TechMainFragment: BaseFragment() {
                     2 -> R.id.action_main_to_activity_flag
                     3 -> R.id.action_main_to_drawable_test
                     4 -> R.id.action_main_to_animation_test
+                    5 -> R.id.action_main_to_animator_test
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

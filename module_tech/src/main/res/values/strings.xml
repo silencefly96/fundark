@@ -14,6 +14,7 @@
     <string name="activity_flag_fragment">测试Activity flag的使用</string>
     <string name="drawable_test_fragment">测试各种drawable效果</string>
     <string name="animation_test_fragment">测试各种animation效果</string>
+    <string name="animator_test_fragment">测试各种animator效果</string>
 
     <string name="activity_flag_button">点击跳转</string>
     <string name="activity_animation_button">点击返回</string>

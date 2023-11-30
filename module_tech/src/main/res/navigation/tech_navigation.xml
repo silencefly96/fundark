@@ -61,6 +61,10 @@
             app:destination="@id/animationTestDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_animator_test"
+            app:destination="@id/animatorTestDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -86,5 +90,11 @@
         android:name="com.silencefly96.module_tech.tech.demo.AnimationTestDemo"
         android:label="@string/animation_test_fragment"
         tools:layout="@layout/fragment_animation_test" />
+
+    <fragment
+        android:id="@+id/animatorTestDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.AnimatorTestDemo"
+        android:label="@string/animator_test_fragment"
+        tools:layout="@layout/fragment_animator_test" />
 
 </navigation>

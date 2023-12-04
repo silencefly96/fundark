@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
-import androidx.core.view.children
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_tech.R
 import com.silencefly96.module_tech.databinding.FragmentAnimationTestBinding
@@ -28,7 +27,7 @@ class AnimationTestDemo: BaseFragment() {
         return binding.root
     }
 
-    @SuppressLint("SetJavaScriptEnabled", "SetTextI18n")
+    @SuppressLint("SetTextI18n")
     override fun doBusiness(context: Context?) {
         // View动画
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.anim_animation_set)

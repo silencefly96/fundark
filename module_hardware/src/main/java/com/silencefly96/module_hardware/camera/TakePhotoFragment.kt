@@ -2,24 +2,22 @@ package com.silencefly96.module_hardware.camera
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.util.Consumer
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.IPermissionHelper
+import com.silencefly96.module_base.utils.BitmapFileUtil
 import com.silencefly96.module_hardware.databinding.FragmentTakePhotoBinding
 import java.io.*
 
@@ -38,11 +36,11 @@ class TakePhotoFragment : BaseFragment() {
     private var _binding: FragmentTakePhotoBinding? = null
     private val binding get() = _binding!!
 
-    // 文件路径
-    private var picturePath: String = ""
+    // 拍照路径
+    private var pictureUri: Uri? = null
 
     // 裁切路径
-    private var cropPicPath: String = ""
+    private var cropPicUri: Uri? = null
 
     // 启用裁切
     private var enableCrop: Boolean = true
@@ -63,15 +61,15 @@ class TakePhotoFragment : BaseFragment() {
         }
 
         binding.insertPictures.setOnClickListener {
-            insert2Pictures()
+            insert2Pictures(requireContext())
         }
 
         binding.clearCache.setOnClickListener {
-            clearCachePictures()
+            clearCachePictures(requireContext())
         }
 
         binding.clearPictures.setOnClickListener {
-            clearAppPictures()
+            clearAppPictures(requireContext())
         }
 
         binding.cropSwitch.setOnCheckedChangeListener { _, isChecked -> enableCrop = isChecked}
@@ -101,10 +99,9 @@ class TakePhotoFragment : BaseFragment() {
     private fun openCamera() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // 应用外部私有目录：files-Pictures
-        val picFile = createFile("Camera")
-        val photoUri = getUriForFile(picFile)
-        // 保存路径，不要uri，读取bitmap时麻烦
-        picturePath = picFile.absolutePath
+        val photoUri = BitmapFileUtil.getUriForAppPictures(requireContext(), "Camera")
+        // 保存uri
+        pictureUri = photoUri
         // 给目标应用一个临时授权
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         //android11以后强制分区存储，外部资源无法访问，所以添加一个输出保存位置，然后取值操作
@@ -112,46 +109,13 @@ class TakePhotoFragment : BaseFragment() {
         startActivityForResult(intent, REQUEST_CAMERA_CODE)
     }
 
-    private fun createFile(type: String): File {
-        // 在相册创建一个临时文件
-        val picFile = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                "${type}_${System.currentTimeMillis()}.jpg")
-        try {
-            if (picFile.exists()) {
-                picFile.delete()
-            }
-            picFile.createNewFile()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        // 临时文件，后面会加long型随机数
-//        return File.createTempFile(
-//            type,
-//            ".jpg",
-//            requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//        )
-
-        return picFile
-    }
-
-    private fun getUriForFile(file: File): Uri {
-        // 转换为uri
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            //适配Android 7.0文件权限，通过FileProvider创建一个content类型的Uri
-            FileProvider.getUriForFile(
-                requireActivity(),
-                "com.silencefly96.module_hardware.fileProvider", file
-            )
-        } else {
-            Uri.fromFile(file)
-        }
-    }
-
     private fun openAlbum() {
         val intent = Intent()
         intent.type = "image/*"
-        intent.action = "android.intent.action.GET_CONTENT"
+        // GET_CONTENT不允许使用裁切，只能简单的读取数据
+        // intent.action = "android.intent.action.GET_CONTENT"
+        // OPEN_DOCUMENT允许对文件进行编辑，并且权限是长期有效的，先用OPEN_DOCUMENT再GET_CONTENT也是有权限的
+        intent.action = "android.intent.action.OPEN_DOCUMENT"
         intent.addCategory("android.intent.category.OPENABLE")
         startActivityForResult(intent, REQUEST_ALBUM_CODE)
     }
@@ -165,19 +129,19 @@ class TakePhotoFragment : BaseFragment() {
 //                    requireContext().sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
 //                        Uri.fromFile(File(picturePath))))
                     if (!enableCrop) {
-                        val bitmap = getBitmap(picturePath)
+                        val bitmap = getBitmap(pictureUri!!)
                         bitmap?.let {
                             // 显示图片
                             binding.image.setImageBitmap(it)
                         }
                     }else {
-                        cropImage(picturePath)
+                        cropImage(pictureUri!!)
                     }
                 }
                 REQUEST_ALBUM_CODE -> {
                     data?.data?.let { uri ->
                         if (!enableCrop) {
-                            val bitmap = getBitmap("", uri)
+                            val bitmap = getBitmap(uri)
                             bitmap?.let {
                                 // 显示图片
                                 binding.image.setImageBitmap(it)
@@ -188,7 +152,7 @@ class TakePhotoFragment : BaseFragment() {
                     }
                 }
                 REQUEST_CROP_CODE -> {
-                    val bitmap = getBitmap(cropPicPath)
+                    val bitmap = getBitmap(cropPicUri!!)
                     bitmap?.let {
                         // 显示图片
                         binding.image.setImageBitmap(it)
@@ -198,17 +162,13 @@ class TakePhotoFragment : BaseFragment() {
         }
     }
 
-    private fun getBitmap(path: String, uri: Uri? = null): Bitmap? {
+    private fun getBitmap(uri: Uri): Bitmap? {
         var bitmap: Bitmap?
         val options = BitmapFactory.Options()
         // 先不读取，仅获取信息
         options.inJustDecodeBounds = true
-        if (uri == null) {
-            BitmapFactory.decodeFile(path, options)
-        }else {
-            val input = requireContext().contentResolver.openInputStream(uri)
-            BitmapFactory.decodeStream(input, null, options)
-        }
+        var input = requireContext().contentResolver.openInputStream(uri)
+        BitmapFactory.decodeStream(input, null, options)
 
         // 预获取信息，大图压缩后加载
         val width = options.outWidth
@@ -223,12 +183,8 @@ class TakePhotoFragment : BaseFragment() {
         }
         options.inSampleSize = size
         options.inJustDecodeBounds = false
-        bitmap = if (uri == null) {
-            BitmapFactory.decodeFile(path, options)
-        }else {
-            val input = requireContext().contentResolver.openInputStream(uri)
-            BitmapFactory.decodeStream(input, null, options)
-        }
+        input = requireContext().contentResolver.openInputStream(uri)
+        bitmap = BitmapFactory.decodeStream(input, null, options)
         Log.d("TAG", "after compress: width = " +
                 options.outWidth + "， height = " + options.outHeight)
 
@@ -242,15 +198,11 @@ class TakePhotoFragment : BaseFragment() {
         return bitmap
     }
 
-    private fun cropImage(path: String) {
-        cropImage(getUriForFile(File(path)))
-    }
-
     private fun cropImage(uri: Uri) {
         val intent = Intent("com.android.camera.action.CROP")
         // Android 7.0需要临时添加读取Url的权限
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         intent.setDataAndType(uri, "image/*")
         // 使图片处于可裁剪状态
         intent.putExtra("crop", "true")
@@ -273,14 +225,19 @@ class TakePhotoFragment : BaseFragment() {
 //        intent.putExtra("outputX", 400)
 //        intent.putExtra("outputY", 400)
 
-        // 生成临时文件
-        val cropFile = createFile("Crop")
-        // 裁切图片时不能使用provider的uri，否则无法保存
-//        val cropUri = getUriForFile(cropFile)
-        val cropUri = Uri.fromFile(cropFile)
+        // 获取裁切图片Uri，私有文件无法通过provider来获取uri进行裁切
+        val cropUri = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            // Android 11以上应该把裁切所需图片放公有目录
+            BitmapFileUtil.getUriForPublicPictures(requireContext(), "Crop")
+        }else {
+            // 低版本还可以把图片放私有目录进行裁切
+            val cropFile = BitmapFileUtil.createAppPicture(requireContext(), "Crop")
+            Uri.fromFile(cropFile)
+        }
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri)
-        // 记录临时位置
-        cropPicPath = cropFile.absolutePath
+
+        // 记录临时uri
+        cropPicUri = cropUri
 
         // 设置图片的输出格式
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
@@ -292,113 +249,29 @@ class TakePhotoFragment : BaseFragment() {
     }
 
     // 保存到外部储存-公有目录-Picture内，并且无需储存权限
-    private fun insert2Pictures() {
+    private fun insert2Pictures(context: Context) {
         binding.image.drawable?.let {
             val bitmap = it.toBitmap()
-            val baos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val bais = ByteArrayInputStream(baos.toByteArray())
-            insert2Album(bais, "Media")
-            showToast("导出到相册成功")
-        }
-    }
-
-    // 使用MediaStore方式将流写入相册
-    @Suppress("SameParameterValue")
-    private fun insert2Album(inputStream: InputStream, type: String) {
-        val fileName = "${type}_${System.currentTimeMillis()}.jpg"
-        val contentValues = ContentValues()
-        contentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, fileName)
-        // Android 10，路径保存在RELATIVE_PATH
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            //RELATIVE_PATH 字段表示相对路径，Fundark为相册下专有目录
-            contentValues.put(
-                MediaStore.Images.ImageColumns.RELATIVE_PATH,
-                Environment.DIRECTORY_PICTURES + File.separator + "Fundark"
-            )
-        } else {
-            // 安卓10(api 29)以下需要申请储存权限
-            val dstDir = StringBuilder().let { sb->
-                sb.append(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
-                sb.append(File.separator)
-                sb.append("Fundark")
-                sb.toString()
-            }
-            val dstPath = dstDir + (File.separator) + fileName
-            File(dstDir).also {
-                if (!it.exists()) it.mkdirs()
-            }
-
-            //DATA字段在Android 10.0 之后已经废弃（Android 11又启用了，但是只读）
-            contentValues.put(MediaStore.Images.ImageColumns.DATA, dstPath)
-        }
-
-        // 插入相册
-        val uri =  requireContext().contentResolver
-            .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-        // 写入文件
-        uri?.let {
-            write2File(it, inputStream)
-        }
-    }
-
-    private fun write2File(uri: Uri, inputStream: InputStream) {
-        // 从Uri构造输出流
-        requireContext().contentResolver.openOutputStream(uri)?.use { outputStream->
-            val byteArray = ByteArray(1024)
-            var len: Int
-            do {
-                //从输入流里读取数据
-                len = inputStream.read(byteArray)
-                if (len != -1) {
-                    outputStream.write(byteArray, 0, len)
-                    outputStream.flush()
-                }
-            } while (len != -1)
-        }
-    }
-
-    private fun clearCachePictures() {
-        // 外部储存-私有目录-files-Pictures目录
-        requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.let { dir->
-            // 删除其中的图片
             try {
-                val pics = dir.listFiles()
-                pics?.forEach { pic ->
-                    pic.delete()
-                }
-                showToast("清除缓存成功")
+                BitmapFileUtil.insert2Pictures(context, bitmap)
+                showToast("导出到相册成功")
             }catch (e: Exception) {
-                e.printStackTrace()
-                showToast("清除缓存失败")
+                showToast("导出到相册失败")
             }
         }
     }
 
-    private fun clearAppPictures() {
-        val selection: String
-        val selectionArgs: String
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            selection = "${MediaStore.Images.ImageColumns.RELATIVE_PATH} like ?"
-            selectionArgs = "%" + Environment.DIRECTORY_PICTURES + File.separator + "Fundark" + "%"
-        } else {
-            val dstPath = StringBuilder().let { sb->
-                sb.append(requireContext()
-                    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
-                sb.append(File.separator)
-                sb.append("Fundark")
-                sb.toString()
-            }
-            selection = "${MediaStore.Images.ImageColumns.DATA} like ?"
-            selectionArgs = "%$dstPath%"
+    private fun clearCachePictures(context: Context) {
+        val result = BitmapFileUtil.clearAppPictures(context)
+        if (result) {
+            showToast("清除缓存成功")
+        }else {
+            showToast("清除缓存失败")
         }
-        val num = requireContext().contentResolver.delete(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            selection,
-            arrayOf(selectionArgs)
-        )
+    }
 
+    private fun clearAppPictures(context: Context) {
+        val num = BitmapFileUtil.clearPublicPictures(context)
         showToast("删除本应用相册图片${num}张")
     }
 

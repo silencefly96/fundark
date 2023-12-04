@@ -103,7 +103,7 @@ class AnimatorTestDemo: BaseFragment() {
                 .start()
         }
 
-        // 使用
+        // ValueAnimator使用
         val valueAnimator = ValueAnimator.ofFloat(0f, 500f)
         valueAnimator.repeatCount = 1
         valueAnimator.repeatMode = ValueAnimator.REVERSE

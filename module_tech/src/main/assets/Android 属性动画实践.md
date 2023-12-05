@@ -440,5 +440,131 @@ animatorCollector.add(animator4)
 
 ![SVID_20231204_162046_1.gif](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/10d268cd48d84b139e70178547a9725e~tplv-k3u1fbpfcp-jj-mark:0:0:0:0:q75.image#?w=356&h=754&s=329665&e=gif&f=54&b=fffdff)
 
+## LayoutTransition使用
+和View动画讲过的LayoutAnimation类似，使用animator也能给Layout添加动画效果，下面看下。
+
+首先要在Layout里面添加animateLayoutChanges属性，这时候会有默认的动画效果:
+```
+<LinearLayout
+    android:id="@+id/layoutTransition"
+    android:background="@color/gray"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:animateLayoutChanges="true"
+    >
+```
+当然也可以自定义动画效果，下面看代码例子:
+```
+// LayoutTransition
+val layoutTransition = LayoutTransition()
+val animatorAdd = ObjectAnimator.ofFloat(null, "scaleX", 0f, 1f)
+val animatorRmv = ObjectAnimator.ofFloat(null, "scaleX", 1f, 0f)
+// CHANGE_APPEARING和CHANGE_DISAPPEARING需要使用PropertyValuesHolder设置动画
+// 参考文章: https://www.cnblogs.com/yongdaimi/p/7993226.html
+val pvhLeft = PropertyValuesHolder.ofInt("left", 0, 0)
+val pvhTop = PropertyValuesHolder.ofInt("top", 0, 0)
+val pvhScaleAddY = PropertyValuesHolder.ofFloat("scaleY", 1f, 1.5f, 1f)
+val pvhScaleRmvY = PropertyValuesHolder.ofFloat("scaleY", 1f, 0.5f, 1f)
+// pvhLeft和pvhTop一定需要，而且开始属性值和结尾属性值要相同
+val animAddOther = ObjectAnimator.ofPropertyValuesHolder(
+    binding.layoutTransition, pvhLeft, pvhTop, pvhScaleAddY)
+val animRmvOther = ObjectAnimator.ofPropertyValuesHolder(
+    binding.layoutTransition, pvhLeft, pvhTop, pvhScaleRmvY)
+// 元素在容器中出现时所定义的动画。
+layoutTransition.setAnimator(LayoutTransition.APPEARING, animatorAdd)
+// 元素在容器中消失时所定义的动画。
+layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, animatorRmv)
+// 由于容器中要显现一个新的元素，其它需要变化的元素所应用的动画
+layoutTransition.setAnimator(LayoutTransition.CHANGE_APPEARING, animAddOther)
+// 当容器中某个元素消失，其它需要变化的元素所应用的动画
+layoutTransition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, animRmvOther)
+// 设置layoutTransition
+binding.layoutTransition.layoutTransition = layoutTransition
+// 点击刷新动画
+val removedViews: Deque<View> = LinkedList()
+binding.layoutTransition.setOnClickListener {
+    removedViews.poll()?.let {
+        binding.layoutTransition.addView(it)
+    }
+}
+// 长按删除第一个
+binding.layoutTransition.setOnLongClickListener {
+    if (binding.layoutTransition.childCount > 1) {
+        val first = binding.layoutTransition.getChildAt(0)
+        removedViews.offer(first)
+        binding.layoutTransition.removeView(first)
+        return@setOnLongClickListener true
+    }
+    return@setOnLongClickListener false
+}
+```
+对应的layout布局完整代码:
+```
+<LinearLayout
+    android:id="@+id/layoutTransition"
+    android:background="@color/gray"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:animateLayoutChanges="true"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="25dp"
+        android:layout_margin="5dp">
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/red"
+            />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="25dp"
+        android:layout_margin="5dp">
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/green"
+            />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="25dp"
+        android:layout_margin="5dp">
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/yellow"
+            />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="25dp"
+        android:layout_margin="5dp">
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/purple"
+            />
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
+```
+实际效果:
+
+![SVID_20231204_161906_1.gif](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31a53453ac164bd785ae4282ed167a7e~tplv-k3u1fbpfcp-jj-mark:0:0:0:0:q75.image#?w=356&h=754&s=368919&e=gif&f=125&b=fffdff)
+
 ## 小结
 花了点时间把animator实践了一下，也就看个效果，里面的原理没有去深究。

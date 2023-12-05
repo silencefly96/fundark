@@ -6,6 +6,7 @@ import android.animation.Animator
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.animation.Keyframe
+import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.animation.TimeInterpolator
@@ -25,6 +26,8 @@ import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_tech.R
 import com.silencefly96.module_tech.databinding.FragmentAnimatorTestBinding
 import kotlinx.coroutines.Runnable
+import java.util.Deque
+import java.util.LinkedList
 import kotlin.math.pow
 import kotlin.math.sin
 
@@ -41,7 +44,7 @@ class AnimatorTestDemo: BaseFragment() {
         return binding.root
     }
 
-    @SuppressLint("SetJavaScriptEnabled", "SetTextI18n")
+    @SuppressLint("SetTextI18n", "ObjectAnimatorBinding")
     override fun doBusiness(context: Context?) {
         // 通过XML实现
         val animatorSet = AnimatorInflater.loadAnimator(requireContext(), R.animator.animator_set_test)
@@ -214,6 +217,49 @@ class AnimatorTestDemo: BaseFragment() {
             animator4.start()
         }
         animatorCollector.add(animator4)
+
+        // LayoutTransition
+        val layoutTransition = LayoutTransition()
+        val animatorAdd = ObjectAnimator.ofFloat(null, "scaleX", 0f, 1f)
+        val animatorRmv = ObjectAnimator.ofFloat(null, "scaleX", 1f, 0f)
+        // CHANGE_APPEARING和CHANGE_DISAPPEARING需要使用PropertyValuesHolder设置动画
+        // 参考文章: https://www.cnblogs.com/yongdaimi/p/7993226.html
+        val pvhLeft = PropertyValuesHolder.ofInt("left", 0, 0)
+        val pvhTop = PropertyValuesHolder.ofInt("top", 0, 0)
+        val pvhScaleAddY = PropertyValuesHolder.ofFloat("scaleY", 1f, 1.5f, 1f)
+        val pvhScaleRmvY = PropertyValuesHolder.ofFloat("scaleY", 1f, 0.5f, 1f)
+        // pvhLeft和pvhTop一定需要，而且开始属性值和结尾属性值要相同
+        val animAddOther = ObjectAnimator.ofPropertyValuesHolder(
+            binding.layoutTransition, pvhLeft, pvhTop, pvhScaleAddY)
+        val animRmvOther = ObjectAnimator.ofPropertyValuesHolder(
+            binding.layoutTransition, pvhLeft, pvhTop, pvhScaleRmvY)
+        // 元素在容器中出现时所定义的动画。
+        layoutTransition.setAnimator(LayoutTransition.APPEARING, animatorAdd)
+        // 元素在容器中消失时所定义的动画。
+        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, animatorRmv)
+        // 由于容器中要显现一个新的元素，其它需要变化的元素所应用的动画
+        layoutTransition.setAnimator(LayoutTransition.CHANGE_APPEARING, animAddOther)
+        // 当容器中某个元素消失，其它需要变化的元素所应用的动画
+        layoutTransition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, animRmvOther)
+        // 设置layoutTransition
+        binding.layoutTransition.layoutTransition = layoutTransition
+        // 点击刷新动画
+        val removedViews: Deque<View> = LinkedList()
+        binding.layoutTransition.setOnClickListener {
+            removedViews.poll()?.let {
+                binding.layoutTransition.addView(it)
+            }
+        }
+        // 长按删除第一个
+        binding.layoutTransition.setOnLongClickListener {
+            if (binding.layoutTransition.childCount > 1) {
+                val first = binding.layoutTransition.getChildAt(0)
+                removedViews.offer(first)
+                binding.layoutTransition.removeView(first)
+                return@setOnLongClickListener true
+            }
+            return@setOnLongClickListener false
+        }
 
     }
 

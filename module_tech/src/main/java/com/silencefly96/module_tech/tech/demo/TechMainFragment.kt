@@ -34,6 +34,12 @@ class TechMainFragment: BaseFragment() {
 
         add(Item(5, "animator测试: AnimatorTest",
             "查看属性动画的展示效果"))
+
+        add(Item(6, "VectorAnim测试: VectorAnimTest",
+            "查看RemoteView的展示效果"))
+
+        add(Item(7, "RemoteView测试: RemoteViewTest",
+            "查看RemoteView的展示效果"))
     }
 
     // 适配器
@@ -64,6 +70,8 @@ class TechMainFragment: BaseFragment() {
                     3 -> R.id.action_main_to_drawable_test
                     4 -> R.id.action_main_to_animation_test
                     5 -> R.id.action_main_to_animator_test
+                    6 -> R.id.action_main_to_vector_test
+                    7 -> R.id.action_main_to_remote_test
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

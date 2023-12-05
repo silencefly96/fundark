@@ -113,6 +113,66 @@
             tools:ignore="HardcodedText"
             />
 
+        <LinearLayout
+            android:id="@+id/layoutTransition"
+            android:background="@color/gray"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:animateLayoutChanges="true"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="25dp"
+                android:layout_margin="5dp">
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/red"
+                    />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="25dp"
+                android:layout_margin="5dp">
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/green"
+                    />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="25dp"
+                android:layout_margin="5dp">
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/yellow"
+                    />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="25dp"
+                android:layout_margin="5dp">
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/purple"
+                    />
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

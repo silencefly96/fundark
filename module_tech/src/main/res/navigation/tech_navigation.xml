@@ -65,6 +65,14 @@
             app:destination="@id/animatorTestDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_vector_test"
+            app:destination="@id/vectorAnimTestDemo">
+        </action>
+
+        <action android:id="@+id/action_main_to_remote_test"
+            app:destination="@id/remoteViewTestDemo">
+        </action>
+
     </fragment>
 
     <fragment
@@ -96,5 +104,17 @@
         android:name="com.silencefly96.module_tech.tech.demo.AnimatorTestDemo"
         android:label="@string/animator_test_fragment"
         tools:layout="@layout/fragment_animator_test" />
+
+    <fragment
+        android:id="@+id/vectorAnimTestDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.VectorAnimTestDemo"
+        android:label="@string/vector_anim_test_fragment"
+        tools:layout="@layout/fragment_vector_test" />
+
+    <fragment
+        android:id="@+id/remoteViewTestDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.RemoteViewTestDemo"
+        android:label="@string/vector_anim_test_fragment"
+        tools:layout="@layout/fragment_remote_test" />
 
 </navigation>

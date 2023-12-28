@@ -14,6 +14,7 @@
         >
 
         <TextView
+            android:visibility="gone"
             android:text="AnimatedVectorTest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
             />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/animatedVectorPath"
             android:text="AnimatedVectorPath(click)"
             app:drawableBottomCompat="@drawable/ic_animated_vector_path"
@@ -37,6 +39,7 @@
             />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/animatedVectorMorphing"
             android:text="AnimatedVectorMorphing(click)"
             app:drawableBottomCompat="@drawable/ic_animated_vector_morphing"
@@ -49,6 +52,7 @@
             />
 
         <TextView
+            android:visibility="visible"
             android:id="@+id/animatedVectorCombine"
             android:text="AnimatedVectorCombine(click)"
             app:drawableBottomCompat="@drawable/ic_animated_vector_combine"

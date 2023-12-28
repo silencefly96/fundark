@@ -12,8 +12,8 @@
         android:duration="2000"
         android:interpolator="@android:interpolator/accelerate_decelerate"
         android:propertyName="trimPathEnd"
-        android:valueFrom="1"
-        android:valueTo="0"
+        android:valueFrom="0.25"
+        android:valueTo="1.25"
         android:valueType="floatType"/>
 
     <objectAnimator

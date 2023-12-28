@@ -73,6 +73,15 @@
 
 
     <!-- ############################################ -->
+    <!--   group说明:-->
+    <!--   name: 属性名，用于绑定animator-->
+    <!--   pivotX、pivotY: 锚点，平移、旋转、缩放的中心点，注意值要使用viewportWidth和viewportHeight的点数-->
+    <!--   scaleX、scaleY: 缩放倍数-->
+    <!--   rotation: 旋转，比如 (0 - 360)-->
+    <!--   translateX、translateY: 平移值，值也是viewportWidth和viewportHeight的点数-->
+
+
+    <!-- ############################################ -->
     <!--    Vector语法说明(大写表示绝对坐标，小写表示相对坐标):-->
 
     <!--    M/m (x,y): 移动指定位置-->

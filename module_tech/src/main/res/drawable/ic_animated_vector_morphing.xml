@@ -11,6 +11,6 @@
 
     <target
         android:animation="@animator/animator_vector_morphing_line"
-        android:name="vector_rectangle"/>
+        android:name="vector_four_line"/>
 
 </animated-vector>

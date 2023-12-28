@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_vector_combine"
+    tools:ignore="NewApi">
+
+    <target
+        android:animation="@animator/animator_vector_combine_bezier"
+        android:name="vector_bezier_circle"/>
+
+    <target
+        android:animation="@animator/animator_vector_combine_scale"
+        android:name="circle"/>
+
+    <target
+        android:animation="@animator/animator_vector_combine_rotate"
+        android:name="heart"/>
+
+</animated-vector>

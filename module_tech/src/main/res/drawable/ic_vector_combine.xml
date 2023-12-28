@@ -1,0 +1,62 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    >
+
+    <group
+        android:name="circle"
+        android:pivotX="12"
+        android:pivotY="12"
+        >
+
+        <!--四段三阶贝塞尔曲线拟合一个圆-->
+        <path
+            android:name="vector_bezier_circle"
+            android:strokeWidth="1"
+            android:strokeColor="#9FBF3B"
+            android:pathData="M4,12
+                            C4,8,8,4,12,4
+                            C16,4,20,8,20,12
+                            C20,16,16,20,12,20
+                            C8,20,4,16,4,12Z"
+            tools:ignore="VectorRaster"
+            />
+
+        <!--四段三阶贝塞尔曲线拟合一个正方形-->
+        <path
+            android:name="vector_bezier_circle_after"
+            android:strokeAlpha="0"
+            android:strokeWidth="1"
+            android:strokeColor="#9FBF3B"
+            android:pathData="M4,4
+                            C8,4,16,4,20,4
+                            C20,8,20,16,20,20
+                            C16,20,8,20,4,20
+                            C4,16,4,8,4,4Z"
+            />
+
+    </group>
+
+    <group
+        android:pivotX="12"
+        android:pivotY="12"
+        android:name="heart"
+        >
+
+        <!--配合strokeLineCap和strokeLineJoin画一个爱心-->
+        <path
+            android:strokeWidth="1"
+            android:strokeColor="#FF0000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="miter"
+            android:strokeMiterLimit="4"
+            android:pathData="M11.5,2 l0.5,0.5 l0.5,-0.5"
+            />
+    </group>
+
+
+
+</vector>

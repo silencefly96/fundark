@@ -14,11 +14,46 @@
         >
 
         <TextView
-            android:id="@+id/viewAnimation"
-            android:text="ViewAnimation(click)"
-            android:background="@drawable/ic_launcher"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
+            android:text="AnimatedVectorTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drawableBottomCompat="@drawable/ic_vector_test"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/animatedVectorPath"
+            android:text="AnimatedVectorPath(click)"
+            app:drawableBottomCompat="@drawable/ic_animated_vector_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/animatedVectorMorphing"
+            android:text="AnimatedVectorMorphing(click)"
+            app:drawableBottomCompat="@drawable/ic_animated_vector_morphing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText"
+            />
+
+        <TextView
+            android:id="@+id/animatedVectorCombine"
+            android:text="AnimatedVectorCombine(click)"
+            app:drawableBottomCompat="@drawable/ic_animated_vector_combine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:clickable="true"
             android:focusable="true"

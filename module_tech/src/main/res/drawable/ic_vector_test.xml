@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:width="80dp"
+    android:height="80dp"
+    android:name="vector"
+    android:alpha="1"
+    android:autoMirrored="true"
+    android:tint="@color/yellow"
+    android:tintMode="multiply"
+    android:opticalInsetTop="1dp"
+    android:opticalInsetRight="1dp"
+    android:opticalInsetBottom="1dp"
+    android:opticalInsetLeft="1dp"
+    tools:ignore="UnusedAttribute,VectorRaster"
+    >
+    <!--    vector属性说明: -->
+    <!--    viewportWidth、viewportHeight: 长宽的点数，绘制的时候按照这个画path-->
+    <!--    width、height: 固有宽高，当需要用到drawable宽高的时候会取这个值-->
+    <!--    alpha: 透明度，0 - 1-->
+    <!--    以下属性要求v21: -->
+    <!--    autoMirrored: 是否自动镜像翻转，和语言布局有关，比如从右到左(RTL)-->
+    <!--    tint: 矢量图形的颜色(作为src且全屏，path为dst)-->
+    <!--    tintMode: 着色模式，只支持:-->
+    <!--        add: 将颜色与矢量图形的像素进行加法混合。结果颜色将更亮。-->
+    <!--        multiply: 将颜色与矢量图形的像素进行乘法混合。结果颜色的亮度将受到矢量图形像素的影响。-->
+    <!--        screen: 将颜色与矢量图形的像素进行屏幕混合。结果颜色将反映出矢量图形像素和颜色的亮度。-->
+    <!--        src_atop: 将颜色绘制在矢量图形上方，但仅绘制在与矢量图形相交的像素上，并与矢量图形的像素进行混合。-->
+    <!--        src_in: 将颜色仅绘制在与矢量图形相交的像素上，其他像素将被透明化。-->
+    <!--        src_over: 默认值。将颜色绘制在矢量图形上方，不考虑矢量图形的像素原始颜色。-->
+    <!--    以下属性要求v29: -->
+    <!--    opticalInsetTop/Right/Bottom/Left: 类似padding吧-->
+
+
+    <!-- ############################################ -->
+    <!--    path属性说明: -->
+    <!--    name: 名称-->
+    <!--    pathData: 路径数据-->
+
+    <!--    fillColor: 填充颜色-->
+    <!--    fillAlpha: 填充透明度-->
+    <!--    fillType: 填充类型-->
+    <!--        nonZero: 非零环绕规则，默认，简单说就是内部都填充-->
+    <!--            路径中的子路径会根据其方向进行计数。当一个子路径沿顺时针方向绘制时，计数值增加1；
+                    当一个子路径沿逆时针方向绘制时，计数值减去1。填充区域位于计数值不为零的区域内。-->
+    <!--        evenOdd: 奇偶环绕规则，简单说就是偶数重叠部分不绘制，比如环形部分-->
+    <!--            路径中的子路径会根据其方向进行计数，并根据计数值的奇偶性来确定填充区域。当计数值为
+                    奇数时，填充区域位于子路径内部；当计数值为偶数时，填充区域位于子路径外部。-->
+
+    <!--    strokeColor: 线条颜色-->
+    <!--    strokeWidth: 线条粗细-->
+    <!--    strokeAlpha: 线条透明度-->
+
+    <!--    trimPathStart: 定义路径的起始截取位置（0到1之间的值），用于截取路径的一部分。-->
+    <!--    trimPathEnd: 定义路径的结束截取位置（0到1之间的值），用于截取路径的一部分。-->
+    <!--    trimPathOffset: 定义路径的截取偏移量，用于调整截取位置。-->
+
+    <!--    strokeLineCap: 定义路径的描边端点形状-->
+    <!--        butt: 默认值。直线末端以路径结束的位置结束，没有任何扩展。-->
+    <!--        round: 直线末端以一个圆形的点结束，直径等于描边宽度。-->
+    <!--        square: 直线末端以一个方形的点结束，宽度和描边宽度相同，长度是描边宽度的一半。-->
+    <!--    strokeLineJoin: 线条拐弯处的样式-->
+    <!--        round: 圆角-->
+    <!--        bevel: 斜角-->
+    <!--        miter: 默认值。斜切尖角-->
+    <!--    strokeMiterLimit: 控制strokeLineJoin为miter时，设置最大斜接长度，值越大越尖，超过会变平角bevel-->
+    <!--        miter_length: 斜接长度指的是在两条线交汇处内角和外角之间的距离。-->
+    <!--        line_width: 线条宽度，即strokeWidth-->
+    <!--        strokeMiterLimit = miter_length / line_width: 通过两者之比限制大小，默认是4-->
+    <!--        strokeMiterLimit = 1 / sin x: 取直角三角形，对边取1的时候，Miter就是斜边长度-->
+
+
+    <!-- ############################################ -->
+    <!--    Vector语法说明(大写表示绝对坐标，小写表示相对坐标):-->
+
+    <!--    M/m (x,y): 移动指定位置-->
+
+    <!--    L/l (x,y): 从当前位置，绘制线段到指定位置-->
+
+    <!--    H/h (x): 从当前位置，绘制水平线到达指定的 x 坐标-->
+    <!--    V/v (x): 从当前位置，绘制竖直线到达指定的 y 坐标-->
+
+    <!--    A/a (rx,ry,xr,laf,sf,x,y): 从当前位置，绘制弧线到指定位置-->
+    <!--        rx、ry为椭圆长短轴半径，xr为x轴旋转角度，laf(0:小弧度,1:大弧度)，sf(0:逆时针,1:顺时针)，x、y为终点-->
+
+    <!--    Q/q (x1,y1,x,y): 从当前位置，绘制二次贝塞尔曲线到指定位置-->
+    <!--        x、y为终点，前面的xn、yn为控制点，控制点和起始点连接的线是曲线在起始点处的切线-->
+    <!--    T/t (x,y): 从当前位置绘制，平滑二次贝塞尔曲线到指定位置-->
+    <!--        x、y表示终点，前一段路径要求是贝塞尔曲线，会保持前一个终点的切线方向，并由这个方向与本次终点形成对称关系，得到控制点-->
+
+    <!--    C/c (x1,y1,x2,y2,x,y): 从当前位置，绘制三次贝塞尔曲线到指定位置-->
+    <!--    S/s (x2,y2,x,y): 从当前位置，绘制平滑三次贝塞尔曲线到指定位置-->
+
+    <!--    Z/z 闭合当前路径-->
+
+    <group android:name="man">
+        <!-- 绘制思路: 通过viewportWidth和viewportHeight来定位 -->
+
+        <!-- 画一个半圆和两个圆，一个圆需要两个半圆拼起来，注意A和a的使用 -->
+        <group android:name="head">
+
+            <!-- 加了两个眼睛，好丑啊，试了下fillType的效果 -->
+            <path
+                android:fillColor="#9FBF3B"
+                android:fillAlpha="0.6"
+                android:fillType="evenOdd"
+                android:pathData="M6,7 A6,6,0,0,1,18,7Z
+                    M10,3 a1,1,0,0,1,0,2 a1,1,0,0,1,0,-2z
+                    M14,3 a1,1,0,0,1,0,2 a1,1,0,0,1,0,-2z"/>
+        </group>
+
+
+        <!-- 画一个矩形加两个角，使用L/l、H、v，三个画线段的 -->
+        <group android:name="body">
+
+            <!-- strokeWidth是根据设置的点数来的，我这24个点 -->
+            <!-- 两个角是用来看MiterLimit的，miter_length / line_width > 4时变平角bevel -->
+            <!-- strokeMiterLimit = 1 / sin x，左边(45°)=根号2，右边(直角边:4,1)=根号17 -->
+            <path
+                android:strokeColor="#3F51B5"
+                android:strokeWidth="0.5"
+                android:strokeAlpha="0.9"
+
+                android:strokeLineCap="round"
+                android:strokeLineJoin="miter"
+                android:strokeMiterLimit="4"
+
+                android:fillColor="#9FBF3B"
+                android:pathData="M4,8 L22,8 L18,9 l0,7 H6 v-6 L4,8z"/>
+        </group>
+
+        <!-- 画两个简单曲线图形，使用Q/q、T/t -->
+        <group android:name="feet">
+            <path
+                android:name="left_feet"
+                android:fillColor="#9FBF3B"
+                android:pathData="M9,18 Q10,16,11,18 T11,22 q-1,2,-2,0 t0,-4z"/>
+
+            <path
+                android:name="right_feet"
+                android:fillColor="#9FBF3B"
+                android:pathData="M13,18 Q14,16,15,18 T15,22 q-1,2,-2,0 t0,-4z"/>
+        </group>
+
+        <!-- 画两个复杂曲线图形，使用C/c、S/s -->
+        <group android:name="arm"
+            android:pivotX="12"
+            android:pivotY="12"
+            android:translateY="2"
+            android:scaleX="1.05"
+            >
+
+            <!-- 两段正弦波形，上下相间2个距离，手末端用平滑三阶贝塞尔曲线相连 -->
+            <path
+                android:name="left_arm"
+                android:fillColor="#9FBF3B"
+                android:pathData="M6,8 C5,7,3,9,2,8 S0,8,2,10 c1,1,3,-1,4,0z"/>
+
+            <!-- 和上面类似，正弦变余弦 -->
+            <path
+                android:name="right_arm"
+                android:fillColor="#9FBF3B"
+                android:pathData="M18,8 c1,-1,3,1,4,0 s2,0,0,2 C21,11,19,9,18,10z"/>
+        </group>
+    </group>
+</vector>

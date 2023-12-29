@@ -14,6 +14,8 @@ import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,9 +24,11 @@ import android.view.animation.BounceInterpolator
 import android.view.animation.CycleInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.core.animation.addListener
+import androidx.core.app.ActivityOptionsCompat
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_tech.R
 import com.silencefly96.module_tech.databinding.FragmentAnimatorTestBinding
+import com.silencefly96.module_tech.tech.animator.AnimatorActivity
 import kotlinx.coroutines.Runnable
 import java.util.Deque
 import java.util.LinkedList
@@ -259,6 +263,21 @@ class AnimatorTestDemo: BaseFragment() {
                 return@setOnLongClickListener true
             }
             return@setOnLongClickListener false
+        }
+
+        // 共享元素过渡动画
+        binding.sceneTransitionAnimation.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 21) {
+                // iv是当前点击的图片  share字符串是第二个activity布局中设置的**transitionName**属性
+                val optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    requireActivity(),
+                    binding.sceneTransitionAnimation,
+                    "sceneTransition")
+                val intent = Intent(requireContext(), AnimatorActivity::class.java)
+                startActivity(intent, optionsCompat.toBundle())
+            }else {
+                showToast("当前系统版本不支持: ${Build.VERSION.SDK_INT}")
+            }
         }
 
     }

@@ -173,6 +173,18 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/sceneTransitionAnimation"
+            android:text="SceneTransitionAnimation(click)"
+            android:background="@drawable/ic_launcher"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText"
+            />
+
     </LinearLayout>
 
 </ScrollView>

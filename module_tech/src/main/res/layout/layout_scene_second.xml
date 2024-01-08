@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@color/gray"
+    >
+
+    <TextView
+        android:id="@+id/sceneSecond"
+        android:text="布局变化后"
+        android:background="@drawable/ic_launcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        tools:ignore="HardcodedText"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,7 +38,10 @@ class TechMainFragment: BaseFragment() {
         add(Item(6, "VectorAnim测试: VectorAnimTest",
             "查看RemoteView的展示效果"))
 
-        add(Item(7, "RemoteView测试: RemoteViewTest",
+        add(Item(7, "过渡动画测试: SceneTransitionTest",
+            "查看各种过渡动画效果"))
+
+        add(Item(8, "RemoteView测试: RemoteViewTest",
             "查看RemoteView的展示效果"))
     }
 
@@ -71,7 +74,8 @@ class TechMainFragment: BaseFragment() {
                     4 -> R.id.action_main_to_animation_test
                     5 -> R.id.action_main_to_animator_test
                     6 -> R.id.action_main_to_vector_test
-                    7 -> R.id.action_main_to_remote_test
+                    7 -> R.id.action_main_to_scene_transition_test
+                    8 -> R.id.action_main_to_remote_test
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

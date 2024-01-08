@@ -92,7 +92,7 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionHelper {
 
         //设置全屏
         if (isFullScreen) {
-            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
         //设置沉浸状态栏

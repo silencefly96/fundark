@@ -69,6 +69,10 @@
             app:destination="@id/vectorAnimTestDemo">
         </action>
 
+        <action android:id="@+id/action_main_to_scene_transition_test"
+            app:destination="@id/sceneTransitionTestDemo">
+        </action>
+
         <action android:id="@+id/action_main_to_remote_test"
             app:destination="@id/remoteViewTestDemo">
         </action>
@@ -112,9 +116,16 @@
         tools:layout="@layout/fragment_vector_test" />
 
     <fragment
+        android:id="@+id/sceneTransitionTestDemo"
+        android:name="com.silencefly96.module_tech.tech.demo.SceneTransitionTestDemo"
+        android:label="@string/vector_scene_transition_test_fragment"
+        tools:layout="@layout/fragment_scene_transition_test" />
+
+
+    <fragment
         android:id="@+id/remoteViewTestDemo"
         android:name="com.silencefly96.module_tech.tech.demo.RemoteViewTestDemo"
-        android:label="@string/vector_anim_test_fragment"
+        android:label="@string/remote_view_test_fragment"
         tools:layout="@layout/fragment_remote_test" />
 
 </navigation>

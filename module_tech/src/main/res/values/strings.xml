@@ -16,6 +16,7 @@
     <string name="animation_test_fragment">测试各种animation效果</string>
     <string name="animator_test_fragment">测试各种animator效果</string>
     <string name="vector_anim_test_fragment">测试vector anim效果</string>
+    <string name="vector_scene_transition_test_fragment">测试各种过渡效果</string>
     <string name="remote_view_test_fragment">测试RemoteView效果</string>
 
     <string name="activity_flag_button">点击跳转</string>

@@ -22,6 +22,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
 import android.widget.LinearLayout.LayoutParams
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.contains
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_tech.R
 import com.silencefly96.module_tech.databinding.FragmentSceneTransitionTestBinding
@@ -272,15 +273,37 @@ class SceneTransitionTestDemo: BaseFragment() {
 
 
         // 过渡动画Layout: CustomVisibility
+        val textView = binding.customVisibilityText
         binding.customVisibilityType.setOnCheckedChangeListener { _, checkedId ->
             // 设置过渡动画
             TransitionManager.beginDelayedTransition(binding.root, CustomVisibility())
             // 触发
-            binding.customVisibilityText.visibility = when(checkedId) {
+            textView.visibility = when(checkedId) {
                 R.id.visiable -> View.VISIBLE
                 R.id.invisible -> View.INVISIBLE
                 R.id.gone -> View.GONE
                 else -> View.VISIBLE
+            }
+        }
+        binding.customVisibilityAdd.setOnCheckedChangeListener { _, checkedId ->
+            // 设置过渡动画
+            TransitionManager.beginDelayedTransition(binding.root, CustomVisibility())
+            // 触发
+            when(checkedId) {
+                R.id.add -> {
+                    if (!binding.visibilityContainer.contains(textView)) {
+                        // 添加并不会触发Visibility的onAppear
+                        textView.visibility = View.VISIBLE
+                        binding.visibilityContainer.addView(textView)
+                    }
+                }
+                R.id.remove -> {
+                    if (binding.visibilityContainer.contains(textView)) {
+                        // 可以触发onDisappear，但是无法出现过渡效果
+                        binding.visibilityContainer.removeView(textView)
+                    }
+                }
+                else -> {}
             }
         }
     }

@@ -27,12 +27,12 @@ class CustomVisibility: Visibility() {
     // 提供了更直接的方式来访问视图的可见性状态，未实现的话，会继续调用上面onAppear方法
     override fun onAppear(
         sceneRoot: ViewGroup,
-        startValues: TransitionValues,
+        startValues: TransitionValues?,
         startVisibility: Int,
         endValues: TransitionValues,
         endVisibility: Int
     ): Animator {
-        // 获取要操作的View
+        // 获取要操作的View，注意startValues可能为null
         val view = endValues.view
 
         // 加日志可以看到受影响的view，可根据ID排除
@@ -48,25 +48,20 @@ class CustomVisibility: Visibility() {
                 View.GONE -> playTogether(
                     ObjectAnimator.ofFloat(view, "alpha", 0f, 1f),
                     ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f),
-                    ObjectAnimator.ofFloat(view, "scaleY", 0f, 1f),
-                    AnimatorSet().apply {
-                        playSequentially(
-                            ObjectAnimator.ofFloat(view, "rotation", 0f, -180f),
-                            ObjectAnimator.ofFloat(view, "rotation", -180f, 0f),
-                        )
-                    }
+                    ObjectAnimator.ofFloat(view, "scaleY", 0f, 1f)
                 )
                 // 从INVISIBLE变为显示
                 View.INVISIBLE -> playTogether(
-                    ObjectAnimator.ofFloat(view, "alpha", 0f, 1f),
-                    AnimatorSet().apply {
-                        playSequentially(
-                            ObjectAnimator.ofFloat(view, "rotation", 0f, 180f),
-                            ObjectAnimator.ofFloat(view, "rotation", 180f, 0f),
-                        )
-                    }
+                    ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
                 )
-                else -> {}
+                // 当view被添时，startVisibility=-1，不加旋转
+                else -> {
+                    playTogether(
+                        ObjectAnimator.ofFloat(view, "alpha", 0f, 1f),
+                        ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f),
+                        ObjectAnimator.ofFloat(view, "scaleY", 0f, 1f),
+                    )
+                }
             }
         }
     }
@@ -75,11 +70,11 @@ class CustomVisibility: Visibility() {
         sceneRoot: ViewGroup,
         startValues: TransitionValues,
         startVisibility: Int,
-        endValues: TransitionValues,
+        endValues: TransitionValues?,
         endVisibility: Int
     ): Animator {
-        // 获取要操作的View
-        val view = endValues.view
+        // 获取要操作的View，注意endValues可能为null
+        val view = endValues?.view ?: startValues.view
 
         // 这里要阻止View直接变成endVisibility，在动画结束后再设置
         // 通过日志可以看出这里设置visibility不会再触发onAppear、onDisappear
@@ -102,7 +97,14 @@ class CustomVisibility: Visibility() {
                 View.INVISIBLE -> playTogether(
                     ObjectAnimator.ofFloat(view, "alpha", 1f, 0f),
                 )
-                else -> {}
+                // 当view被remove的时候，endVisibility=-1，不加旋转
+                else -> {
+                    playTogether(
+                        ObjectAnimator.ofFloat(view, "alpha", 1f, 0f),
+                        ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f),
+                        ObjectAnimator.ofFloat(view, "scaleY", 1f, 0f)
+                    )
+                }
             }
         }
     }

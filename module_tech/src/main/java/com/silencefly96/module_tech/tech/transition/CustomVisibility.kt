@@ -52,7 +52,13 @@ class CustomVisibility: Visibility() {
                 )
                 // 从INVISIBLE变为显示
                 View.INVISIBLE -> playTogether(
-                    ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+                    ObjectAnimator.ofFloat(view, "alpha", 0f, 1f),
+                    AnimatorSet().apply {
+                        playSequentially(
+                            ObjectAnimator.ofFloat(view, "rotation", 0f, 180f),
+                            ObjectAnimator.ofFloat(view, "rotation", 180f, 0f),
+                        )
+                    }
                 )
                 // 当view被添时，startVisibility=-1，不加旋转
                 else -> {

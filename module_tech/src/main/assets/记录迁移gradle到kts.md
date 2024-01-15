@@ -200,6 +200,81 @@ classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
 ```
 还看了一篇[stackOverflow文章](https://stackoverflow.com/questions/67699823/module-was-compiled-with-an-incompatible-version-of-kotlin-the-binary-version-o)，有详细写为什么，有需要可以看下。
 
+#### ext变量的使用
+在groovy里面ext用起来很方便，比如下面:
+```java
+// project的build.gradle
+buildscript{
+    ext.version="1.0.0"
+    // ...
+    repositories{
+        println("version: "+rootProject.ext.version)
+    }
+}
+allprojects {
+    repositories{
+        println("commonLib: "+rootProject.ext.version)
+    }
+}
+// module的build.gradle
+dependencies{
+    println("commonLib: "+rootProject.ext.version)
+}
+```
+ext是全局的，我们只要在project的build.gradle的buildscript里面定义，就能在buildscript、插件及依赖的repositories、module的build.gradle中使用，然而在kts里面就不行了。
+
+首先，ext不能在kts的buildscript里面使用了，根目录和allprojects倒是不受影响:
+```java
+// project的build.gradle
+ext {
+    set("githubUser", "xxx")
+    set("githubPassword", "xxx")
+}
+
+allprojects {
+    ext {
+        set("githubUser", "xxx")
+        set("githubPassword", "xxx")
+    }
+}
+```
+在project的build.gradle的buildscript要用kts提供的新东西——extra:
+```java
+buildscript {
+    // 使用extra设置全局变量
+    // 方式一:
+    val githubUser by extra("xxx")
+    val githubPassword by extra("xxx")
+    // 在module中使用: val githubUser: String by rootProject.extra
+    // 方式二:
+    extra["githubUser"] = "xxx"
+    extra["githubPassword"] = "xxx"
+    // 方式三:
+    extra.set("githubUser", "xxx")
+    extra.set("githubPassword", "xxx")
+}
+```
+用起来和groovy里面的ext类似，而且和kts里面ext存的值指向位置是一样的，比如下面的值，ext和extra是一样的:
+```java
+username = rootProject.extra["githubUser"].toString()
+password = rootProject.extra["githubPassword"].toString()
+```
+那就有人说了，不就是把ext换成了extra吗，基本没区别。那还真不一样，上面说groovy的时候，是包含了插件及依赖的repositories的，而转移到kts后，这两个是在setting.gradle里面的，这样就没法用了。
+
+那在settting.gradle里面定义extra行不行，确实可以还能在repositories用:
+```java
+dependencyResolutionManagement{
+    extra.set("githubUser", "xxx")
+    extra.set("githubPassword", "xxx")
+    repositories {
+        // ...
+    }
+}
+```
+不过，经过我的测试这里设置的extra，在build.gradle里面拿不到，我打印了下他们的对象，对应不上，源码看得头疼不太想看(有时间系统性学下吧)，总之这里就是不一样吧。
+
+那如何解决，我这是有个存在local.properties的变量，用文件里面取出来就行了，不知道读者没有有什么好办法。
+
 ### 整体梳理
 迁移过程可能会有很多问题，最好还是拿一个项目的来参考，我下面也贴一下我迁移后的三个文件吧: setting.gradle 、项目的build.gradle 、module的build.gradle，读者可以参考下:
 

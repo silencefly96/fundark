@@ -24,7 +24,7 @@ dependencyResolutionManagement {
     val propsFile = File(rootProject.projectDir.path + "/local.properties")
     val properties = java.util.Properties()
     properties.load(propsFile.inputStream())
-    // 设置到extra，这里设置的extra没办法在module里面用。。。。
+    // 设置到extra，会先于buildSrc执行，但是这里设置的extra没办法在project/module的gradle里面用。。。。
     extra.set("githubUser", properties.getProperty("gpr.user"))
     extra.set("githubPassword", properties.getProperty("gpr.key"))
 

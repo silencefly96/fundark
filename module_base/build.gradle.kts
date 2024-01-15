@@ -43,8 +43,8 @@ publishing{
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/silencefly96/fundark")
             credentials {
-                username = extra["githubUser"].toString()
-                password = extra["githubPassword"].toString()
+                username = rootProject.extra["githubUser"].toString()
+                password = rootProject.extra["githubPassword"].toString()
             }
         }
     }

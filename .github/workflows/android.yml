@@ -4,8 +4,8 @@ name: Release
 on:
   push:
     # 根据branch或者tags来触发
-    # branches:
-    #  - main
+    branches:
+      - main
 
     tags:
       - "v*"

@@ -21,5 +21,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     //从基础库继承各个依赖
-    implementation(project(":module_base"))
+    // implementation(project(":module_base"))
+    implementation("com.silencefly96:lib-module_base:1.0.1")
 }

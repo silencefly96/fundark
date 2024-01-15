@@ -1,5 +1,6 @@
 plugins {
     id("library-optimize-plugin")
+    id("maven-publish")
 }
 
 @Suppress("UnstableApiUsage")
@@ -20,4 +21,31 @@ dependencies {
 
     // Glide
     api(libs.glide)
+}
+
+group = "com.silencefly96"
+publishing{
+    publications {
+        // 会新建一个目录
+        register<MavenPublication>("lib-base") {
+            // 配置信息，使用: classpath("groupId:artifactId:version"(不能有空格))
+            groupId = "com.silencefly96"
+            artifactId = "lib-module_base"
+            version = "1.0.1"
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+    repositories {
+        // 远程仓库
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/silencefly96/fundark")
+            credentials {
+                username = extra["githubUser"].toString()
+                password = extra["githubPassword"].toString()
+            }
+        }
+    }
 }

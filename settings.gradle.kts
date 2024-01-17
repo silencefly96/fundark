@@ -8,7 +8,23 @@
 //enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    // 从local.properties读取github用户名及personal access token (classic)
+    val propsFile = File(rootProject.projectDir.path + "/local.properties")
+    val properties = java.util.Properties()
+    properties.load(propsFile.inputStream())
+    // 设置到extra，会先于buildSrc执行，但是这里设置的extra没办法在project/module的gradle里面用。。。。
+    extra.set("githubUser", properties.getProperty("gpr.user"))
+    extra.set("githubPassword", properties.getProperty("gpr.key"))
+
     repositories {
+        // Github远程仓库
+        maven {
+            url = uri("https://maven.pkg.github.com/silencefly96/fundark")
+            credentials {
+                username = extra["githubUser"].toString()
+                password = extra["githubPassword"].toString()
+            }
+        }
         // 是用于从 Gradle 插件门户下载插件的默认仓库。
         gradlePluginPortal()
         maven{ url = uri("https://maven.aliyun.com/repository/google/") }
@@ -20,14 +36,6 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    // 从local.properties读取github用户名及personal access token (classic)
-    val propsFile = File(rootProject.projectDir.path + "/local.properties")
-    val properties = java.util.Properties()
-    properties.load(propsFile.inputStream())
-    // 设置到extra，会先于buildSrc执行，但是这里设置的extra没办法在project/module的gradle里面用。。。。
-    extra.set("githubUser", properties.getProperty("gpr.user"))
-    extra.set("githubPassword", properties.getProperty("gpr.key"))
-
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven{ url = uri("./catalog_repo") }
@@ -59,13 +67,13 @@ dependencyResolutionManagement {
 //    }
 
     // 版本目录配置
-//    versionCatalogs {
-//        // 创建一个名称为 libs 的版本目录
-//        create("libs") {
-//            // 从 maven 仓库获取依赖
-//            from("silencefly96.catalog:catalog-plugin:1.0.0")
-//        }
-//    }
+    versionCatalogs {
+        // 创建一个名称为 libs 的版本目录
+        create("libs") {
+            // 从 maven 仓库获取依赖
+            from("com.silencefly96:lib-catalog_plugin:1.0.0")
+        }
+    }
 }
 
 rootProject.name = "fundark"

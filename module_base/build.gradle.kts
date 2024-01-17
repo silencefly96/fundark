@@ -23,10 +23,9 @@ dependencies {
     api(libs.glide)
 }
 
-group = "com.silencefly96"
 publishing{
     publications {
-        // 会新建一个目录
+        // 注册整个发布物
         register<MavenPublication>("lib-base") {
             // 配置信息，使用: classpath("groupId:artifactId:version"(不能有空格))
             groupId = "com.silencefly96"

@@ -4,6 +4,8 @@
     package="com.silencefly96.module_tech">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Android 9(API28)要求注册前台服务权限，Android 14还要求具体的工作类型 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".TechApplication"
@@ -37,6 +39,11 @@
         <activity android:name=".tech.scene.SceneTransitionActivity" android:theme="@style/CustomActivityTheme"/>
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <service
+            android:name=".tech.remote_view.audio.service.AudioService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"
+            />
     </application>
 
 </manifest>

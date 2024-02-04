@@ -67,13 +67,13 @@ dependencyResolutionManagement {
 //    }
 
     // 版本目录配置
-    versionCatalogs {
-        // 创建一个名称为 libs 的版本目录
-        create("libs") {
-            // 从 maven 仓库获取依赖
-            from("com.silencefly96:lib-catalog_plugin:1.0.0")
-        }
-    }
+//    versionCatalogs {
+//        // 创建一个名称为 libs 的版本目录
+//        create("libs") {
+//            // 从 maven 仓库获取依赖
+//            from("com.silencefly96:lib-catalog_plugin:1.0.0")
+//        }
+//    }
 }
 
 rootProject.name = "fundark"

@@ -31,6 +31,9 @@ class GameMainFragment: BaseFragment() {
 
         add(Item(4, "俄罗斯方块: TetrisGameView",
             "俄罗斯方块"))
+
+        add(Item(5, "小蛋向上飞: FlyEggGameView",
+            "小蛋向上飞"))
     }
 
     // 适配器
@@ -60,6 +63,7 @@ class GameMainFragment: BaseFragment() {
                     2 -> R.id.action_main_to_snark
                     3 -> R.id.action_main_to_bomb_ball
                     4 -> R.id.action_main_to_tetris
+                    5 -> R.id.action_main_to_egg
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

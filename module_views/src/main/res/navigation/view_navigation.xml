@@ -173,6 +173,10 @@
         <action android:id="@+id/action_main_to_tetris"
             app:destination="@id/tetrisGameDemo">
         </action>
+
+        <action android:id="@+id/action_main_to_egg"
+            app:destination="@id/eggGameDemo">
+        </action>
     </fragment>
 
     <fragment
@@ -198,6 +202,12 @@
         android:name="com.silencefly96.module_views.game.demo.TetrisGameDemo"
         android:label="@string/tetris_game_fragment"
         tools:layout="@layout/fragment_tetris_game" />
+
+    <fragment
+        android:id="@+id/eggGameDemo"
+        android:name="com.silencefly96.module_views.game.demo.FlyEggGameDemo"
+        android:label="@string/egg_game_fragment"
+        tools:layout="@layout/fragment_game_fly_egg" />
 
     <fragment
         android:id="@+id/widgetMainFragment"

@@ -24,6 +24,7 @@
     <string name="snark_game_fragment">飞机大战</string>
     <string name="bomb_ball_game_fragment">飞机大战</string>
     <string name="tetris_game_fragment">俄罗斯方块</string>
+    <string name="egg_game_fragment">小蛋向上飞</string>
 
     <string name="widget_main_fragment">自定义widget</string>
     <string name="drawable_view_fragment">手写签名</string>

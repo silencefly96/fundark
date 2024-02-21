@@ -19,6 +19,9 @@
     <!--  相机模块  -->
     <string name="take_photo_by_system">前往系统拍照</string>
     <string name="pick_photo_by_system">前往相册选取</string>
+    <string name="take_photo_by_camera">使用Camera拍照</string>
+    <string name="take_photo_by_camera2">使用Camera2拍照</string>
+    <string name="take_photo_no_feeling">使用Camera无感拍照</string>
     <string name="enable_crop">开启裁切模式</string>
     <string name="insert_photo_to_pictures">将bitmap插入到相册</string>
     <string name="clear_Cache">清除缓存图片</string>

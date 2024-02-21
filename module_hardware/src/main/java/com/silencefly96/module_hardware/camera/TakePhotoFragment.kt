@@ -6,19 +6,31 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.graphics.Matrix
+import android.graphics.Rect
+import android.graphics.YuvImage
+import android.hardware.Camera
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Surface
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.util.Consumer
+import androidx.lifecycle.coroutineScope
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.IPermissionHelper
 import com.silencefly96.module_base.utils.BitmapFileUtil
 import com.silencefly96.module_hardware.databinding.FragmentTakePhotoBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.*
 
 
@@ -45,6 +57,10 @@ class TakePhotoFragment : BaseFragment() {
     // 启用裁切
     private var enableCrop: Boolean = true
 
+    private var mCamera: Camera? = null
+
+    private var mSurfaceCallback: SurfaceHolder.Callback? = null
+
     // 绑定布局
     override fun bindView(inflater: LayoutInflater, container: ViewGroup?): View {
         _binding = FragmentTakePhotoBinding.inflate(inflater, container, false)
@@ -60,6 +76,14 @@ class TakePhotoFragment : BaseFragment() {
             openAlbum()
         }
 
+        binding.takePhotoByCamera.setOnClickListener {
+            takePhotoByCamera()
+        }
+
+        binding.takePhotoNoFeeling.setOnClickListener {
+            takePhotoNoFeeling()
+        }
+
         binding.insertPictures.setOnClickListener {
             insert2Pictures(requireContext())
         }
@@ -73,6 +97,8 @@ class TakePhotoFragment : BaseFragment() {
         }
 
         binding.cropSwitch.setOnCheckedChangeListener { _, isChecked -> enableCrop = isChecked}
+
+//        initCamera()
     }
 
     private fun requestPermission(consumer: Consumer<Boolean>) {
@@ -118,6 +144,116 @@ class TakePhotoFragment : BaseFragment() {
         intent.action = "android.intent.action.OPEN_DOCUMENT"
         intent.addCategory("android.intent.category.OPENABLE")
         startActivityForResult(intent, REQUEST_ALBUM_CODE)
+    }
+
+    private fun initCamera() {
+        // surface可见时才能使用相机
+        binding.surface.visibility = View.VISIBLE
+        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+            // 获取后置摄像头ID
+            val cameraId = getCameraId(Camera.CameraInfo.CAMERA_FACING_BACK)
+            // 获取相机实例
+            mCamera = Camera.open(cameraId)
+            // 设置和屏幕方向一致
+            setCameraDisplayOrientation(mCamera!!, cameraId)
+            // 设置holder，不要在surfaceCreated设置，不然有问题
+            mCamera!!.setPreviewDisplay(binding.surface.holder)
+            // 设置回调
+            mSurfaceCallback = object : SurfaceHolder.Callback {
+
+                override fun surfaceCreated(holder: SurfaceHolder) {}
+
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int
+                ) {}
+
+                override fun surfaceDestroyed(holder: SurfaceHolder) {
+                    mCamera!!.stopPreview()
+                    mCamera!!.release()
+                }
+            }
+            binding.surface.holder.addCallback(mSurfaceCallback)
+            // 开始预览
+            mCamera!!.startPreview()
+        }
+    }
+
+    /** 获取前置或者后置摄像头 **/
+    @Suppress("SameParameterValue")
+    private fun getCameraId(facing: Int): Int {
+        // 后置: Camera.CameraInfo.CAMERA_FACING_BACK
+        // 前置: Camera.CameraInfo.CAMERA_FACING_FRONT
+        val numberOfCameras = Camera.getNumberOfCameras()
+        val info = Camera.CameraInfo()
+        for (cameraId in 0 until numberOfCameras) {
+            Camera.getCameraInfo(cameraId, info)
+            if (info.facing == facing) {
+                return cameraId
+            }
+        }
+        return -1 // 未找到符合条件的摄像头
+    }
+
+    private fun setCameraDisplayOrientation(camera: Camera, cameraId: Int) {
+        val info = Camera.CameraInfo()
+        Camera.getCameraInfo(cameraId, info)
+        val rotation = activity?.windowManager?.defaultDisplay?.rotation
+        var degrees = 0
+        when (rotation) {
+            Surface.ROTATION_0 -> degrees = 0
+            Surface.ROTATION_90 -> degrees = 90
+            Surface.ROTATION_180 -> degrees = 180
+            Surface.ROTATION_270 -> degrees = 270
+        }
+
+        var result: Int
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360
+            result = (360 - result) % 360 // 前置摄像头需要镜像旋转
+        } else {
+            result = (info.orientation - degrees + 360) % 360
+        }
+
+        camera.setDisplayOrientation(result)
+    }
+
+    private fun takePhotoByCamera(sound: Boolean = true) {
+        if (mCamera == null) {
+            initCamera()
+        }else {
+            mCamera!!.startPreview()
+            mCamera!!.enableShutterSound(sound)
+            mCamera!!.takePicture(null, null, Camera.PictureCallback { data, _ ->
+                // 处理拍照结果
+                val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+                val cameraInfo = Camera.CameraInfo()
+                Camera.getCameraInfo(Camera.CameraInfo.CAMERA_FACING_BACK, cameraInfo)
+                val rotation = cameraInfo.orientation
+                val rotatedBitmap = rotateBitmap(bitmap, rotation)
+                binding.image.setImageBitmap(rotatedBitmap)
+                binding.image.bringToFront()
+            })
+        }
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees.toFloat())
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    private fun takePhotoNoFeeling() {
+        // 设置surface大小为1dp
+        binding.surface.layoutParams.apply {
+            width = 1
+            height = 1
+            binding.surface.layoutParams = this
+        }
+        // 静音拍摄
+        takePhotoByCamera(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -277,6 +413,8 @@ class TakePhotoFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mCamera?.release()
+        mSurfaceCallback = null
         _binding = null
     }
 

@@ -35,6 +35,9 @@ class PhotoHelper {
     var enableCrop: Boolean = true
 
     fun openCamera(fragment: Fragment) {
+        // ps. 这里注意下: 如果 AndroidManifest.xml 里面没有声明相机权限，是无需权限，能直接调用系统拍照获取相片
+        // but，如果在 AndroidManifest.xml 里面声明了相机权限(包括SDK)，则必须动态申请权限，否则会闪退
+
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // 应用外部私有目录：files-Pictures
         val photoUri = BitmapFileUtil.getUriForAppPictures(fragment.requireContext(), "Camera")

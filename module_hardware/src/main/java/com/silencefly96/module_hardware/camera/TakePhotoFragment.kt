@@ -3,15 +3,19 @@ package com.silencefly96.module_hardware.camera
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.util.Consumer
+import androidx.lifecycle.coroutineScope
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.IPermissionHelper
 import com.silencefly96.module_base.utils.BitmapFileUtil
 import com.silencefly96.module_hardware.databinding.FragmentTakePhotoBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class TakePhotoFragment : BaseFragment() {
@@ -39,8 +43,9 @@ class TakePhotoFragment : BaseFragment() {
 
     override fun doBusiness(context: Context?) {
         binding.takePhoto.setOnClickListener {
+            // 如果 AndroidManifest.xml 里面有注册Camera权限(包含SDK)，则必须申请=>默认申请最好
             requestPermission {
-                photoHelper.openCamera(this)
+                it ?: photoHelper.openCamera(this)
             }
         }
 
@@ -49,23 +54,60 @@ class TakePhotoFragment : BaseFragment() {
         }
 
         binding.takePhotoByCamera.setOnClickListener {
-            // 调用拍照
-            cameraHelper.takePhotoByCamera(requireActivity(), binding.surface, {
-                binding.image.setImageBitmap(it)
-                binding.image.bringToFront()
-            })
+            requestPermission {
+                if (it) {
+                    // surface可见时才能使用相机
+                    binding.surface.visibility = View.VISIBLE
+                    // 调用拍照，相机操作最好放异步线程
+                    lifecycle.coroutineScope.launch(Dispatchers.IO) {
+                        cameraHelper.takePhotoByCamera(requireActivity(), binding.surface, {
+                            // UI操作放主线程
+                            binding.image.post {
+                                binding.image.setImageBitmap(it)
+                                binding.image.bringToFront()
+                            }
+                        })
+                    }
+                }
+            }
         }
 
         binding.takePhotoNoFeeling.setOnClickListener {
-            // 无感调用拍照
-            cameraHelper.takePhotoNoFeeling(requireActivity(), binding.surface) {
-                binding.image.setImageBitmap(it)
-                binding.image.bringToFront()
+            requestPermission {
+                if (it) {
+                    // surface可见时才能使用相机
+                    binding.surface.visibility = View.VISIBLE
+                    // 使用camera2拍照
+                    lifecycle.coroutineScope.launch(Dispatchers.IO) {
+                        cameraHelper.takePhotoNoFeeling(requireActivity(), binding.surface) {
+                            // UI操作放主线程
+                            binding.image.post {
+                                binding.image.setImageBitmap(it)
+                                binding.image.bringToFront()
+                            }
+                        }
+                    }
+                }
             }
         }
 
         binding.takePhotoByCamera2.setOnClickListener {
-            camera2Helper.takePhotoByCamera2()
+            requestPermission {
+                if (it) {
+                    // surface可见时才能使用相机
+                    binding.surface.visibility = View.VISIBLE
+                    // 无感调用拍照
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        camera2Helper.takePhotoByCamera2(requireActivity(), binding.surface) {
+                            // UI操作放主线程
+                            binding.image.post {
+                                binding.image.setImageBitmap(it)
+                                binding.image.bringToFront()
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         binding.takePhotoByCameraX.setOnClickListener {
@@ -90,7 +132,10 @@ class TakePhotoFragment : BaseFragment() {
 
         photoHelper = PhotoHelper()
         cameraHelper = CameraHelper()
-        camera2Helper = Camera2Helper()
+        // Android 5.0开始支持Camera2
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            camera2Helper = Camera2Helper()
+        }
         cameraXHelper = CameraXHelper()
     }
 

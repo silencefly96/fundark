@@ -62,37 +62,33 @@ class CameraHelper {
     }
 
     private fun initCamera(activity: Activity, surface: SurfaceView) {
-        // surface可见时才能使用相机
-        surface.visibility = View.VISIBLE
-        Thread {
-            // 获取后置摄像头ID
-            val cameraId = getCameraId(Camera.CameraInfo.CAMERA_FACING_BACK)
-            // 获取相机实例
-            mCamera = Camera.open(cameraId)
-            // 设置和屏幕方向一致
-            setCameraDisplayOrientation(activity, mCamera!!, cameraId)
-            // 设置holder，不要在surfaceCreated设置，不然有问题
-            mCamera!!.setPreviewDisplay(surface.holder)
-            // 设置回调
-            surface.holder.addCallback(object : SurfaceHolder.Callback {
+        // 获取后置摄像头ID
+        val cameraId = getCameraId(Camera.CameraInfo.CAMERA_FACING_BACK)
+        // 获取相机实例
+        mCamera = Camera.open(cameraId)
+        // 设置和屏幕方向一致
+        setCameraDisplayOrientation(activity, mCamera!!, cameraId)
+        // 设置holder，不要在surfaceCreated设置，不然有问题
+        mCamera!!.setPreviewDisplay(surface.holder)
+        // 设置回调
+        surface.holder.addCallback(object : SurfaceHolder.Callback {
 
-                override fun surfaceCreated(holder: SurfaceHolder) {}
+            override fun surfaceCreated(holder: SurfaceHolder) {}
 
-                override fun surfaceChanged(
-                    holder: SurfaceHolder,
-                    format: Int,
-                    width: Int,
-                    height: Int
-                ) {}
+            override fun surfaceChanged(
+                holder: SurfaceHolder,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {}
 
-                override fun surfaceDestroyed(holder: SurfaceHolder) {
-                    mCamera!!.stopPreview()
-                    mCamera!!.release()
-                }
-            })
-            // 开始预览
-            mCamera!!.startPreview()
-        }.start()
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                mCamera!!.stopPreview()
+                mCamera!!.release()
+            }
+        })
+        // 开始预览
+        mCamera!!.startPreview()
     }
 
     /** 获取前置或者后置摄像头 **/

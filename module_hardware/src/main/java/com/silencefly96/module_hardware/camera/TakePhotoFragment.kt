@@ -98,7 +98,8 @@ class TakePhotoFragment : BaseFragment() {
                     binding.surface.visibility = View.VISIBLE
                     // 无感调用拍照
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        camera2Helper.takePhotoByCamera2(requireActivity(), binding.surface) {
+                        // 内部用协程在IO线程处理了
+                        camera2Helper.takePhotoByCamera2(requireActivity(), lifecycle, binding.surface) {
                             // UI操作放主线程
                             binding.image.post {
                                 binding.image.setImageBitmap(it)

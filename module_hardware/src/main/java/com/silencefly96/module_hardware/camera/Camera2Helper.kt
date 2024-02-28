@@ -14,11 +14,20 @@ import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.TotalCaptureResult
 import android.media.ImageReader
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.annotation.RequiresApi
 import androidx.core.util.Consumer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @RequiresApi(Build.VERSION_CODES.M)
 class Camera2Helper {
@@ -33,7 +42,10 @@ class Camera2Helper {
     // 摄像头信息
     private var mCameraCharacteristics: CameraCharacteristics? = null
 
-    // 用于读取图片
+    // 用于处理相机结果的handler(主线程handler)
+    private val mHandler = Handler(Looper.getMainLooper())
+
+        // 用于读取图片
     private var mImageReader: ImageReader? = null
 
     // 相机
@@ -45,58 +57,50 @@ class Camera2Helper {
 
     private var mCaptureRequest: CaptureRequest? = null
 
-    fun takePhotoByCamera2(context: Activity, surfaceView: SurfaceView, consumer: Consumer<Bitmap>) {
-        if (!isInit) {
-            // 1、获取CameraManager
-            mCameraManager = context.getSystemService(CameraManager::class.java)
+    fun takePhotoByCamera2(context: Activity, lifecycle: Lifecycle, surfaceView: SurfaceView, consumer: Consumer<Bitmap>) {
+        // 通过协程在异步线程执行，还方便将回调改成直接返回
+        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+            if (!isInit) {
+                // 1、获取CameraManager
+                mCameraManager = context.getSystemService(CameraManager::class.java)
 
-            // 2、获取摄像头相关信息，使用后置摄像头
-            chooseCameraIdByFacing(CameraCharacteristics.LENS_FACING_BACK)
+                // 2、获取摄像头相关信息，使用后置摄像头
+                chooseCameraIdByFacing(CameraCharacteristics.LENS_FACING_BACK)
 
-            // 3、设置如何读取图片的ImageReader
-            mImageReader = getImageReader(surfaceView, consumer)
+                // 3、设置如何读取图片的ImageReader
+                mImageReader = getImageReader(surfaceView, consumer)
 
-            // 4、开启相机
-            openCamera { camera ->
-                // 相机开启成功时，拿到CameraDevice
-                mCamera = camera
+                // 4、开启相机
+                mCamera = openCamera()
 
                 // 5.创建Capture Session
-                startCaptureSession(mutableListOf(
+                mSession = startCaptureSession(mutableListOf(
                     // 注意一定要传入使用到的surface，不然会闪退
                     surfaceView.holder.surface,
                     mImageReader!!.surface
-                ),  camera) { session ->
-                    // 拿到Capture会话，就能发起拍照请求了
-                    mSession = session
+                ),  mCamera!!)
 
-                    // 6.开始预览，预览和拍照都用request实现
-                    startPreview(surfaceView.holder.surface)
-                    isInit = true
-                }
+                // 6.开始预览，预览和拍照都用request实现
+                startPreview(surfaceView.holder.surface)
+
+                // 7.关闭相机，在surfaceView销毁的时候关闭(或者手动关闭)
+                surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
+
+                    override fun surfaceCreated(holder: SurfaceHolder) {}
+
+                    override fun surfaceChanged(
+                        holder: SurfaceHolder, format: Int, width: Int, eight: Int ) {}
+
+                    override fun surfaceDestroyed(holder: SurfaceHolder) {
+                        closeAll()
+                    }
+                })
+
+                isInit = true
+            }else {
+                // 8.拍照
+                takePhoto(context)
             }
-
-            // 7.关闭相机，在surfaceView销毁的时候关闭
-            surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
-
-                override fun surfaceCreated(holder: SurfaceHolder) {}
-
-                override fun surfaceChanged(
-                    holder: SurfaceHolder,
-                    format: Int,
-                    width: Int,
-                    height: Int
-                ) {}
-
-                override fun surfaceDestroyed(holder: SurfaceHolder) {
-                    mCamera?.close()
-                    mSession?.close()
-                    mImageReader?.close()
-                }
-            })
-        }else {
-            // 8.拍照
-            takePhoto(context)
         }
     }
 
@@ -144,42 +148,45 @@ class Camera2Helper {
                     consumer.accept(bitmap)
                 }
             }
-        }, null)
+        }, mHandler)
         return imageReader
     }
 
     @SuppressLint("MissingPermission")
-    private fun openCamera(consumer: Consumer<CameraDevice>) {
+    private suspend fun openCamera() = suspendCoroutine<CameraDevice> {
         mCameraManager.openCamera(mCameraId!!, object : CameraDevice.StateCallback() {
             override fun onOpened(camera: CameraDevice) {
                 // 表示相机打开成功，可以真正开始使用相机，创建Capture会话
-                consumer.accept(camera)
+                it.resume(camera)
             }
 
             override fun onDisconnected(camera: CameraDevice) {
                 // 当相机断开连接时回调该方法，需要进行释放相机的操作
                 mCamera?.close()
                 mCamera = null
+                it.resumeWithException(Exception("onDisconnected"))
             }
 
             override fun onError(camera: CameraDevice, error: Int) {
                 // 当相机打开失败时，需要进行释放相机的操作
                 mCamera?.close()
                 mCamera = null
+                it.resumeWithException(Exception("onError: $error"))
             }
-        }, null)
+        }, mHandler)
     }
 
-    private fun startCaptureSession(outputs: List<Surface> ,cameraDevice: CameraDevice, consumer: Consumer<CameraCaptureSession>) {
-        cameraDevice.createCaptureSession(outputs, object : CameraCaptureSession.StateCallback() {
-            override fun onConfigured(session: CameraCaptureSession) {
-                consumer.accept(session)
-            }
+    private suspend fun startCaptureSession(outputs: List<Surface> ,cameraDevice: CameraDevice)
+        = suspendCoroutine<CameraCaptureSession> {
+            cameraDevice.createCaptureSession(outputs, object : CameraCaptureSession.StateCallback() {
+                override fun onConfigured(session: CameraCaptureSession) {
+                    it.resume(session)
+                }
 
-            override fun onConfigureFailed(session: CameraCaptureSession) {
-                consumer.accept(session)
-            }
-        }, null)
+                override fun onConfigureFailed(session: CameraCaptureSession) {
+                    it.resumeWithException(Exception("onConfigureFailed"))
+                }
+            }, mHandler)
     }
 
     private fun startPreview(surface: Surface) {
@@ -193,7 +200,7 @@ class Camera2Helper {
         previewRequestBuilder.addTarget(surface)
 
         mPreviewRequest = previewRequestBuilder.build()
-        mSession!!.setRepeatingRequest(mPreviewRequest!!, null, null)
+        mSession!!.setRepeatingRequest(mPreviewRequest!!, null, mHandler)
     }
 
     private fun takePhoto(activity: Activity) {
@@ -223,7 +230,7 @@ class Camera2Helper {
                 // 图片已捕获
                 // 可选步骤，根据需要进行处理
             }
-        }, null)
+        }, mHandler)
     }
 
     private fun getJpegOrientation(
@@ -243,5 +250,14 @@ class Camera2Helper {
 
         // 计算最终的JPEG方向
         return (sensorOrientation!! + deviceRotation + 360) % 360
+    }
+
+    fun closeAll() {
+        // 需要关闭这三个
+        mCamera?.close()
+        mSession?.close()
+        mImageReader?.close()
+        mHandler.removeCallbacksAndMessages(null)
+        isInit = false
     }
 }

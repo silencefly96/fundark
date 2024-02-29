@@ -153,7 +153,7 @@ abstract class BaseGameView @JvmOverloads constructor(
         colDelta = w / colNumb
         // 开始游戏
         load(w, h)
-        mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+        start()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -202,6 +202,8 @@ abstract class BaseGameView @JvmOverloads constructor(
         private val mRef: WeakReference<BaseGameView> = WeakReference(view)
         // 游戏结束标志
         private var isGameOver = false
+        // 暂停标志
+        private var isPause = false
 
         override fun handleMessage(msg: Message) {
             mRef.get()?.let { gameView ->
@@ -210,12 +212,16 @@ abstract class BaseGameView @JvmOverloads constructor(
 
                 // 循环发送消息，刷新页面
                 gameView.invalidate()
-                if (!isGameOver) {
-                    gameView.mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
-                }else {
+                if (isGameOver) {
                     gameView.gameOver()
+                }else if (!isPause) {
+                    gameView.mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
                 }
             }
+        }
+
+        fun pause(flag: Boolean) {
+            isPause = flag
         }
     }
 
@@ -279,12 +285,28 @@ abstract class BaseGameView @JvmOverloads constructor(
             .setPositiveButton("确认") { _, _ ->
                 run {
                     reload(width, height)
-                    mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
+                    start()
                 }
             }
             .setNegativeButton("取消", null)
             .create()
             .show()
+    }
+
+    /**
+     * 暂停游戏刷新
+     */
+    protected fun pause() {
+        mGameController.pause(true)
+        mGameController.removeMessages(0)
+    }
+
+    /**
+     * 继续游戏
+     */
+    protected fun start() {
+        mGameController.pause(false)
+        mGameController.sendEmptyMessageDelayed(0, GAME_FLUSH_TIME)
     }
 
     /**

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FlyEggGameView">
+        <attr name="eggMask" format="reference"/>
+        <attr name="boatMask" format="reference"/>
+        <attr name="gameConfig" format="reference"/>
+        <attr name="showTip" format="boolean"/>
+    </declare-styleable>
+    <string-array name="easy">
+        <item>2</item>
+        <item>3</item>
+        <item>2</item>
+        <item>4</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="middle">
+        <item>2</item>
+        <item>3</item>
+        <item>2</item>
+        <item>4</item>
+        <item>2</item>
+
+        <item>5</item>
+        <item>2</item>
+        <item>6</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="hard">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>2</item>
+
+        <item>5</item>
+        <item>3</item>
+        <item>5</item>
+        <item>2</item>
+
+        <item>4</item>
+        <item>6</item>
+        <item>3</item>
+        <item>2</item>
+    </string-array>
+</resources>

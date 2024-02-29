@@ -9,6 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black"
+        app:eggMask="@drawable/ic_node"
+        app:boatMask="@drawable/ic_boat"
+        app:gameConfig="@array/easy"
+        app:showTip="true"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

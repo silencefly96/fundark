@@ -4,8 +4,6 @@
 
     <data>
 
-        <import type="android.view.View" />
-
         <variable
             name="viewmodel"
             type="com.silencefly96.module_mvvm.plan.PlanViewModel" />

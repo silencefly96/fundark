@@ -25,7 +25,7 @@ class TetrisGameDemo: BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.gamaView.recycle()
+        binding.gameView.recycle()
         _binding = null
     }
 }

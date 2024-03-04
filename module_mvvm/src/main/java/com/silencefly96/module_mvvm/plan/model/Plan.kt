@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 //8.129.134.62:8800/tasks/query
 
 @Entity(tableName = "plan")
-data class Plan constructor(
+data class Plan(
         @PrimaryKey(autoGenerate = true)
         var id: Long = 0,
 

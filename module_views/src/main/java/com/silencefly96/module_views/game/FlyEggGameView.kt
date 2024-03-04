@@ -76,22 +76,23 @@ class FlyEggGameView @JvmOverloads constructor(
     // XML 传入配置:
     // 两种掩图
     private val mEggMask: Bitmap
-//    = drawable2Bitmap(R.drawable.ic_node)
     private val mBoatMask: Bitmap
-//    = drawable2Bitmap(R.drawable.ic_boat)
 
     // 游戏配置
-    private val mGameConfig: Array<Int>
-    private val mDefaultConfig = arrayOf(
-        TYPE_UNMOVE, TYPE_MOVE,
+    private lateinit var mGameConfig: IntArray
+    private val mDefaultConfig = intArrayOf(
+        TYPE_UNMOVE, TYPE_SINY,
         TYPE_UNMOVE, TYPE_CIRCLE,
         TYPE_UNMOVE, TYPE_BEVAL,
         TYPE_UNMOVE, TYPE_SINY,
         TYPE_UNMOVE
     )
 
+    // 使用游戏level(-1, 0, 1, 2)
+    private var mGameLevel = -1
+
     // 是否显示辅助线
-    private var isShowTip = false
+    var isShowTip = false
 
     init{
         // 读取配置
@@ -99,18 +100,27 @@ class FlyEggGameView @JvmOverloads constructor(
 
         // 蛋的掩图
         var drawable = typedArray.getDrawable(R.styleable.FlyEggGameView_eggMask)
-        mEggMask = drawable2Bitmap(drawable!!)
+        mEggMask = if (drawable != null) {
+            drawable2Bitmap(drawable)
+        }else {
+            drawable2Bitmap( R.mipmap.ic_launcher_round)
+        }
+
         // 船的掩图
         drawable = typedArray.getDrawable(R.styleable.FlyEggGameView_boatMask)
-        mBoatMask = drawable2Bitmap(drawable!!)
+        mBoatMask = if (drawable != null) {
+            drawable2Bitmap(drawable)
+        }else {
+            drawable2Bitmap( R.mipmap.ic_launcher)
+        }
+
+        // 像读取gameLevel
+        mGameLevel = typedArray.getInteger(R.styleable.FlyEggGameView_gameLevel, -1)
+
 
         // 读取目标的布局配置
         val configId = typedArray.getResourceId(R.styleable.FlyEggGameView_gameConfig, -1)
-        mGameConfig = if (configId != -1) {
-            getGameConfig(configId)
-        }else {
-            mDefaultConfig
-        }
+        setGameLevel(mGameLevel, configId)
 
         // 是否显示辅助线
         isShowTip = typedArray.getBoolean(R.styleable.FlyEggGameView_showTip, false)
@@ -118,13 +128,22 @@ class FlyEggGameView @JvmOverloads constructor(
         typedArray.recycle()
     }
 
-    private fun getGameConfig(resId: Int): Array<Int> {
-        val array = resources.getStringArray(resId)
-        val result = Array<Int>(array.size) { it }
-        for (i in array.indices) {
-            result[i] = array[i].toInt()
+    fun setGameLevel(level: Int, configId: Int = -1) {
+        mGameConfig = if (configId != -1) {
+            resources.getIntArray(configId)
+        }else if (level != -1) {
+            // 没有设置自定义，再看设置游戏等级没
+            mGameLevel = level
+            when(level) {
+                0 -> R.array.easy
+                1 -> R.array.middle
+                else -> R.array.hard
+            }.let {
+                resources.getIntArray(it)
+            }
+        }else {
+            mDefaultConfig
         }
-        return result
     }
 
     override fun load(w: Int, h: Int) {
@@ -145,15 +164,8 @@ class FlyEggGameView @JvmOverloads constructor(
         mHeroFlyHeight = (h - BUTTOM_PADDING - TOP_PADDING) / 2 + HERO_OVER_HEIGHT
 
         // 构建地图
-        val map = arrayOf(
-            TYPE_UNMOVE, TYPE_MOVE,
-            TYPE_UNMOVE, TYPE_CIRCLE,
-            TYPE_UNMOVE, TYPE_BEVAL,
-            TYPE_UNMOVE, TYPE_SINY,
-            TYPE_UNMOVE
-        )
-        for (i in map.indices) {
-            mDisplaySprites.add(getBoat(map[i], i + 1, w, h))
+        for (i in mGameConfig.indices) {
+            mDisplaySprites.add(getBoat(mGameConfig[i], i + 1, w, h))
         }
 
         // 页面动画
@@ -195,6 +207,10 @@ class FlyEggGameView @JvmOverloads constructor(
         mDisplaySprites.forEach {
             drawSprite(it, canvas, paint)
         }
+        // 简单画个辅助线
+        if (isShowTip) {
+            drawTip(canvas, paint)
+        }
     }
 
     // 在原来的基础上增加页面滚动值
@@ -203,6 +219,28 @@ class FlyEggGameView @JvmOverloads constructor(
             canvas.drawBitmap(mask, sprite.posX - mask.width / 2f,
                 sprite.posY - mask.height / 2f + mScorllValue, paint)
         }
+    }
+
+    private fun drawTip(canvas: Canvas, paint: Paint) {
+        // 其实很简单，按segment为间隔画HERO_FLY_COUNT个点就是预测的抛物线
+        val x = mHeroSprite.posX.toFloat()
+        val y = mHeroSprite.posY.toFloat() + mScorllValue
+        val totalWidth = width - HORIZONTAL_PADDING * 2
+        val segment = totalWidth / BOAT_MOVE_COUNT
+
+        val oldStrokeWidth = paint.strokeWidth
+        paint.strokeWidth = 1f
+        for (i in 0..HERO_FLY_COUNT) {
+            val cx1 = x + segment * i
+            val cx2 = x - segment * i
+            val cy = y - getFlyHeight(i)
+
+            // 三条辅助线
+            canvas.drawCircle(x, cy, 1f, paint)
+            canvas.drawCircle(cx1, cy, 1f, paint)
+            canvas.drawCircle(cx2, cy, 1f, paint)
+        }
+        paint.strokeWidth = oldStrokeWidth
     }
 
     override fun onMoveUp(dir: Int): Boolean {
@@ -220,7 +258,7 @@ class FlyEggGameView @JvmOverloads constructor(
             return false
         }
 
-        // 检查游戏结束
+        // 检查游戏成功
         if (checkSuccess()) {
             return false
         }
@@ -229,20 +267,15 @@ class FlyEggGameView @JvmOverloads constructor(
         for (sprite in mDisplaySprites) {
             moveBoat(sprite)
 
-            if (checkSite(sprite)) {
-                // 坐上了船
-                // mDisplaySprites.remove(mHeroBoat)
-                mHeroBoat = sprite
-                mHeroSprite.moveCount = 0
-                mState = STATE_NORMAL
-                // 每次到最上面一个船时，移动页面
-                if (sprite.posY + mScorllValue <= TOP_PADDING) {
-                    mState = STATE_SCROLL
-                    mAnimator.start()
-                }
-                break
-            }
+            // 检查是否碰撞 => 坐上船
+            checkSite(sprite)
         }
+
+        // 判断是否要移动页面
+        mHeroBoat?.let {
+            checkAndMovePage(it)
+        }
+
 
         return mState == STATE_FLYING && mHeroSprite.moveCount == 0
     }
@@ -279,7 +312,7 @@ class FlyEggGameView @JvmOverloads constructor(
                 val index = mDisplaySprites.indexOf(sprite) - 1
                 val staticY = (height - BUTTOM_PADDING) - index * (height - BUTTOM_PADDING - TOP_PADDING) / 2
                 // 方便函数计算，从最低的Y坐标开始算(注意，向下是加)
-                val startY = staticY + totalHeight
+                val startY = staticY + totalHeight / 2
                 // 在上面基础上增加Y轴变换
                 val segmentX = totalWidth / BOAT_MOVE_COUNT
                 val segmentY = totalHeight / BOAT_MOVE_COUNT
@@ -350,13 +383,24 @@ class FlyEggGameView @JvmOverloads constructor(
         return 0
     }
 
-    private fun checkSite(sprite: Sprite): Boolean {
-        return if (sprite == mHeroSprite || sprite == mHeroBoat) {
-            false
-        }else {
+    private fun checkSite(sprite: Sprite) {
+        if (sprite != mHeroSprite && sprite != mHeroBoat) {
             // 角色和船一定距离内，认为坐上了船
-            getDistance(sprite.posX, sprite.posY,
-                mHeroSprite.posX, mHeroSprite.posY) <= COLLISION_DISTANCE
+            if (getDistance(sprite.posX, sprite.posY,
+                    mHeroSprite.posX, mHeroSprite.posY) <= COLLISION_DISTANCE) {
+                // 坐上了船
+                mHeroBoat = sprite
+                mHeroSprite.moveCount = 0
+                mState = STATE_NORMAL
+            }
+        }
+    }
+
+    private fun checkAndMovePage(sprite: Sprite) {
+        // 飞蛋坐的船到上面一定距离时，移动页面
+        if (sprite.posY + mScorllValue <= TOP_PADDING * 1.25f) {
+            mState = STATE_SCROLL
+            mAnimator.start()
         }
     }
 

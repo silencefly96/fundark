@@ -26,7 +26,7 @@ class AirplaneFightGameDemo: BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         // 资源回收
-        binding.gamaView.recycle()
+        binding.gameView.recycle()
         _binding = null
     }
 }

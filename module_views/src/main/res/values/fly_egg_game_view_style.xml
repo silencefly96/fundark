@@ -5,15 +5,26 @@
         <attr name="boatMask" format="reference"/>
         <attr name="gameConfig" format="reference"/>
         <attr name="showTip" format="boolean"/>
+        <attr name="gameLevel">
+            <enum name ="easy" value="0" />
+            <enum name ="middle" value="1" />
+            <enum name ="hard" value="2" />
+        </attr>
     </declare-styleable>
-    <string-array name="easy">
+    <string-array name="gameLevel">
+        <item>custom</item>
+        <item>easy</item>
+        <item>middle</item>
+        <item>hard</item>
+    </string-array>
+    <integer-array name="easy">
         <item>2</item>
         <item>3</item>
         <item>2</item>
         <item>4</item>
         <item>2</item>
-    </string-array>
-    <string-array name="middle">
+    </integer-array>
+    <integer-array name="middle">
         <item>2</item>
         <item>3</item>
         <item>2</item>
@@ -24,8 +35,8 @@
         <item>2</item>
         <item>6</item>
         <item>2</item>
-    </string-array>
-    <string-array name="hard">
+    </integer-array>
+    <integer-array name="hard">
         <item>2</item>
         <item>3</item>
         <item>4</item>
@@ -40,5 +51,5 @@
         <item>6</item>
         <item>3</item>
         <item>2</item>
-    </string-array>
+    </integer-array>
 </resources>

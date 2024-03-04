@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.silencefly96.module_views.game.FlyEggGameView
-        android:id="@+id/gamaView"
+        android:id="@+id/game_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black"
         app:eggMask="@drawable/ic_node"
         app:boatMask="@drawable/ic_boat"
+        app:gameLevel="middle"
         app:gameConfig="@array/easy"
         app:showTip="true"
+        />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/tipSwitch"
+        android:text="辅助线"
+        android:textColor="@color/white"
+        android:checked="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_margin="5dp"
+        tools:ignore="HardcodedText"
+        />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/configSpinner"
+        android:entries="@array/gameLevel"
+        android:textColor="@color/gray"
+        android:background="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="5dp"
+        tools:ignore="HardcodedText"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

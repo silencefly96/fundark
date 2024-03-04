@@ -7,12 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import com.silencefly96.module_mvvm.plan.model.Plan
 import com.silencefly96.module_mvvm.plan.model.PlanRepository
+import com.silencefly96.module_mvvm.plan.model.PlanRepository.Companion.TYPE_LOCAL
 import com.silencefly96.module_mvvm.plan.model.PlanRepository.Companion.TYPE_REMOTE
 
 class PlanViewModel: ViewModel() {
 
     //仓库类型
-    private val repoType: Int = TYPE_REMOTE
+    private val repoType: Int = TYPE_LOCAL
     //总仓库
     lateinit var planRepository: PlanRepository
 

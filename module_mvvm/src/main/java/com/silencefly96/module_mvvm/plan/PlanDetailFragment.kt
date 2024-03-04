@@ -18,13 +18,17 @@ class PlanDetailFragment(val viewModel: PlanViewModel): BaseFragment() {
     }
 
     override fun doBusiness(context: Context?) {
+        // 设置好数据
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+
         //监测选中plan的变化
-        viewModel.plan.observe(viewLifecycleOwner) { result ->
-            result.getOrNull()?.let {
-                binding.title.text = it.title
-                binding.content.text = it.content
-            }
-        }
+//        viewModel.plan.observe(viewLifecycleOwner) { result ->
+//            result.getOrNull()?.let {
+//                binding.title.text = it.title
+//                binding.content.text = it.content
+//            }
+//        }
     }
 
     override fun onDestroyView() {

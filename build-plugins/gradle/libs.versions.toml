@@ -53,6 +53,9 @@ volley = "1.2.1"
 # httpdns
 httpdns = "2.3.0-intl"
 
+# cameraX
+camerax = "1.1.0-beta01"
+
 [libraries]
 # 基本库
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin"}
@@ -100,6 +103,14 @@ volley = { module = "com.android.volley:volley", version.ref = "volley"}
 
 # httpdns
 httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "httpdns"}
+
+# cameraX
+camerax = { module = "androidx.camera:camera-core", version.ref = "camerax"}
+camerax_camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax"}
+camerax_video = { module = "androidx.camera:camera-video", version.ref = "camerax"}
+camerax_lifecycler = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax"}
+camerax_view = { module = "androidx.camera:camera-view", version.ref = "camerax"}
+camerax_extensions = { module = "androidx.camera:camera-extensions", version.ref = "camerax"}
 
 [bundles]
 versionBase = [

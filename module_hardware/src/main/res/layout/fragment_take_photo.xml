@@ -152,6 +152,12 @@
             android:layout_height="match_parent"
             />
 
+        <androidx.camera.view.PreviewView
+            android:id="@+id/preview"
+            android:visibility="invisible"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+
         <ImageView
             android:id="@+id/image"
             android:layout_width="wrap_content"

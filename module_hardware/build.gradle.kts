@@ -25,4 +25,12 @@ dependencies {
     // navigation
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+
+    // CameraX 相关依赖
+    implementation(libs.camerax)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycler)
+    implementation(libs.camerax.video)
+    implementation(libs.camerax.view)
+    implementation(libs.camerax.extensions)
 }

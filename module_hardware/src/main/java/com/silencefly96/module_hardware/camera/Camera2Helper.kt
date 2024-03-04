@@ -20,6 +20,7 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
@@ -29,7 +30,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-@RequiresApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class Camera2Helper {
 
     private var isInit = false
@@ -62,7 +63,7 @@ class Camera2Helper {
         lifecycle.coroutineScope.launch(Dispatchers.IO) {
             if (!isInit) {
                 // 1、获取CameraManager
-                mCameraManager = context.getSystemService(CameraManager::class.java)
+                mCameraManager = ContextCompat.getSystemService(context, CameraManager::class.java)!!
 
                 // 2、获取摄像头相关信息，使用后置摄像头
                 chooseCameraIdByFacing(CameraCharacteristics.LENS_FACING_BACK)

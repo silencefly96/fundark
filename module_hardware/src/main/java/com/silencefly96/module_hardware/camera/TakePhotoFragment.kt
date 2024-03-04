@@ -45,7 +45,7 @@ class TakePhotoFragment : BaseFragment() {
         binding.takePhoto.setOnClickListener {
             // 如果 AndroidManifest.xml 里面有注册Camera权限(包含SDK)，则必须申请=>默认申请最好
             requestPermission {
-                it ?: photoHelper.openCamera(this)
+                if (it) photoHelper.openCamera(this)
             }
         }
 
@@ -99,7 +99,11 @@ class TakePhotoFragment : BaseFragment() {
                     // 无感调用拍照
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         // 内部用协程在IO线程处理了
-                        camera2Helper.takePhotoByCamera2(requireActivity(), lifecycle, binding.surface) {
+                        camera2Helper.takePhotoByCamera2(
+                            requireActivity(),
+                            lifecycle,
+                            binding.surface
+                        ) {
                             // UI操作放主线程
                             binding.image.post {
                                 binding.image.setImageBitmap(it)
@@ -112,7 +116,24 @@ class TakePhotoFragment : BaseFragment() {
         }
 
         binding.takePhotoByCameraX.setOnClickListener {
-            cameraXHelper.takePhotoByCameraX()
+            requestPermission {
+                if (it) {
+                    // 使用PreviewView
+                    binding.preview.visibility = View.VISIBLE
+                    // 无感调用拍照
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        cameraXHelper.takePhotoByCameraX(
+                            requireContext(),
+                            viewLifecycleOwner,
+                            binding.preview
+                        ) { bitmap ->
+                            // 已经在主线程设置了
+                            binding.image.setImageBitmap(bitmap)
+                            binding.image.bringToFront()
+                        }
+                    }
+                }
+            }
         }
 
         binding.insertPictures.setOnClickListener {
@@ -134,10 +155,10 @@ class TakePhotoFragment : BaseFragment() {
         photoHelper = PhotoHelper()
         cameraHelper = CameraHelper()
         // Android 5.0开始支持Camera2
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             camera2Helper = Camera2Helper()
+            cameraXHelper = CameraXHelper()
         }
-        cameraXHelper = CameraXHelper()
     }
 
     private fun requestPermission(consumer: Consumer<Boolean>) {

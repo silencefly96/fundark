@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":module_mvi")
+
+
 // 开启version catalogs(gradle-7.4.1-src起为稳定特性，不需要开启)
 // enableFeaturePreview("VERSION_CATALOGS")
 
@@ -80,10 +83,10 @@ rootProject.name = "fundark"
 include(":app")
 include(":module_base")
 include(":module_mvvm")
+include(":module_mvi")
 include(":module_hardware")
 include(":module_views")
 include(":module_media")
-include(":module_third")
+include(":module_common")
 include(":module_tech")
-include(":privacy-plugin")
 includeBuild("build-plugins")

@@ -11,47 +11,46 @@
         android:label="@string/main_fragment"
         tools:layout="@layout/fragment_main">
 
-        <action android:id="@+id/action_main_to_tool"
-            app:destination="@id/toolMainFragment">
+        <action android:id="@+id/action_main_to_activity"
+            app:destination="@id/activityMainFragment">
         </action>
 
-        <action android:id="@+id/action_main_to_tech"
-            app:destination="@id/techMainFragment">
+        <action android:id="@+id/action_main_to_drawable"
+            app:destination="@id/drawableMainFragment">
         </action>
 
+        <action android:id="@+id/action_main_to_practice"
+            app:destination="@id/practiceMainFragment">
+        </action>
+
+        <action android:id="@+id/action_main_to_service"
+            app:destination="@id/serviceMainFragment">
+        </action>
     </fragment>
 
     <fragment
-        android:id="@+id/toolMainFragment"
-        android:name="com.silencefly96.module_tech.tool.demo.ToolsMainFragment"
-        android:label="@string/tool_main_fragment"
+        android:id="@+id/activityMainFragment"
+        android:name="com.silencefly96.module_tech.activity.demo.ActivityMainFragment"
+        android:label="@string/activity_main_fragment"
         tools:layout="@layout/fragment_main" >
-
-        <action android:id="@+id/action_main_to_custom_glide"
-            app:destination="@id/customGlideDemo">
-        </action>
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/customGlideDemo"
-        android:name="com.silencefly96.module_tech.tool.demo.CustomGlideDemo"
-        android:label="@string/custom_glide_fragment"
-        tools:layout="@layout/fragment_custom_glide" />
-
-    <fragment
-        android:id="@+id/techMainFragment"
-        android:name="com.silencefly96.module_tech.tech.demo.TechMainFragment"
-        android:label="@string/tech_main_fragment"
-        tools:layout="@layout/fragment_main" >
-
-        <action android:id="@+id/action_main_to_dns_test"
-            app:destination="@id/dnsTestDemo">
-        </action>
 
         <action android:id="@+id/action_main_to_activity_flag"
             app:destination="@id/activityFlagDemo">
         </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/activityFlagDemo"
+        android:name="com.silencefly96.module_tech.activity.demo.ActivityFlagDemo"
+        android:label="@string/activity_flag_fragment"
+        tools:layout="@layout/activity_test" />
+
+    <fragment
+        android:id="@+id/drawableMainFragment"
+        android:name="com.silencefly96.module_tech.drawable.demo.DrawableMainFragment"
+        android:label="@string/drawable_main_fragment"
+        tools:layout="@layout/fragment_main" >
 
         <action android:id="@+id/action_main_to_drawable_test"
             app:destination="@id/drawableTestDemo">
@@ -73,6 +72,72 @@
             app:destination="@id/sceneTransitionTestDemo">
         </action>
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/drawableTestDemo"
+        android:name="com.silencefly96.module_tech.drawable.demo.DrawableTestDemo"
+        android:label="@string/drawable_test_fragment"
+        tools:layout="@layout/fragment_drawable_test" />
+
+    <fragment
+        android:id="@+id/animationTestDemo"
+        android:name="com.silencefly96.module_tech.drawable.demo.AnimationTestDemo"
+        android:label="@string/animation_test_fragment"
+        tools:layout="@layout/fragment_animation_test" />
+
+    <fragment
+        android:id="@+id/animatorTestDemo"
+        android:name="com.silencefly96.module_tech.drawable.demo.AnimatorTestDemo"
+        android:label="@string/animator_test_fragment"
+        tools:layout="@layout/fragment_animator_test" />
+
+    <fragment
+        android:id="@+id/vectorAnimTestDemo"
+        android:name="com.silencefly96.module_tech.drawable.demo.VectorAnimTestDemo"
+        android:label="@string/vector_anim_test_fragment"
+        tools:layout="@layout/fragment_vector_test" />
+
+    <fragment
+        android:id="@+id/sceneTransitionTestDemo"
+        android:name="com.silencefly96.module_tech.drawable.demo.SceneTransitionTestDemo"
+        android:label="@string/vector_scene_transition_test_fragment"
+        tools:layout="@layout/fragment_scene_transition_test" />
+
+    <fragment
+        android:id="@+id/practiceMainFragment"
+        android:name="com.silencefly96.module_tech.practice.demo.PracticeMainFragment"
+        android:label="@string/activity_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_custom_glide"
+            app:destination="@id/customGlideDemo">
+        </action>
+
+        <action android:id="@+id/action_main_to_dns_test"
+            app:destination="@id/dnsTestDemo">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/customGlideDemo"
+        android:name="com.silencefly96.module_tech.practice.demo.CustomGlideDemo"
+        android:label="@string/custom_glide_fragment"
+        tools:layout="@layout/fragment_custom_glide" />
+
+    <fragment
+        android:id="@+id/dnsTestDemo"
+        android:name="com.silencefly96.module_tech.practice.demo.DnsTestDemo"
+        android:label="@string/dns_test_fragment"
+        tools:layout="@layout/fragment_custom_glide" />
+
+    <fragment
+        android:id="@+id/serviceMainFragment"
+        android:name="com.silencefly96.module_tech.service.demo.ServiceMainFragment"
+        android:label="@string/service_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
         <action android:id="@+id/action_main_to_remote_test"
             app:destination="@id/remoteViewTestDemo">
         </action>
@@ -80,51 +145,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/dnsTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.DnsTestDemo"
-        android:label="@string/dns_test_fragment"
-        tools:layout="@layout/fragment_custom_glide" />
-
-    <fragment
-        android:id="@+id/activityFlagDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.ActivityFlagDemo"
-        android:label="@string/activity_flag_fragment"
-        tools:layout="@layout/activity_test" />
-
-    <fragment
-        android:id="@+id/drawableTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.DrawableTestDemo"
-        android:label="@string/drawable_test_fragment"
-        tools:layout="@layout/fragment_drawable_test" />
-
-    <fragment
-        android:id="@+id/animationTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.AnimationTestDemo"
-        android:label="@string/animation_test_fragment"
-        tools:layout="@layout/fragment_animation_test" />
-
-    <fragment
-        android:id="@+id/animatorTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.AnimatorTestDemo"
-        android:label="@string/animator_test_fragment"
-        tools:layout="@layout/fragment_animator_test" />
-
-    <fragment
-        android:id="@+id/vectorAnimTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.VectorAnimTestDemo"
-        android:label="@string/vector_anim_test_fragment"
-        tools:layout="@layout/fragment_vector_test" />
-
-    <fragment
-        android:id="@+id/sceneTransitionTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.SceneTransitionTestDemo"
-        android:label="@string/vector_scene_transition_test_fragment"
-        tools:layout="@layout/fragment_scene_transition_test" />
-
-
-    <fragment
         android:id="@+id/remoteViewTestDemo"
-        android:name="com.silencefly96.module_tech.tech.demo.RemoteViewTestDemo"
+        android:name="com.silencefly96.module_tech.service.demo.RemoteViewTestDemo"
         android:label="@string/remote_view_test_fragment"
         tools:layout="@layout/fragment_remote_test" />
 

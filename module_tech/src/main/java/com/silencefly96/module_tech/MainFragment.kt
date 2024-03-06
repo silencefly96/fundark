@@ -19,11 +19,17 @@ class MainFragment: BaseFragment() {
 
     // 数据
     private val mData = arrayListOf<Item>().apply {
-        add(Item(1, "tool",
-            "编写的一些实用工具"))
+        add(Item(1, "practice",
+            "一些技术实践，没有特定方向"))
 
-        add(Item(2, "tech",
-            "一些实践、测试用的技术"))
+        add(Item(2, "drawable",
+            "测试各种drawable、animation、animator、vector、过渡动画效果"))
+
+        add(Item(3, "activity",
+            "对activity的一些实践，比如生命周期、Intent Flag调用等"))
+
+        add(Item(4, "service",
+            "对后台服务、通知、JobScheduler、WorkManager的一些实践"))
     }
 
     // 适配器
@@ -49,8 +55,10 @@ class MainFragment: BaseFragment() {
             override fun onItemClick(view: View?, itemObj: Item, position: Int) {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
-                    1 -> R.id.action_main_to_tool
-                    2 -> R.id.action_main_to_tech
+                    1 -> R.id.action_main_to_practice
+                    2 -> R.id.action_main_to_drawable
+                    3 -> R.id.action_main_to_activity
+                    4 -> R.id.action_main_to_service
                     else -> 0
                 })
                 // showToast("title: ${itemObj.title}")

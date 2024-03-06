@@ -15,8 +15,8 @@
             app:destination="@id/bluetoothFragment">
         </action>
 
-        <action android:id="@+id/action_main_to_take_photo"
-            app:destination="@id/takePhotoFragment">
+        <action android:id="@+id/action_main_to_camera"
+            app:destination="@id/cameraMainFragment">
         </action>
 
         <action android:id="@+id/action_main_to_usb"
@@ -53,10 +53,31 @@
         tools:layout="@layout/fragment_bluetooth_server" />
 
     <fragment
+        android:id="@+id/cameraMainFragment"
+        android:name="com.silencefly96.module_hardware.camera.CameraMainFragment"
+        android:label="@string/camera_main_fragment"
+        tools:layout="@layout/fragment_main" >
+
+        <action android:id="@+id/action_main_to_take_photo"
+            app:destination="@id/takePhotoFragment">
+        </action>
+
+        <action android:id="@+id/action_main_to_take_video"
+            app:destination="@id/takeVideoFragment">
+        </action>
+    </fragment>
+
+    <fragment
         android:id="@+id/takePhotoFragment"
-        android:name="com.silencefly96.module_hardware.camera.TakePhotoFragment"
+        android:name="com.silencefly96.module_hardware.camera.photo.TakePhotoFragment"
         android:label="@string/take_photo_fragment"
-        tools:layout="@layout/fragment_take_photo" />
+        tools:layout="@layout/fragment_camera_take_photo" />
+
+    <fragment
+        android:id="@+id/takeVideoFragment"
+        android:name="com.silencefly96.module_hardware.camera.video.TakeVideoFragment"
+        android:label="@string/take_video_fragment"
+        tools:layout="@layout/fragment_camera_take_video" />
 
     <fragment
         android:id="@+id/usbFragment"

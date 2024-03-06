@@ -17,6 +17,8 @@
     <string name="wait_client_connect">"等待客户端连接…\n"</string>
 
     <!--  相机模块  -->
+    <string name="camera_main_fragment">拍照</string>
+    <string name="take_photo_fragment">拍照</string>
     <string name="take_photo_by_system">前往系统拍照</string>
     <string name="pick_photo_by_system">前往相册选取</string>
     <string name="take_photo_by_camera">使用Camera拍照</string>
@@ -28,7 +30,8 @@
     <string name="clear_Cache">清除缓存图片</string>
     <string name="clear_this_pictures">清除应用图片</string>
     <string name="main_fragment">首页</string>
-    <string name="take_photo_fragment">拍照</string>
+
+    <string name="take_video_fragment">拍视频</string>
 
     <!--  USB模块  -->
     <string name="usb_fragment">USB</string>

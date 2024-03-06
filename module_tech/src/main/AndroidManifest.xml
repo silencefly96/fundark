@@ -29,18 +29,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".tech.activity_flag.TestActivityA" android:taskAffinity="com.test.TestA"/>
-        <activity android:name=".tech.activity_flag.TestActivityB" android:launchMode="singleTop" android:taskAffinity="com.test.TestA"/>
-        <activity android:name=".tech.activity_flag.TestActivityC" android:taskAffinity="com.test.TestA"/>
-        <activity android:name=".tech.activity_flag.TestActivityD" android:taskAffinity="com.test.TestB"/>
-        <activity android:name=".tech.activity_flag.TestActivityE" android:taskAffinity="com.test.TestB"/>
-        <activity android:name=".tech.animation.AnimationActivity" />
-        <activity android:name=".tech.animator.AnimatorActivity" />
-        <activity android:name=".tech.scene.SceneTransitionActivity" android:theme="@style/CustomActivityTheme"/>
+        <activity android:name=".activity.flag.TestActivityA" android:taskAffinity="com.test.TestA"/>
+        <activity android:name=".activity.flag.TestActivityB" android:launchMode="singleTop" android:taskAffinity="com.test.TestA"/>
+        <activity android:name=".activity.flag.TestActivityC" android:taskAffinity="com.test.TestA"/>
+        <activity android:name=".activity.flag.TestActivityD" android:taskAffinity="com.test.TestB"/>
+        <activity android:name=".activity.flag.TestActivityE" android:taskAffinity="com.test.TestB"/>
+        <activity android:name=".drawable.animation.AnimationActivity" />
+        <activity android:name=".drawable.animator.AnimatorActivity" />
+        <activity android:name=".drawable.scene.SceneTransitionActivity" android:theme="@style/CustomActivityTheme"/>
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <service
-            android:name=".tech.remote_view.audio.service.AudioService"
+            android:name=".service.remote_view.audio.service.AudioService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback"
             />

@@ -56,7 +56,7 @@ class MainFragment: BaseFragment() {
                 // navigation跳转
                 view?.findNavController()?.navigate(when(itemObj.index) {
                     1 -> R.id.action_main_to_bluetooth
-                    2 -> R.id.action_main_to_take_photo
+                    2 -> R.id.action_main_to_camera
                     3 -> R.id.action_main_to_usb
                     else -> 0
                 })

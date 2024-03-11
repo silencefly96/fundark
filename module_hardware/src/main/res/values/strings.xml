@@ -19,17 +19,24 @@
     <!--  相机模块  -->
     <string name="camera_main_fragment">拍照</string>
     <string name="take_photo_fragment">拍照</string>
-    <string name="take_photo_by_system">前往系统拍照</string>
-    <string name="pick_photo_by_system">前往相册选取</string>
-    <string name="take_photo_by_camera">使用Camera拍照</string>
-    <string name="take_photo_by_camera2">使用Camera2拍照</string>
-    <string name="take_photo_by_cameraX">使用CameraX拍照</string>
-    <string name="take_photo_no_feeling">使用Camera无感拍照</string>
-    <string name="enable_crop">开启裁切模式</string>
-    <string name="insert_photo_to_pictures">将bitmap插入到相册</string>
-    <string name="clear_Cache">清除缓存图片</string>
-    <string name="clear_this_pictures">清除应用图片</string>
+    <string name="take_photo_by_system">系统拍照</string>
+    <string name="pick_photo_by_system">相册选取</string>
+    <string name="type_camera">camera</string>
+    <string name="type_camera2">camera2</string>
+    <string name="type_cameraX">cameraX</string>
+    <string name="start_preview">开始预览</string>
+    <string name="take_capture">拍照</string>
+    <string name="cancel_capture">取消拍摄</string>
+    <string name="enable_crop">裁切</string>
+    <string name="insert_photo_to_pictures">保存到相册</string>
+    <string name="clear_Cache">清除图片缓存</string>
+    <string name="clear_this_pictures">删除应用图片</string>
     <string name="main_fragment">首页</string>
+
+    <string name="start_record_video">录制</string>
+    <string name="stop_record_video">停止</string>
+    <string name="save_record_video">保存</string>
+    <string name="cancel_record_video">取消</string>
 
     <string name="take_video_fragment">拍视频</string>
 

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -34,6 +35,11 @@ class PhotoHelper {
     // 启用裁切
     var enableCrop: Boolean = true
 
+    /**
+     * 通过相机获取照片
+     *
+     * @param fragment
+     */
     fun openCamera(fragment: Fragment) {
         // ps. 这里注意下: 如果 AndroidManifest.xml 里面没有声明相机权限，是无需权限，能直接调用系统拍照获取相片
         // but，如果在 AndroidManifest.xml 里面声明了相机权限(包括SDK)，则必须动态申请权限，否则会闪退
@@ -95,6 +101,38 @@ class PhotoHelper {
         bitmap = BitmapFactory.decodeStream(bais, null, options)
 
         return bitmap
+    }
+
+    /**
+     * 根据给定的新宽度和新高度,对传入的Bitmap进行缩放操作
+     *
+     * @param bitmap 需要进行缩放的原始Bitmap对象
+     * @param newWidth 希望缩放后Bitmap的新宽度
+     * @param newHeight 希望缩放后Bitmap的新高度
+     * @return 缩放后的新Bitmap对象
+     */
+    fun scaleBitmap(bitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+
+        // 创建一个Matrix对象
+        val matrix = Matrix()
+
+        // 计算缩放比例
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
+
+        // 设置Matrix的缩放比例
+        matrix.postScale(scaleWidth, scaleHeight)
+
+        // 创建一个新的Bitmap对象，用于存储缩放后的图片
+        val newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
+
+        // 如果原始Bitmap不再需要,可以回收内存
+        bitmap.recycle()
+
+        // 返回新的Bitmap对象
+        return newBitmap
     }
 
     private fun cropImage(fragment: Fragment, uri: Uri) {

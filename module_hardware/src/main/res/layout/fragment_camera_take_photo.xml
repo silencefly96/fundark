@@ -1,138 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".camera.photo.TakePhotoFragment">
-
-    <Button
-        android:id="@+id/takePhoto"
-        android:text="@string/take_photo_by_system"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/pickPhoto"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/pickPhoto"
-        android:text="@string/pick_photo_by_system"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/takePhoto"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/takePhotoByCamera"
-        android:text="@string/take_photo_by_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/pickPhoto"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/takePhotoNoFeeling"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/takePhotoNoFeeling"
-        android:text="@string/take_photo_no_feeling"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/pickPhoto"
-        app:layout_constraintLeft_toRightOf="@id/takePhotoByCamera"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/takePhotoByCamera2"
-        android:text="@string/take_photo_by_camera2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/takePhotoByCamera"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/takePhotoByCameraX"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/takePhotoByCameraX"
-        android:text="@string/take_photo_by_cameraX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/takePhotoByCamera"
-        app:layout_constraintLeft_toRightOf="@+id/takePhotoByCamera2"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/insertPictures"
-        android:text="@string/insert_photo_to_pictures"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/takePhotoByCamera2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/clearCache"
-        android:text="@string/clear_Cache"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/insertPictures"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/clearPictures"
-        android:layout_marginTop="10dp"
-        />
-
-    <Button
-        android:id="@+id/clearPictures"
-        android:text="@string/clear_this_pictures"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/insertPictures"
-        app:layout_constraintLeft_toRightOf="@+id/clearCache"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"
-        />
-
-    <TextView
-        android:id="@+id/enable_crop_text"
-        android:textSize="18sp"
-        android:text="@string/enable_crop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/cropSwitch"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/cropSwitch"
-        app:layout_constraintBottom_toBottomOf="@id/cropSwitch"
-        />
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/cropSwitch"
-        android:checked="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        app:layout_constraintLeft_toRightOf="@id/enable_crop_text"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clearPictures"
-        />
+    xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:background="@color/black"
         app:layout_constraintTop_toBottomOf="@id/cropSwitch"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -160,12 +37,213 @@
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/cameraType"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:scaleType="centerCrop"
             tools:ignore="ContentDescription"
             />
 
     </FrameLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_camera_dialog_top"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="40dp"
+        app:behavior_fitToContents="false"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:id="@+id/topBar"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_camera_dialog_top_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <RadioGroup
+            android:id="@+id/cameraType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            >
+
+            <RadioButton
+                android:id="@+id/type_camera"
+                android:text="@string/type_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <RadioButton
+                android:id="@+id/type_camera2"
+                android:text="@string/type_camera2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                />
+
+            <RadioButton
+                android:id="@+id/type_cameraX"
+                android:checked="true"
+                android:text="@string/type_cameraX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+        </RadioGroup>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/cameraGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/cameraType"
+            >
+
+            <Button
+                android:id="@+id/startPreview"
+                android:text="@string/start_preview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:id="@+id/takeCapture"
+                android:text="@string/take_capture"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                />
+
+            <Button
+                android:id="@+id/cancelCapture"
+                android:text="@string/cancel_capture"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/photoGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/cameraGroup"
+            >
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@+id/topBar"
+                >
+
+                <Button
+                    android:id="@+id/takePhoto"
+                    android:text="@string/take_photo_by_system"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+
+                <Button
+                    android:id="@+id/pickPhoto"
+                    android:text="@string/pick_photo_by_system"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    >
+
+                    <TextView
+                        android:id="@+id/enable_crop_text"
+                        android:textSize="18sp"
+                        android:text="@string/enable_crop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/cropSwitch"
+                        android:checked="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        />
+
+                </LinearLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/topBar"
+                >
+
+                <Button
+                    android:id="@+id/insertPictures"
+                    android:text="@string/insert_photo_to_pictures"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+
+                <Button
+                    android:id="@+id/clearCache"
+                    android:text="@string/clear_Cache"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    />
+
+                <Button
+                    android:id="@+id/clearPictures"
+                    android:text="@string/clear_this_pictures"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -3,19 +3,18 @@ package com.silencefly96.module_hardware.camera.photo
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.util.Consumer
-import androidx.lifecycle.coroutineScope
 import com.silencefly96.module_base.base.BaseFragment
 import com.silencefly96.module_base.base.IPermissionHelper
 import com.silencefly96.module_base.utils.BitmapFileUtil
+import com.silencefly96.module_hardware.R
 import com.silencefly96.module_hardware.databinding.FragmentCameraTakePhotoBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class TakePhotoFragment : BaseFragment() {
@@ -23,11 +22,14 @@ class TakePhotoFragment : BaseFragment() {
     private var _binding: FragmentCameraTakePhotoBinding? = null
     private val binding get() = _binding!!
 
+    // 选中的相机API
+    private var mSelectCameraType = R.id.type_cameraX
+
     // 系统相机、相册选图片辅助类
     private lateinit var photoHelper: PhotoHelper
 
     // 旧版Camera接口，已被废弃
-    private lateinit var cameraHelper: CameraHelper
+    private lateinit var camera1Helper: Camera1Helper
 
     // Camera2接口，Android 5.0以上升级方案
     private lateinit var camera2Helper: Camera2Helper
@@ -42,118 +44,139 @@ class TakePhotoFragment : BaseFragment() {
     }
 
     override fun doBusiness(context: Context?) {
+
+        // 使用系统相机拍照
         binding.takePhoto.setOnClickListener {
             // 如果 AndroidManifest.xml 里面有注册Camera权限(包含SDK)，则必须申请=>默认申请最好
             requestPermission {
-                if (it) photoHelper.openCamera(this)
+                photoHelper.openCamera(this)
             }
         }
 
+        // 从相册选取
         binding.pickPhoto.setOnClickListener {
             photoHelper.openAlbum(this)
         }
 
-        binding.takePhotoByCamera.setOnClickListener {
-            requestPermission {
-                if (it) {
-                    // surface可见时才能使用相机
-                    binding.surface.visibility = View.VISIBLE
-                    // 调用拍照，相机操作最好放异步线程
-                    lifecycle.coroutineScope.launch(Dispatchers.IO) {
-                        cameraHelper.takePhotoByCamera(requireActivity(), binding.surface, {
-                            // UI操作放主线程
-                            binding.image.post {
-                                binding.image.setImageBitmap(it)
-                                binding.image.bringToFront()
-                            }
-                        })
-                    }
-                }
-            }
+        // 更新选中相机的API
+        binding.cameraType.setOnCheckedChangeListener { _, checkedId ->
+            mSelectCameraType = checkedId
         }
 
-        binding.takePhotoNoFeeling.setOnClickListener {
+        // 启动预览
+        binding.startPreview.setOnClickListener {
             requestPermission {
-                if (it) {
-                    // surface可见时才能使用相机
-                    binding.surface.visibility = View.VISIBLE
-                    // 使用camera2拍照
-                    lifecycle.coroutineScope.launch(Dispatchers.IO) {
-                        cameraHelper.takePhotoNoFeeling(requireActivity(), binding.surface) {
-                            // UI操作放主线程
-                            binding.image.post {
-                                binding.image.setImageBitmap(it)
-                                binding.image.bringToFront()
-                            }
+                // 预览前关闭所有相机资源
+                camera1Helper.release()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    camera2Helper.release()
+                    cameraXHelper.release()
+                }
+
+                // 再根据选择的API预览
+                when(mSelectCameraType) {
+                    R.id.type_camera -> {
+                        // surface可见时才能使用相机
+                        binding.surface.visibility = View.VISIBLE
+                        binding.surface.bringToFront()
+                        camera1Helper.startPreview(requireActivity(), binding.surface)
+                    }
+                    R.id.type_camera2 -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            binding.textureView.visibility = View.VISIBLE
+                            binding.textureView.bringToFront()
+                            camera2Helper.startPreview(requireActivity(), binding.textureView)
+                        }
+                    }
+                    else -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            binding.preview.visibility = View.VISIBLE
+                            binding.preview.bringToFront()
+                            cameraXHelper.startPreview(requireActivity(), binding.preview)
                         }
                     }
                 }
             }
         }
 
-        binding.takePhotoByCamera2.setOnClickListener {
+        // 点击拍照
+        binding.takeCapture.setOnClickListener {
             requestPermission {
-                if (it) {
-                    // surface可见时才能使用相机
+                // 拍照后的回调
+                val callback = Consumer<Bitmap> {
+                    binding.image.setImageBitmap(it)
+                    binding.image.bringToFront()
+                }
+
+                when(mSelectCameraType) {
+                    R.id.type_camera -> {
+                        camera1Helper.takePhoto(requireActivity(), binding.surface, callback)
+                    }
+                    R.id.type_camera2 -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            camera2Helper.takePhoto(requireActivity(), binding.textureView, callback)
+                        }
+                    }
+                    else -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            cameraXHelper.takePhoto(requireActivity(), binding.preview, callback)
+                        }
+                    }
+                }
+            }
+        }
+
+        // 取消拍照
+        binding.cancelCapture.setOnClickListener {
+            when(mSelectCameraType) {
+                R.id.type_camera -> {
                     binding.surface.visibility = View.VISIBLE
-                    // 无感调用拍照
+                    binding.surface.bringToFront()
+                    try {
+                        // 如果
+                        camera1Helper.continuePreview()
+                    }catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                R.id.type_camera2 -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        // 内部用协程在IO线程处理了
-                        camera2Helper.takePhotoByCamera2(
-                            requireActivity(),
-                            lifecycle,
-                            binding.surface
-                        ) {
-                            // UI操作放主线程
-                            binding.image.post {
-                                binding.image.setImageBitmap(it)
-                                binding.image.bringToFront()
-                            }
-                        }
+                        binding.textureView.visibility = View.VISIBLE
+                        binding.textureView.bringToFront()
+                    }
+                }
+                else -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        binding.preview.visibility = View.VISIBLE
+                        binding.preview.bringToFront()
                     }
                 }
             }
         }
 
-        binding.takePhotoByCameraX.setOnClickListener {
-            requestPermission {
-                if (it) {
-                    // 使用PreviewView
-                    binding.preview.visibility = View.VISIBLE
-                    // 无感调用拍照
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        cameraXHelper.takePhotoByCameraX(
-                            requireContext(),
-                            viewLifecycleOwner,
-                            binding.preview
-                        ) { bitmap ->
-                            // 已经在主线程设置了
-                            binding.image.setImageBitmap(bitmap)
-                            binding.image.bringToFront()
-                        }
-                    }
-                }
-            }
-        }
-
+        // 保存到相册
         binding.insertPictures.setOnClickListener {
             insert2Pictures(requireContext())
         }
 
+        // 清除本地缓存
         binding.clearCache.setOnClickListener {
             clearCachePictures(requireContext())
         }
 
+        // 删除APP的相册图片
         binding.clearPictures.setOnClickListener {
             clearAppPictures(requireContext())
         }
 
+        // 裁切开关
         binding.cropSwitch.setOnCheckedChangeListener { _, isChecked ->
             photoHelper.enableCrop = isChecked
         }
 
+        // 几个相机辅助类
         photoHelper = PhotoHelper()
-        cameraHelper = CameraHelper()
+        camera1Helper = Camera1Helper()
         // Android 5.0开始支持Camera2
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             camera2Helper = Camera2Helper()
@@ -173,11 +196,11 @@ class TakePhotoFragment : BaseFragment() {
                 }
 
                 override fun onGranted(grantedPermission: List<String>?) {
-                    consumer.accept(false)
+                    // consumer.accept(false)
                 }
 
                 override fun onDenied(deniedPermission: List<String>?) {
-                    consumer.accept(false)
+                    // consumer.accept(false)
                 }
             })
     }
@@ -220,6 +243,14 @@ class TakePhotoFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        // 释放资源
+        camera1Helper.release()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            camera2Helper.release()
+            cameraXHelper.release()
+        }
+
         _binding = null
     }
 }

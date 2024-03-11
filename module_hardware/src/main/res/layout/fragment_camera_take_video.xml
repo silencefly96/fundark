@@ -1,7 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/cropSwitch"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        >
+
+        <SurfaceView
+            android:id="@+id/surface"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextureView
+            android:id="@+id/textureView"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/preview"
+            android:visibility="invisible"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription"
+            />
+
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_camera_dialog_top"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="40dp"
+        app:behavior_fitToContents="false"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:id="@+id/topBar"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_camera_dialog_top_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <RadioGroup
+            android:id="@+id/cameraType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            >
+
+            <RadioButton
+                android:id="@+id/type_camera"
+                android:text="@string/type_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/type_camera2"
+                android:text="@string/type_camera2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/type_cameraX"
+                android:text="@string/type_cameraX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/startRecord"
+            android:text="@string/start_record_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cameraType"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/stopRecord"
+            />
+
+        <Button
+            android:id="@+id/stopRecord"
+            android:text="@string/stop_record_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cameraType"
+            app:layout_constraintLeft_toRightOf="@+id/startRecord"
+            app:layout_constraintRight_toLeftOf="@+id/saveRecord"
+            />
+
+        <Button
+            android:id="@+id/saveRecord"
+            android:text="@string/save_record_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cameraType"
+            app:layout_constraintLeft_toRightOf="@+id/stopRecord"
+            app:layout_constraintRight_toLeftOf="@+id/cancelRecord"
+            />
+
+        <Button
+            android:id="@+id/cancelRecord"
+            android:text="@string/cancel_record_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cameraType"
+            app:layout_constraintLeft_toRightOf="@+id/saveRecord"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/cancelRecord"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

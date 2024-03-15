@@ -1,4 +1,4 @@
-package com.silencefly96.module_hardware.camera.photo
+package com.silencefly96.module_hardware.camera.helper
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -19,6 +19,7 @@ import android.os.Looper
 import android.util.Log
 import android.util.Size
 import android.view.Surface
+import android.view.SurfaceView
 import android.view.TextureView
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
@@ -333,6 +334,20 @@ class Camera2Helper(
         return (sensorOrientation!! + deviceRotation + 360) % 360
     }
 
+    /**
+     * 使用相机API拍视频
+     *
+     * @param activity 带lifecycle的activity，提供context，并且便于使用协程
+     * @param view 使用 TextureView 拍视频
+     * @param callback 结果回调
+     */
+    override fun takeVideo(
+        activity: ComponentActivity,
+        view: TextureView,
+        callback: Consumer<String>
+    ){
+
+    }
     override fun release() {
         // 从 SurfaceTexture 中移除 SurfaceTextureListener
         mTextureViewRef?.get()?.surfaceTextureListener = null

@@ -67,7 +67,7 @@ class PhotoHelper {
         fragment.startActivityForResult(intent, REQUEST_ALBUM_CODE)
     }
 
-    private fun getBitmap(fragment: Fragment, uri: Uri): Bitmap? {
+    fun getBitmap(fragment: Fragment, uri: Uri): Bitmap? {
         var bitmap: Bitmap?
         val options = BitmapFactory.Options()
         // 先不读取，仅获取信息

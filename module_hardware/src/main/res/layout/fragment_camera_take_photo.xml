@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/cropSwitch"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         >
@@ -35,15 +34,26 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent" />
 
-        <ImageView
-            android:id="@+id/image"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/imageContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/cameraType"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:scaleType="centerCrop"
-            tools:ignore="ContentDescription"
-            />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/black"
+            android:gravity="center"
+            >
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/cameraType"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scaleType="centerCrop"
+                tools:ignore="ContentDescription"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </FrameLayout>
 
@@ -69,180 +79,407 @@
             app:layout_constraintRight_toRightOf="parent"
             />
 
-        <RadioGroup
-            android:id="@+id/cameraType"
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal"
             app:layout_constraintTop_toBottomOf="@+id/topBar"
-            >
-
-            <RadioButton
-                android:id="@+id/type_camera"
-                android:text="@string/type_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-            <RadioButton
-                android:id="@+id/type_camera2"
-                android:text="@string/type_camera2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                />
-
-            <RadioButton
-                android:id="@+id/type_cameraX"
-                android:checked="true"
-                android:text="@string/type_cameraX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-        </RadioGroup>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/cameraGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@+id/cameraType"
-            >
-
-            <Button
-                android:id="@+id/startPreview"
-                android:text="@string/start_preview"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-            <Button
-                android:id="@+id/takeCapture"
-                android:text="@string/take_capture"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                />
-
-            <Button
-                android:id="@+id/cancelCapture"
-                android:text="@string/cancel_capture"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/photoGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/cameraGroup"
+            android:layout_marginBottom="100dp"
             >
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                app:layout_constraintTop_toBottomOf="@+id/topBar"
                 >
 
-                <Button
-                    android:id="@+id/takePhoto"
-                    android:text="@string/take_photo_by_system"
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    />
-
-                <Button
-                    android:id="@+id/pickPhoto"
-                    android:text="@string/pick_photo_by_system"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_camera_group"
+                    android:padding="10dp"
                     >
 
                     <TextView
-                        android:id="@+id/enable_crop_text"
-                        android:textSize="18sp"
-                        android:text="@string/enable_crop"
+                        android:text="@string/group_camera"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/cropSwitch"
-                        android:checked="true"
+                    <RadioGroup
+                        android:id="@+id/cameraType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_horizontal"
+
+                        >
+
+                        <RadioButton
+                            android:id="@+id/type_camera"
+                            android:text="@string/type_camera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                        <RadioButton
+                            android:id="@+id/type_camera2"
+                            android:text="@string/type_camera2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <RadioButton
+                            android:id="@+id/type_cameraX"
+                            android:checked="true"
+                            android:text="@string/type_cameraX"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                    </RadioGroup>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        >
+
+                        <Button
+                            android:id="@+id/startPreview"
+                            android:text="@string/start_preview"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                        <Button
+                            android:id="@+id/takeCapture"
+                            android:text="@string/take_capture"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <Button
+                            android:id="@+id/cancelCapture"
+                            android:text="@string/cancel_capture"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_camera_group"
+                    android:padding="10dp"
+                    >
+
+                    <TextView
+                        android:text="@string/group_system"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
                         />
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <Button
+                            android:id="@+id/takePhoto"
+                            android:text="@string/take_photo_by_system"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                        <Button
+                            android:id="@+id/pickPhoto"
+                            android:text="@string/pick_photo_by_system"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            >
+
+                            <TextView
+                                android:id="@+id/enable_crop_text"
+                                android:textSize="18sp"
+                                android:text="@string/enable_crop"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                />
+
+                            <androidx.appcompat.widget.SwitchCompat
+                                android:id="@+id/cropSwitch"
+                                android:checked="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_camera_group"
+                    android:padding="10dp"
+                    >
+
+                    <TextView
+                        android:text="@string/group_share"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        >
+
+                        <Button
+                            android:id="@+id/shareWechat"
+                            android:text="@string/share_wechat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                        <Button
+                            android:id="@+id/shareFriend"
+                            android:text="@string/share_wechat_friend"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <Button
+                            android:id="@+id/shareQQ"
+                            android:text="@string/share_qq"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        >
+
+                        <Button
+                            android:id="@+id/shareWeibo"
+                            android:text="@string/share_weibo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                        <Button
+                            android:id="@+id/shareQzone"
+                            android:text="@string/share_qzone"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <Button
+                            android:id="@+id/shareDD"
+                            android:text="@string/share_dingding"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_camera_group"
+                    android:padding="10dp"
+                    >
+
+                    <TextView
+                        android:text="@string/group_operate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <Button
+                            android:id="@+id/insertPictures"
+                            android:text="@string/insert_photo_to_pictures"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                        <Button
+                            android:id="@+id/saveLocal"
+                            android:text="@string/save_photo_to_app"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <Button
+                            android:id="@+id/clearCache"
+                            android:text="@string/clear_Cache"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+
+                            />
+
+                        <Button
+                            android:id="@+id/clearPictures"
+                            android:text="@string/clear_this_pictures"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            />
+
+                    </LinearLayout>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_camera_group"
+                    android:padding="10dp"
+                    >
+
+                    <TextView
+                        android:text="@string/ablum_photo_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <TextView
+                        android:text="@string/ablum_photo_path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/ablumList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_camera_group"
+                    android:padding="10dp"
+                    >
+
+                    <TextView
+                        android:text="@string/cache_photo_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <TextView
+                        android:text="@string/cache_photo_path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/cacheList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@+id/topBar"
-                >
-
-                <Button
-                    android:id="@+id/insertPictures"
-                    android:text="@string/insert_photo_to_pictures"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    />
-
-                <Button
-                    android:id="@+id/clearCache"
-                    android:text="@string/clear_Cache"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    />
-
-                <Button
-                    android:id="@+id/clearPictures"
-                    android:text="@string/clear_this_pictures"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

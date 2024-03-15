@@ -1,9 +1,10 @@
-package com.silencefly96.module_hardware.camera.photo
+package com.silencefly96.module_hardware.camera.helper
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
+import android.view.SurfaceView
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
@@ -114,6 +115,21 @@ class CameraXHelper(
         buffer.get(bytes)
 
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    /**
+     * 使用相机API拍视频
+     *
+     * @param activity 带lifecycle的activity，提供context，并且便于使用协程
+     * @param view 使用 PreviewView 拍视频
+     * @param callback 结果回调
+     */
+    override fun takeVideo(
+        activity: ComponentActivity,
+        view: PreviewView,
+        callback: Consumer<String>
+    ){
+
     }
 
     /**

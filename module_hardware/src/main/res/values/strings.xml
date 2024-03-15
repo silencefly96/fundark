@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">module_hardware</string>
+    <string name="main_fragment">首页</string>
 
     <!--  蓝牙模块  -->
     <string name="bluetooth_fragment">蓝牙模块</string>
@@ -19,19 +20,39 @@
     <!--  相机模块  -->
     <string name="camera_main_fragment">拍照</string>
     <string name="take_photo_fragment">拍照</string>
-    <string name="take_photo_by_system">系统拍照</string>
-    <string name="pick_photo_by_system">相册选取</string>
+
+    <string name="group_camera">使用API拍照</string>
     <string name="type_camera">camera</string>
     <string name="type_camera2">camera2</string>
     <string name="type_cameraX">cameraX</string>
     <string name="start_preview">开始预览</string>
     <string name="take_capture">拍照</string>
+    <string name="take_video">录制</string>
     <string name="cancel_capture">取消拍摄</string>
+
+    <string name="group_system">使用系统拍照</string>
+    <string name="take_photo_by_system">系统拍照</string>
+    <string name="pick_photo_by_system">相册选取</string>
     <string name="enable_crop">裁切</string>
-    <string name="insert_photo_to_pictures">保存到相册</string>
-    <string name="clear_Cache">清除图片缓存</string>
-    <string name="clear_this_pictures">删除应用图片</string>
-    <string name="main_fragment">首页</string>
+
+    <string name="group_share">使用系统分享</string>
+    <string name="share_wechat">微信</string>
+    <string name="share_wechat_friend">朋友圈</string>
+    <string name="share_qq">QQ</string>
+    <string name="share_weibo">微博</string>
+    <string name="share_qzone">QQ空间</string>
+    <string name="share_dingding">钉钉</string>
+
+    <string name="group_operate">图片操作</string>
+    <string name="insert_photo_to_pictures">保存相册</string>
+    <string name="save_photo_to_app">保存本地</string>
+    <string name="clear_Cache">清空缓存</string>
+    <string name="clear_this_pictures">清空相册</string>
+    <string name="cache_photo_list">缓存图片列表: </string>
+    <string name="cache_photo_path">~/Android/data/packageName/files/Pictures/ </string>
+    <string name="ablum_photo_list">本应用相册图片列表: </string>
+    <string name="ablum_photo_path">~/Pictures/Fundark/ </string>
+    <string name="photo_list_delete">删除</string>
 
     <string name="start_record_video">录制</string>
     <string name="stop_record_video">停止</string>

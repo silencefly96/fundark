@@ -1,4 +1,4 @@
-package com.silencefly96.module_hardware.camera.photo
+package com.silencefly96.module_hardware.camera.helper
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.graphics.Matrix
 import android.hardware.Camera
+import android.media.MediaRecorder
+import android.os.Environment
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -14,8 +16,11 @@ import androidx.core.util.Consumer
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.IOException
 import java.lang.ref.WeakReference
 import kotlin.math.abs
+
 
 class Camera1Helper(
     private var mFacingType: Int = Camera.CameraInfo.CAMERA_FACING_BACK
@@ -26,6 +31,9 @@ class Camera1Helper(
 
     // 弱引用持有SurfaceView
     private var mSurfaceViewRef: WeakReference<SurfaceView>? = null
+
+    // 录制视频
+    private var mMediaRecorder: MediaRecorder? = null
 
     // 创建surface的回调
     private val mSurfaceCallback = object : SurfaceHolder.Callback {
@@ -246,6 +254,57 @@ class Camera1Helper(
         val matrix = Matrix()
         matrix.postRotate(degrees.toFloat())
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    /**
+     * 使用相机API拍视频
+     *
+     * @param activity 带lifecycle的activity，提供context，并且便于使用协程
+     * @param view 使用 SurfaceView 拍视频
+     * @param callback 结果回调
+     */
+    override fun takeVideo(
+        activity: ComponentActivity,
+        view: SurfaceView,
+        callback: Consumer<String>
+    ){
+        // 创建一个 MediaRecorder 对象
+        if (mMediaRecorder == null) {
+            mMediaRecorder = MediaRecorder().apply {
+                setAudioSource(MediaRecorder.AudioSource.CAMCORDER)
+                setVideoSource(MediaRecorder.VideoSource.CAMERA)
+                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            }
+        }
+
+        try {
+            // 设置 MediaRecorder 的属性
+            mMediaRecorder?.apply {
+
+                // 设置输出文件路径
+                setOutputFile(getTempVideoPath(activity).absolutePath)
+
+                // 准备 MediaRecorder
+                prepare()
+
+                // 开始录制
+                start()
+            }
+            
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getTempVideoPath(activity: ComponentActivity): File {
+        // 临时文件，后面会加long型随机数
+        return File.createTempFile(
+            "video_",
+            ".mp4",
+            activity.getExternalFilesDir(Environment.DIRECTORY_DCIM)
+        )
     }
 
     /**

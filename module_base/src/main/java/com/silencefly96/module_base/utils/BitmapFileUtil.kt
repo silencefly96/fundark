@@ -3,14 +3,18 @@
 package com.silencefly96.module_base.utils
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -32,7 +36,7 @@ object BitmapFileUtil {
      * @exception IllegalStateException 过程错误异常
      */
     @Throws(IllegalStateException::class)
-    public fun insert2Pictures(context: Context, bitmap: Bitmap): Uri {
+    public fun insert2Album(context: Context, bitmap: Bitmap): Uri {
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val bais = ByteArrayInputStream(baos.toByteArray())
@@ -116,6 +120,74 @@ object BitmapFileUtil {
     }
 
     /**
+     * 获取所有当前应用在公有目录保存的图片
+     *
+     * @param context 上下文
+     * @return 删除图片的数量
+     */
+    public fun getAllPublicPictures(context: Context): List<Pair<String, Uri>> {
+        val result: MutableList<Pair<String, Uri>> = ArrayList()
+
+        // 图片类型uri
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+
+        // 查询条目
+        val projection = arrayOf(
+            MediaStore.Images.Media.TITLE,
+            MediaStore.Images.Media._ID
+        )
+
+        // 查询条件
+        val selection: String
+        val selectionArg: String
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            selection = "${MediaStore.Images.ImageColumns.RELATIVE_PATH} like ?"
+            selectionArg = "%" + Environment.DIRECTORY_PICTURES + File.separator + PATH + "%"
+        } else {
+            val dstPath = StringBuilder().let { sb ->
+                sb.append(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.path)
+                sb.append(File.separator)
+                sb.append(PATH)
+                sb.toString()
+            }
+            selection = "${MediaStore.Images.ImageColumns.DATA} like ?"
+            selectionArg = "%$dstPath%"
+        }
+
+        // 排序
+        val sortOrder = "${MediaStore.Audio.Media.TITLE} ASC"
+
+        // 查询
+        val cursor = context.contentResolver.query(
+            uri,
+            projection,
+            selection,
+            arrayOf(selectionArg),
+            sortOrder
+        )
+
+        // 处理结果
+        cursor?.let {
+            while (it.moveToNext()) {
+                try {
+                    val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
+                    result.add(
+                        Pair(
+                            it.getString(it.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE)),
+                            ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                        )
+                    )
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        cursor?.close()
+        return result
+    }
+
+    /**
      * 清除当前应用在公有目录保存的图片
      *
      * @param context 上下文
@@ -144,6 +216,39 @@ object BitmapFileUtil {
             selection,
             arrayOf(selectionArgs)
         )
+    }
+
+    /**
+     * 保存到外部私有目录的文件
+     *
+     * @param context 上下文
+     * @param bitmap 图片
+     * @return 插入图片的uri
+     * @exception IllegalStateException 过程错误异常
+     */
+    @Throws(IllegalStateException::class)
+    public fun saveInApp(context: Context, bitmap: Bitmap): Uri {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val bais = ByteArrayInputStream(baos.toByteArray())
+        return saveInApp(context, bais, "Media")
+    }
+
+
+    // 使用MediaStore方式将流写入相册
+    @Suppress("SameParameterValue")
+    @Throws(IllegalStateException::class)
+    private fun saveInApp(context: Context, inputStream: InputStream, type: String): Uri {
+        // 获取写入的uri
+        val uri = getUriForAppPictures(context, type)
+
+        // 写入文件
+        val result = write2File(context, uri, inputStream)
+        if (!result) {
+            throw IllegalStateException("write to file fail")
+        }
+
+        return uri
     }
 
     /**
@@ -202,6 +307,28 @@ object BitmapFileUtil {
         }
     }
 
+    /**
+     * 获取应用外部私有目录内PICTURES目录所有图片
+     *
+     * @param context 上下文
+     * @return 是否成功
+     */
+    public fun getAllAppPictures(context: Context): List<Pair<String, Uri>> {
+        val result: MutableList<Pair<String, Uri>> = ArrayList()
+        // 外部储存-私有目录-files-Pictures目录
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.let { dir->
+            // 删除其中的图片
+            try {
+                val pics = dir.listFiles()
+                pics?.forEach { pic ->
+                    result.add(Pair(pic.name, getUriForFile(pic, context)))
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return result
+    }
 
     /**
      * 清除应用外部私有目录内PICTURES目录所有图片
@@ -277,5 +404,33 @@ object BitmapFileUtil {
             }
         }
         return data
+    }
+
+    /**
+     * 资源drawable转成bitmap
+     *
+     * @param context 上下文
+     * @param id 资源id
+     */
+    fun drawable2Bitmap(context: Context, id: Int): Bitmap {
+        val drawable = ResourcesCompat.getDrawable(context.resources, id, null)
+        return drawable2Bitmap(drawable!!)
+    }
+
+    /**
+     * 资源drawable转成bitmap
+     *
+     * @param drawable 图片
+     */
+    fun drawable2Bitmap(drawable: Drawable): Bitmap {
+        val w = drawable.intrinsicWidth
+        val h = drawable.intrinsicHeight
+        val config = Bitmap.Config.ARGB_8888
+        val bitmap = Bitmap.createBitmap(w, h, config)
+        //注意，下面三行代码要用到，否则在View或者SurfaceView里的canvas.drawBitmap会看不到图
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, w, h)
+        drawable.draw(canvas)
+        return bitmap
     }
 }

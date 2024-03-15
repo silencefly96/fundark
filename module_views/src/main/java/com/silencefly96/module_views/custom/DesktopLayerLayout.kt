@@ -246,14 +246,14 @@ class DesktopLayerLayout @JvmOverloads constructor(
 
     // layout 按顺序间距排列即可，大小有onMeasure控制,开始位置在中心，也和curIndex无关
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        val startX = (r + l) / 2
+        val startX = (r - l) / 2
         // 排列布局
         for (i in 0 until childCount) {
             val child = mInitViews[i]
 
             // 中间减去间距，再减去一半的宽度，得到左边坐标
             val left = startX + mGateLength * i - child.measuredWidth / 2
-            val top = (b + t) / 2 - child.measuredHeight / 2
+            val top = (b - t) / 2 - child.measuredHeight / 2
             val right = left + child.measuredWidth
             val bottom = top + child.measuredHeight
 

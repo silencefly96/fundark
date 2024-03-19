@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
-import android.view.SurfaceView
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
@@ -18,9 +17,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class CameraXHelper(
+class CameraXVideoHelper(
     private var mSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-): ICameraHelper<PreviewView> {
+): ICameraVideoHelper<PreviewView> {
 
     //
     private var mCameraProvider: ProcessCameraProvider? = null
@@ -72,49 +71,6 @@ class CameraXHelper(
 
             // 回调代码在主线程处理
         }, ContextCompat.getMainExecutor(activity))
-    }
-
-    /**
-     * 使用相机API拍照
-     *
-     * @param activity 带lifecycle的activity，提供context，并且便于使用协程
-     * @param view Camerax API使用的 PreviewView
-     * @param callback 结果回调
-     */
-    override fun takePhoto (
-        activity: ComponentActivity,
-        view: PreviewView,
-        callback: Consumer<Bitmap>
-    ) {
-        // Get a stable reference of the modifiable image capture use case
-        val imageCapture = imageCapture ?: return
-
-        // 直接拍照拿bitmap，存文件可以用 OutputFileOptions
-        imageCapture.takePicture(
-            ContextCompat.getMainExecutor(activity),
-            object : ImageCapture.OnImageCapturedCallback() {
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    // 转换为 Bitmap，并传递结果
-                    callback.accept(imageProxyToBitmap(image))
-                    image.close()
-                }
-
-                override fun onError(exc: ImageCaptureException) {
-                    // 处理拍摄过程中的异常
-                    Log.e("TAG", "Photo capture failed: ${exc.message}", exc)
-                }
-            }
-        )
-    }
-
-    private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
-        val planeProxy = image.planes[0]
-        val buffer = planeProxy.buffer
-
-        val bytes = ByteArray(buffer.remaining())
-        buffer.get(bytes)
-
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
     /**

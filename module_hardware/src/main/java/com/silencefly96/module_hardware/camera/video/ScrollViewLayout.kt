@@ -4,12 +4,12 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import androidx.core.animation.addListener
+import androidx.core.util.Consumer
 import androidx.core.view.children
 import java.util.*
 import kotlin.math.abs
@@ -41,6 +41,11 @@ class ScrollViewLayout @JvmOverloads constructor(
      * 当前主页面的index
      */
     private var curIndex = 0
+
+    /**
+     * 页面变化监听
+     */
+    var pageChangeListner: Consumer<Int>? = null
 
     // 由于将view提高层级会搞乱顺序，需要记录原始位置信息
     private val mInitViews = ArrayList<View>()
@@ -76,15 +81,15 @@ class ScrollViewLayout @JvmOverloads constructor(
         val height = max(getDefaultSize(0, heightMeasureSpec), suggestedMinimumHeight)
 
         // 设置间距
-        mGateLength = width / 4
+        mGateLength = width / 2 - height / 4
 
         // 中间 view 占满高度
         val maxWidth = height
         val maxHeight = height
 
         // 两侧 view 大小
-        val minWidth = (height / 2f).toInt()
-        val minHeight = (height / 2f).toInt()
+        val minWidth = height / 2
+        val minHeight = height / 2
 
         var childWidth: Int
         var childHeight: Int
@@ -108,9 +113,9 @@ class ScrollViewLayout @JvmOverloads constructor(
         // 开始时当前view未测量，不计算
         if (measuredWidth == 0) return scanSize
 
-        // 初始化的时候，第一个放中间，所以index移到可见范围为[2+index, index-2]，可见!=可移动
-        val scrollLeftLimit = (index - 2) * mGateLength
-        val scrollRightLimit = (index + 2) * mGateLength
+        // 初始化的时候，第一个放中间，最多可见三个
+        val scrollLeftLimit = (index - 1) * mGateLength
+        val scrollRightLimit = (index + 1) * mGateLength
 
         // 先判断child是否可见
         if (scrolledLen in scrollLeftLimit..scrollRightLimit) {
@@ -132,10 +137,8 @@ class ScrollViewLayout @JvmOverloads constructor(
 
     // layout 按顺序间距排列即可，大小有onMeasure控制,开始位置在中心，也和curIndex无关
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        Log.e("TAG", "onLayout(container): top=$t, bottom=$b")
-        Log.e("TAG", "onLayout(container): left=$l, right=$r")
         // 从正中间开始排列
-        val startX = (r + l) / 2
+        val startX = (r - l) / 2
 
         // 排列布局
         for (i in 0 until childCount) {
@@ -143,34 +146,16 @@ class ScrollViewLayout @JvmOverloads constructor(
 
             // 中间减去间距，再减去一半的宽度，得到左边坐标
             val left = startX + mGateLength * i - child.measuredWidth / 2
-            val top = (b + t) / 2 - child.measuredHeight / 2
+            val top = (b - t) / 2 - child.measuredHeight / 2
             val right = left + child.measuredWidth
             val bottom = top + child.measuredHeight
 
-            Log.e("TAG", "onLayout($i): top=$top, bottom=$bottom")
-            Log.e("TAG", "onLayout($i): left=$left, right=$right")
             child.layout(left, top, right, bottom)
         }
 
         // 修改大小，布局完成后移动
         scrollBy(mDxLen.toInt(), 0)
         mDxLen = 0f
-
-        // 完成布局及移动后，绘制之前，将可见view提高层级
-        val targetIndex = getCurrentIndex()
-        for (i in 2 downTo 0) {
-            val preIndex = targetIndex - i
-            val aftIndex = targetIndex + i
-
-            // 逐次提高层级，注意在mInitViews拿就可以，不可见不管
-            if (preIndex in 0..childCount) {
-                bringChildToFront(mInitViews[preIndex])
-            }
-
-            if (aftIndex != preIndex && aftIndex in 0 until childCount) {
-                bringChildToFront(mInitViews[aftIndex])
-            }
-        }
     }
 
     // 根据滚动距离获得当前index
@@ -258,7 +243,11 @@ class ScrollViewLayout @JvmOverloads constructor(
 
         // 在动画结束时修改curIndex
         animator.addListener (onEnd = {
-            curIndex = getCurrentIndex()
+            val index = getCurrentIndex()
+            if (index != curIndex) {
+                curIndex = index
+                pageChangeListner?.accept(index)
+            }
             mState = SCROLL_STATE_IDLE
         })
 

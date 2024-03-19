@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
     xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout
@@ -50,25 +51,29 @@
     <com.silencefly96.module_hardware.camera.video.ScrollViewLayout
         android:id="@+id/recordGroup"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@color/white"
+        android:layout_height="150dp"
+        android:background="@color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:clipChildren="false"
         >
 
-        <View
-            android:background="@color/red"
+        <com.silencefly96.module_hardware.camera.video.RecordButton
+            android:id="@+id/camera1Button"
+            android:tag="@string/type_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <View
-            android:background="@color/red"
+        <com.silencefly96.module_hardware.camera.video.RecordButton
+            android:id="@+id/camera2Button"
+            android:tag="@string/type_camera2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <View
-            android:background="@color/red"
+        <com.silencefly96.module_hardware.camera.video.RecordButton
+            android:id="@+id/cameraXButton"
+            android:tag="@string/type_cameraX"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

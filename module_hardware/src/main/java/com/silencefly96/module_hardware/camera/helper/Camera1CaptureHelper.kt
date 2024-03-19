@@ -22,9 +22,9 @@ import java.lang.ref.WeakReference
 import kotlin.math.abs
 
 
-class Camera1Helper(
+class Camera1CaptureHelper(
     private var mFacingType: Int = Camera.CameraInfo.CAMERA_FACING_BACK
-): ICameraHelper<SurfaceView> {
+): ICameraCaptureHelper<SurfaceView> {
 
     // 相机
     private var mCamera: Camera? = null
@@ -106,7 +106,11 @@ class Camera1Helper(
      * 继续预览，camera1 APU拍照后会暂停预览
      */
     fun continuePreview() {
-        mCamera?.startPreview()
+        try {
+            mCamera?.startPreview()
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /** 获取前置或者后置摄像头 **/
@@ -254,57 +258,6 @@ class Camera1Helper(
         val matrix = Matrix()
         matrix.postRotate(degrees.toFloat())
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    /**
-     * 使用相机API拍视频
-     *
-     * @param activity 带lifecycle的activity，提供context，并且便于使用协程
-     * @param view 使用 SurfaceView 拍视频
-     * @param callback 结果回调
-     */
-    override fun takeVideo(
-        activity: ComponentActivity,
-        view: SurfaceView,
-        callback: Consumer<String>
-    ){
-        // 创建一个 MediaRecorder 对象
-        if (mMediaRecorder == null) {
-            mMediaRecorder = MediaRecorder().apply {
-                setAudioSource(MediaRecorder.AudioSource.CAMCORDER)
-                setVideoSource(MediaRecorder.VideoSource.CAMERA)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            }
-        }
-
-        try {
-            // 设置 MediaRecorder 的属性
-            mMediaRecorder?.apply {
-
-                // 设置输出文件路径
-                setOutputFile(getTempVideoPath(activity).absolutePath)
-
-                // 准备 MediaRecorder
-                prepare()
-
-                // 开始录制
-                start()
-            }
-            
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun getTempVideoPath(activity: ComponentActivity): File {
-        // 临时文件，后面会加long型随机数
-        return File.createTempFile(
-            "video_",
-            ".mp4",
-            activity.getExternalFilesDir(Environment.DIRECTORY_DCIM)
-        )
     }
 
     /**

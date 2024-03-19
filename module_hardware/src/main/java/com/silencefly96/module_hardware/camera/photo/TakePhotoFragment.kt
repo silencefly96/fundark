@@ -22,9 +22,9 @@ import com.silencefly96.module_base.base.ViewHolder
 import com.silencefly96.module_base.utils.BitmapFileUtil
 import com.silencefly96.module_base.utils.ShareUtil
 import com.silencefly96.module_hardware.R
-import com.silencefly96.module_hardware.camera.helper.Camera1Helper
-import com.silencefly96.module_hardware.camera.helper.Camera2Helper
-import com.silencefly96.module_hardware.camera.helper.CameraXHelper
+import com.silencefly96.module_hardware.camera.helper.Camera1CaptureHelper
+import com.silencefly96.module_hardware.camera.helper.Camera2CaptureHelper
+import com.silencefly96.module_hardware.camera.helper.CameraXCaptureHelper
 import com.silencefly96.module_hardware.databinding.FragmentCameraTakePhotoBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,13 +42,13 @@ class TakePhotoFragment : BaseFragment() {
     private lateinit var photoHelper: PhotoHelper
 
     // 旧版Camera接口，已被废弃
-    private lateinit var camera1Helper: Camera1Helper
+    private lateinit var camera1Helper: Camera1CaptureHelper
 
     // Camera2接口，Android 5.0以上升级方案
-    private lateinit var camera2Helper: Camera2Helper
+    private lateinit var camera2Helper: Camera2CaptureHelper
 
     // JetPack的CameraX，基与Cmaera2 API封装，简化了开发流程，并增加生命周期控制
-    private lateinit var cameraXHelper: CameraXHelper
+    private lateinit var cameraXHelper: CameraXCaptureHelper
 
     // 当前应用在相册的图片
     private val mAblumPhotos: MutableList<Pair<String, Uri>> = ArrayList()
@@ -288,11 +288,11 @@ class TakePhotoFragment : BaseFragment() {
     private fun getHelpers() {
         // 几个相机辅助类
         photoHelper = PhotoHelper()
-        camera1Helper = Camera1Helper()
+        camera1Helper = Camera1CaptureHelper()
         // Android 5.0开始支持Camera2
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            camera2Helper = Camera2Helper()
-            cameraXHelper = CameraXHelper()
+            camera2Helper = Camera2CaptureHelper()
+            cameraXHelper = CameraXCaptureHelper()
         }
     }
 

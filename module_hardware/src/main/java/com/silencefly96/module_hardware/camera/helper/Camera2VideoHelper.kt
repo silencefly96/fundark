@@ -19,7 +19,6 @@ import android.os.Looper
 import android.util.Log
 import android.util.Size
 import android.view.Surface
-import android.view.SurfaceView
 import android.view.TextureView
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
@@ -34,9 +33,9 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class Camera2Helper(
+class Camera2VideoHelper(
     private var mFacingType: Int = CameraCharacteristics.LENS_FACING_BACK
-): ICameraHelper<TextureView> {
+): ICameraVideoHelper<TextureView> {
 
     // 用于处理相机结果的handler(主线程handler)
     private val mHandler = Handler(Looper.getMainLooper())
@@ -244,94 +243,6 @@ class Camera2Helper(
 
         mPreviewRequest = previewRequestBuilder.build()
         mSession!!.setRepeatingRequest(mPreviewRequest!!, null, mHandler)
-    }
-
-    /**
-     * 使用相机API拍照
-     *
-     * @param activity 带lifecycle的activity，提供context，并且便于使用协程
-     * @param view Camera2 API使用的 TextureView(当然也能用SurfaceView)
-     * @param callback 结果回调
-     */
-    override fun takePhoto (
-        activity: ComponentActivity,
-        view: TextureView,
-        callback: Consumer<Bitmap>
-    ) {
-        // IO协程中执行，
-        activity.lifecycleScope.launch(Dispatchers.IO) {
-
-            // 1、创建拍照的请求
-            val captureRequestBuilder =
-                mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-
-            // 2、设置参数
-            captureRequestBuilder.addTarget(mImageReader!!.surface)
-            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
-
-            // 3、设置拍照方向
-            val rotation = activity.windowManager.defaultDisplay.rotation
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,
-                getJpegOrientation(mCameraCharacteristics!!, rotation))
-
-            mCaptureRequest = captureRequestBuilder.build()
-
-            // 4、拍照
-            // mSession?.stopRepeating() // 这行代码只是为了防止重复请求
-            // mSession?.abortCaptures() // 这行代码只是为了防止重复请求
-            mSession!!.capture(mCaptureRequest!!, object : CameraCaptureSession.CaptureCallback() {
-                override fun onCaptureCompleted(
-                    session: CameraCaptureSession,
-                    request: CaptureRequest,
-                    result: TotalCaptureResult
-                ) {
-                    // 图片已捕获
-                    // 可选步骤，根据需要进行处理
-                }
-            }, mHandler)
-
-            // 5、设置图片回调，拿到结果
-            setImageReaderCallback(callback)
-        }
-    }
-
-    private fun setImageReaderCallback(callback: Consumer<Bitmap>) {
-        mImageReader?.setOnImageAvailableListener({
-            val image = mImageReader!!.acquireNextImage()
-            image?.use {
-                val planes = it.planes
-                if (planes.isNotEmpty()) {
-                    val buffer = planes[0].buffer
-                    val data = ByteArray(buffer.remaining())
-                    buffer.get(data)
-
-                    // 转成bitmap
-                    val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-
-                    // 传递结果，mHandler应该是在UI线程了
-                    callback.accept(bitmap)
-                }
-            }
-        }, mHandler)
-    }
-
-    private fun getJpegOrientation(
-        cameraCharacteristics: CameraCharacteristics,
-        deviceOrientation: Int
-    ): Int {
-        val sensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)
-
-        // 根据设备方向调整传感器方向
-        val deviceRotation = when (deviceOrientation) {
-            Surface.ROTATION_0 -> 0
-            Surface.ROTATION_90 -> 90
-            Surface.ROTATION_180 -> 180
-            Surface.ROTATION_270 -> 270
-            else -> 0
-        }
-
-        // 计算最终的JPEG方向
-        return (sensorOrientation!! + deviceRotation + 360) % 360
     }
 
     /**
